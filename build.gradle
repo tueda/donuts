@@ -1,0 +1,21 @@
+plugins {
+  id 'java-library'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  api 'cc.redberry:rings:2.5.2'
+  testImplementation 'com.google.truth:truth:0.44'
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
+}
+
+test {
+    useJUnitPlatform()
+}
