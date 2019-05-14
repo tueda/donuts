@@ -1,5 +1,6 @@
 plugins {
   id 'java-library'
+  id 'com.diffplug.gradle.spotless' version '3.23.0'
 }
 
 sourceCompatibility = '1.8'
@@ -17,5 +18,11 @@ dependencies {
 }
 
 test {
-    useJUnitPlatform()
+  useJUnitPlatform()
+}
+
+spotless {
+  java {
+    googleJavaFormat('1.7')
+  }
 }

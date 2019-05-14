@@ -3,9 +3,7 @@ package com.github.tueda.donuts;
 import java.io.Serializable;
 import java.util.Comparator;
 
-/**
- * Variables.
- */
+/** Variables. */
 public final class Variable implements Comparable<Variable>, Serializable {
   private static final long serialVersionUID = 1L;
 
