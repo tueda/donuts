@@ -7,6 +7,7 @@ import java.util.Comparator;
 public final class Variable implements Comparable<Variable>, Serializable {
   private static final long serialVersionUID = 1L;
 
+  /** The variable name. */
   private final String name;
 
   /**
@@ -71,10 +72,22 @@ public final class Variable implements Comparable<Variable>, Serializable {
     return name;
   }
 
+  public String getName() {
+    return name;
+  }
+
+  /** The comparator for variable names. */
   static final Comparator<String> comparator = new NameComparator();
 
-  public static class NameComparator implements Comparator<String> {
+  /** Comparator class for variable names. */
+  public static class NameComparator implements Serializable, Comparator<String> {
+    private static final long serialVersionUID = 1L;
+
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+        justification = "Intended to compare two references",
+        value = "ES_COMPARING_PARAMETER_STRING_WITH_EQ")
     public int compare(String s1, String s2) {
       if (s1 == s2) {
         return 0;
@@ -160,6 +173,11 @@ public final class Variable implements Comparable<Variable>, Serializable {
     @Override
     public boolean equals(Object obj) {
       return obj instanceof NameComparator;
+    }
+
+    @Override
+    public int hashCode() {
+      return 1;
     }
   }
 }
