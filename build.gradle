@@ -19,6 +19,15 @@ dependencies {
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
 }
 
+javadoc {
+  configure(options) {
+    links += [
+      'https://docs.oracle.com/javase/8/docs/api/',
+      'https://static.javadoc.io/cc.redberry/rings/2.5.2/',
+    ]
+  }
+}
+
 test {
   useJUnitPlatform()
 }
