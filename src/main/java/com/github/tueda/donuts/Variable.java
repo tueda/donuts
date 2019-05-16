@@ -3,7 +3,7 @@ package com.github.tueda.donuts;
 import java.io.Serializable;
 import java.util.Comparator;
 
-/** Variables. */
+/** Variable. */
 public final class Variable implements Comparable<Variable>, Serializable {
   private static final long serialVersionUID = 1L;
 
@@ -72,10 +72,6 @@ public final class Variable implements Comparable<Variable>, Serializable {
     return name;
   }
 
-  public String getName() {
-    return name;
-  }
-
   /** The comparator for variable names. */
   static final Comparator<String> comparator = new NameComparator();
 
@@ -86,14 +82,15 @@ public final class Variable implements Comparable<Variable>, Serializable {
     @Override
     @SuppressWarnings("PMD.CompareObjectsWithEquals")
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-        justification = "Intended to compare two references",
+        justification = "Intend to compare two references",
         value = "ES_COMPARING_PARAMETER_STRING_WITH_EQ")
     public int compare(String s1, String s2) {
+      // First, compare the references as a shortcut.
       if (s1 == s2) {
         return 0;
       }
 
-      // more or less "natural order numerical sorting"
+      // This is more or less "natural order numerical sorting".
 
       int len1 = s1.length();
       int len2 = s2.length();
@@ -104,70 +101,74 @@ public final class Variable implements Comparable<Variable>, Serializable {
         char c1 = s1.charAt(i);
         char c2 = s2.charAt(i);
         if (Character.isDigit(c1) && Character.isDigit(c2)) {
-          // numeric order: firstly skip zeros and find the end
-          int j1 = i;
-          while (c1 == '0' && j1 + 1 < len1) {
-            c1 = s1.charAt(j1 + 1);
-            if (!Character.isDigit(c1)) {
-              break;
-            }
-            j1++;
+          // numeric order
+          int result = compareNumbers(s1, s2, i);
+          if (result != 0) {
+            return result;
           }
-          int k1 = j1;
-          while (k1 < len1 && Character.isDigit(s1.charAt(k1))) {
-            k1++;
-          }
-
-          int j2 = i;
-          while (c2 == '0' && j2 + 1 < len2) {
-            c2 = s2.charAt(j2 + 1);
-            if (!Character.isDigit(c2)) {
-              break;
-            }
-            j2++;
-          }
-          int k2 = j2;
-          while (k2 < len2 && Character.isDigit(s2.charAt(k2))) {
-            k2++;
-          }
-
-          // compare the numbers of digits
-          if (k1 - j1 != k2 - j2) {
-            return (k1 - j1) - (k2 - j2);
-          }
-
-          // compare the digits
-          int numlen = k1 - j1;
-          for (int j = 0; j < numlen; j++) {
-            c1 = s1.charAt(j1 + j);
-            c2 = s2.charAt(j2 + j);
-            if (c1 != c2) {
-              return c1 - c2;
-            }
-          }
-
-          // compare the numbers of zeros
-          if (k1 != k2) {
-            if (numlen == 1 && c1 == '0') {
-              // both are 0
-              return k1 - k2;
-            } else {
-              return k2 - k1;
-            }
-          }
-
-          i = k1;
+          i = skipDigits(s1, i);
         } else {
           // lexicographical order
           if (c1 != c2) {
             return c1 - c2;
           }
-
           i++;
         }
       }
 
+      // Now, compare the length. Shorter is smaller.
       return len1 - len2;
+    }
+
+    private static int compareNumbers(String s1, String s2, int first) {
+      int j1 = skipZeros(s1, first);
+      int j2 = skipZeros(s2, first);
+      int k1 = skipDigits(s1, j1);
+      int k2 = skipDigits(s2, j2);
+
+      // Compare the numbers of non-zero digits. Shorter is smaller.
+      if (k1 - j1 != k2 - j2) {
+        return (k1 - j1) - (k2 - j2);
+      }
+
+      // Compare each non-zero digit.
+      int len = k1 - j1;
+      for (int j = 0; j < len; j++) {
+        char c1 = s1.charAt(j1 + j);
+        char c2 = s2.charAt(j2 + j);
+        if (c1 != c2) {
+          return c1 - c2;
+        }
+      }
+
+      // Compare the numbers of leading zeros (as in lexicographical order).
+      if (k1 != k2) {
+        if (j1 == k1) {
+          // Both are 0, e.g., "a00" < "a000".
+          return k1 - k2;
+        } else {
+          // E.g., "a0001" < "a001".
+          return k2 - k1;
+        }
+      }
+
+      return 0;
+    }
+
+    private static int skipZeros(String s, int first) {
+      int i = first;
+      while (i < s.length() && s.charAt(i) == '0') {
+        i++;
+      }
+      return i;
+    }
+
+    private static int skipDigits(String s, int first) {
+      int i = first;
+      while (i < s.length() && Character.isDigit(s.charAt(i))) {
+        i++;
+      }
+      return i;
     }
 
     @Override

@@ -22,6 +22,7 @@ public class VariableTest {
       "a0a",
       "a00",
       "a000",
+      "a0001",
       "a001",
       "a01",
       "a01b00",
