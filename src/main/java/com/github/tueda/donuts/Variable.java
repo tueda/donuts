@@ -2,10 +2,22 @@ package com.github.tueda.donuts;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-/** Variable. */
+/** An immutable object representing a variable. */
 public final class Variable implements Comparable<Variable>, Serializable {
   private static final long serialVersionUID = 1L;
+
+  /** The pattern for legal variable names. */
+  private static final Pattern IDENTIFIER_PATTERN = Pattern.compile("[a-zA-Z][a-zA-Z0-9]*");
+
+  /** The comparator for variable names. */
+  /* default */ static final Comparator<String> NAME_COMPARATOR = new NameComparator();
 
   /** The variable name. */
   private final String name;
@@ -15,19 +27,59 @@ public final class Variable implements Comparable<Variable>, Serializable {
    *
    * @param name the name of the variable.
    */
-  public Variable(String name) {
-    if (!isLegalName(name)) {
+  public Variable(final String name) {
+    if (!isVariableName(name)) {
       throw new IllegalArgumentException(String.format("illegal variable name: %s", name));
     }
     this.name = name;
+  }
+
+  @Override
+  public boolean equals(final Object other) {
+    if (this == other) {
+      return true;
+    }
+    if (!(other instanceof Variable)) {
+      return false;
+    }
+    final Variable aVariable = (Variable) other;
+    return name.equals(aVariable.name);
+  }
+
+  @Override
+  public int compareTo(final Variable other) {
+    if (this == other) {
+      return 0;
+    }
+    return NAME_COMPARATOR.compare(name, other.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return name.hashCode();
+  }
+
+  @Override
+  public String toString() {
+    return name;
+  }
+
+  /**
+   * Returns the name of this variable.
+   *
+   * @return the name of variable.
+   */
+  public String getName() {
+    return name;
   }
 
   /**
    * Returns whether the given name is legal for variables.
    *
    * @param name the name to be tested.
+   * @return {@code true} if the name is legal.
    */
-  public static boolean isLegalName(String name) {
+  public static boolean isVariableName(final String name) {
     if (name.isEmpty()) {
       return false;
     }
@@ -42,41 +94,24 @@ public final class Variable implements Comparable<Variable>, Serializable {
     return true;
   }
 
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
+  /**
+   * Returns strings that look like variable names.
+   *
+   * @param string the string to be examined.
+   * @return variable names found in the string.
+   */
+  public static String[] guessVariableNames(final String string) {
+    final Matcher matcher = IDENTIFIER_PATTERN.matcher(string);
+    final Set<String> seen = new HashSet<>();
+    while (matcher.find()) {
+      seen.add(matcher.group());
     }
-    if (!(obj instanceof Variable)) {
-      return false;
-    }
-    Variable other = (Variable) obj;
-    return name.equals(other.name);
+    final Stream<String> stream = StreamSupport.stream(seen.spliterator(), false);
+    return stream.sorted(NAME_COMPARATOR).toArray(String[]::new);
   }
-
-  @Override
-  public int compareTo(Variable other) {
-    if (this == other) {
-      return 0;
-    }
-    return comparator.compare(name, other.name);
-  }
-
-  @Override
-  public int hashCode() {
-    return name.hashCode();
-  }
-
-  @Override
-  public String toString() {
-    return name;
-  }
-
-  /** The comparator for variable names. */
-  static final Comparator<String> comparator = new NameComparator();
 
   /** Comparator class for variable names. */
-  public static class NameComparator implements Serializable, Comparator<String> {
+  /* default */ static class NameComparator implements Serializable, Comparator<String> {
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -84,7 +119,7 @@ public final class Variable implements Comparable<Variable>, Serializable {
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
         justification = "Intend to compare two references",
         value = "ES_COMPARING_PARAMETER_STRING_WITH_EQ")
-    public int compare(String s1, String s2) {
+    public int compare(final String s1, final String s2) {
       // First, compare the references as a shortcut.
       if (s1 == s2) {
         return 0;
@@ -92,17 +127,17 @@ public final class Variable implements Comparable<Variable>, Serializable {
 
       // This is more or less "natural order numerical sorting".
 
-      int len1 = s1.length();
-      int len2 = s2.length();
-      int limit = Math.min(len1, len2);
+      final int len1 = s1.length();
+      final int len2 = s2.length();
+      final int limit = Math.min(len1, len2);
 
       int i = 0;
       while (i < limit) {
-        char c1 = s1.charAt(i);
-        char c2 = s2.charAt(i);
+        final char c1 = s1.charAt(i);
+        final char c2 = s2.charAt(i);
         if (Character.isDigit(c1) && Character.isDigit(c2)) {
           // numeric order
-          int result = compareNumbers(s1, s2, i);
+          final int result = compareNumbers(s1, s2, i);
           if (result != 0) {
             return result;
           }
@@ -120,11 +155,11 @@ public final class Variable implements Comparable<Variable>, Serializable {
       return len1 - len2;
     }
 
-    private static int compareNumbers(String s1, String s2, int first) {
-      int j1 = skipZeros(s1, first);
-      int j2 = skipZeros(s2, first);
-      int k1 = skipDigits(s1, j1);
-      int k2 = skipDigits(s2, j2);
+    private static int compareNumbers(final String s1, final String s2, final int first) {
+      final int j1 = skipZeros(s1, first);
+      final int j2 = skipZeros(s2, first);
+      final int k1 = skipDigits(s1, j1);
+      final int k2 = skipDigits(s2, j2);
 
       // Compare the numbers of non-zero digits. Shorter is smaller.
       if (k1 - j1 != k2 - j2) {
@@ -132,10 +167,10 @@ public final class Variable implements Comparable<Variable>, Serializable {
       }
 
       // Compare each non-zero digit.
-      int len = k1 - j1;
+      final int len = k1 - j1;
       for (int j = 0; j < len; j++) {
-        char c1 = s1.charAt(j1 + j);
-        char c2 = s2.charAt(j2 + j);
+        final char c1 = s1.charAt(j1 + j);
+        final char c2 = s2.charAt(j2 + j);
         if (c1 != c2) {
           return c1 - c2;
         }
@@ -155,7 +190,7 @@ public final class Variable implements Comparable<Variable>, Serializable {
       return 0;
     }
 
-    private static int skipZeros(String s, int first) {
+    private static int skipZeros(final String s, final int first) {
       int i = first;
       while (i < s.length() && s.charAt(i) == '0') {
         i++;
@@ -163,7 +198,7 @@ public final class Variable implements Comparable<Variable>, Serializable {
       return i;
     }
 
-    private static int skipDigits(String s, int first) {
+    private static int skipDigits(final String s, final int first) {
       int i = first;
       while (i < s.length() && Character.isDigit(s.charAt(i))) {
         i++;
@@ -172,7 +207,7 @@ public final class Variable implements Comparable<Variable>, Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
       return obj instanceof NameComparator;
     }
 
