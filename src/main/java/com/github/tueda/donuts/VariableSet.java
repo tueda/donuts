@@ -58,12 +58,6 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     table = stream.sorted(Variable.NAME_COMPARATOR).distinct().toArray(String[]::new);
   }
 
-  /** Constructs a set of variables from the given string containing names. */
-  /* default */ VariableSet(final String string) {
-    super();
-    table = Variable.guessVariableNames(string);
-  }
-
   @SuppressWarnings("PMD.ArrayIsStoredDirectly")
   private VariableSet(final String... rawTable) {
     super();
@@ -73,6 +67,10 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   private static VariableSet fromVariableNames(final Stream<String> stream) {
     return new VariableSet(
         stream.sorted(Variable.NAME_COMPARATOR).distinct().toArray(String[]::new));
+  }
+
+  /* default */ static VariableSet createVariableSetFromRawArray(final String... rawTable) {
+    return new VariableSet(rawTable);
   }
 
   /**
@@ -103,16 +101,8 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     if (!(other instanceof VariableSet)) {
       return false;
     }
-    return equals((VariableSet) other);
-  }
-
-  /** Returns whether this variable set and the other are the same. */
-  @SuppressWarnings("PMD.SuspiciousEqualsMethodName")
-  public boolean equals(final VariableSet other) {
-    if (this == other) {
-      return true;
-    }
-    return Arrays.equals(table, other.table);
+    final VariableSet aVariableSet = (VariableSet) other;
+    return Arrays.equals(table, aVariableSet.table);
   }
 
   @Override
@@ -132,7 +122,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
 
   @Override
   public Iterator<Variable> iterator() {
-    return Stream.of(table).map(x -> new Variable(x)).iterator();
+    return Stream.of(table).map(x -> Variable.createVariableWithoutCheck(x)).iterator();
   }
 
   /**
@@ -156,5 +146,9 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     }
 
     return newVariables;
+  }
+
+  /* default */ String[] getTable() {
+    return table.clone();
   }
 }

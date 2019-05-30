@@ -28,10 +28,18 @@ public final class Variable implements Comparable<Variable>, Serializable {
    * @param name the name of the variable.
    */
   public Variable(final String name) {
-    if (!isVariableName(name)) {
+    this(name, true);
+  }
+
+  private Variable(final String name, final boolean check) {
+    if (check && !isVariableName(name)) {
       throw new IllegalArgumentException(String.format("illegal variable name: %s", name));
     }
     this.name = name;
+  }
+
+  /* default */ static Variable createVariableWithoutCheck(final String name) {
+    return new Variable(name, false);
   }
 
   @Override
@@ -98,7 +106,7 @@ public final class Variable implements Comparable<Variable>, Serializable {
    * Returns strings that look like variable names.
    *
    * @param string the string to be examined.
-   * @return variable names found in the string.
+   * @return variable names found in the string, sorted and distinct.
    */
   public static String[] guessVariableNames(final String string) {
     final Matcher matcher = IDENTIFIER_PATTERN.matcher(string);
