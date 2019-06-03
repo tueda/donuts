@@ -2,10 +2,13 @@ package com.github.tueda.donuts;
 
 import cc.redberry.rings.Rings;
 import cc.redberry.rings.bigint.BigInteger;
+import cc.redberry.rings.poly.PolynomialMethods;
 import cc.redberry.rings.poly.multivar.MonomialOrder;
+import cc.redberry.rings.poly.multivar.MultivariateDivision;
 import cc.redberry.rings.poly.multivar.MultivariatePolynomial;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.BinaryOperator;
 
 /** An immutable multivariate polynomial. */
 public final class Polynomial implements Serializable {
@@ -34,17 +37,30 @@ public final class Polynomial implements Serializable {
     raw = MultivariatePolynomial.parse(string, names);
   }
 
+  private Polynomial(
+      final VariableSet rawVariables, final MultivariatePolynomial<BigInteger> rawPoly) {
+    assert rawVariables.size() == rawPoly.nVariables;
+    variables = rawVariables;
+    raw = rawPoly;
+  }
+
   @Override
   public boolean equals(final Object other) {
     if (this == other) {
       return true;
     }
+
     if (!(other instanceof Polynomial)) {
       return false;
     }
+
     final Polynomial aPoly = (Polynomial) other;
-    // TODO: variables
-    return raw.equals(aPoly.raw);
+    if (variables.equals(aPoly.variables)) {
+      return raw.equals(aPoly.raw);
+    }
+
+    final VariableSet newVariables = variables.union(aPoly.variables);
+    return translate(newVariables).equals(aPoly.translate(newVariables));
   }
 
   @Override
@@ -55,5 +71,80 @@ public final class Polynomial implements Serializable {
   @Override
   public String toString() {
     return raw.toString(variables.getTable());
+  }
+
+  /** Returns the same polynomial in a different variable set. */
+  @SuppressWarnings("PMD.CompareObjectsWithEquals")
+  public Polynomial translate(final VariableSet newVariables) {
+    if (variables == newVariables) {
+      return this;
+    } else if (variables.equals(newVariables)) {
+      return new Polynomial(newVariables, raw);
+    } else {
+      if (variables.size() == 0) {
+        return new Polynomial(newVariables, raw.setNVariables(newVariables.size()));
+      } else {
+        return new Polynomial(
+            newVariables,
+            raw.mapVariables(variables.map(newVariables)).setNVariables(newVariables.size()));
+      }
+    }
+    // Postcondition: `variables` of the returned-value is the given variable set.
+  }
+
+  private Polynomial performBinaryOperation(
+      final Polynomial other, final BinaryOperator<MultivariatePolynomial<BigInteger>> operator) {
+    // NOTE: MultivariatePolynomial is not immutable. We need a clone of one of the
+    // operands.
+    if (variables.equals(other.variables)) {
+      return new Polynomial(variables, operator.apply(raw.clone(), other.raw));
+    } else {
+      final VariableSet newVariables = variables.union(other.variables);
+      return new Polynomial(
+          newVariables,
+          operator.apply(translate(newVariables).raw.clone(), other.translate(newVariables).raw));
+    }
+  }
+
+  /** Returns the sum of this polynomial and the other. */
+  public Polynomial add(final Polynomial other) {
+    return performBinaryOperation(other, MultivariatePolynomial<BigInteger>::add);
+  }
+
+  /** Returns the difference of this polynomial from the other. */
+  public Polynomial subtract(final Polynomial other) {
+    return performBinaryOperation(other, MultivariatePolynomial<BigInteger>::subtract);
+  }
+
+  /** Returns the product of this polynomial and the other. */
+  public Polynomial multiply(final Polynomial other) {
+    return performBinaryOperation(other, MultivariatePolynomial<BigInteger>::multiply);
+  }
+
+  /**
+   * Returns the quotient of this polynomial divided by the given divisor.
+   *
+   * @throws ArithmeticException when exact division is impossible
+   */
+  public Polynomial divideExact(final Polynomial divisor) {
+    return performBinaryOperation(divisor, MultivariateDivision::divideExact);
+  }
+
+  /**
+   * Returns this polynomial to the power {@code exponent}.
+   *
+   * @throws IllegalArgumentException when {@code exponent} is negative
+   */
+  public Polynomial pow(final int exponent) {
+    return new Polynomial(variables, PolynomialMethods.polyPow(raw, exponent));
+  }
+
+  /**
+   * Returns this polynomial to the power {@code exponent}.
+   *
+   * @throws IllegalArgumentException when {@code exponent} is negative
+   */
+  public Polynomial pow(final BigInteger exponent) {
+    return new Polynomial(variables, PolynomialMethods.polyPow(raw, exponent));
   }
 }

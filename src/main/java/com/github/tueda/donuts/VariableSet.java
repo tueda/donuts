@@ -148,6 +148,26 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     return newVariables;
   }
 
+  /**
+   * Returns the mapping of the variables to those in the other.
+   *
+   * @param other The target set of variables.
+   * @throws IllegalArgumentException when the given variable set is incompatible.
+   */
+  public int[] map(final VariableSet other) {
+    final int[] mapping = new int[table.length];
+    for (int i = 0; i < mapping.length; i++) {
+      final int j = Arrays.binarySearch(other.table, table[i]);
+      if (j < 0) {
+        throw new IllegalArgumentException(
+            String.format(
+                "Failed to map %s from %s to %s", table[i], toString(), other.toString()));
+      }
+      mapping[i] = j;
+    }
+    return mapping;
+  }
+
   /* default */ String[] getTable() {
     return table.clone();
   }
