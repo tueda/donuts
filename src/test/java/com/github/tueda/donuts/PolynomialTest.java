@@ -10,6 +10,10 @@ public class PolynomialTest {
     Polynomial p1 = new Polynomial("x + y + z");
     Polynomial p2 = new Polynomial("z + y + x");
     assertThat(p1).isEqualTo(p2);
+
+    p1 = new Polynomial("123");
+    p2 = new Polynomial(123);
+    assertThat(p1).isEqualTo(p2);
   }
 
   @Test

@@ -30,6 +30,18 @@ public final class Polynomial implements Serializable {
     raw = RAW_ZERO;
   }
 
+  /** Constructs a polynomial from the given integer. */
+  public Polynomial(final long value) {
+    variables = VariableSet.EMPTY;
+    raw = RAW_ZERO.createConstant(value);
+  }
+
+  /** Constructs a polynomial from the given integer. */
+  public Polynomial(final BigInteger value) {
+    variables = VariableSet.EMPTY;
+    raw = RAW_ZERO.createConstant(value);
+  }
+
   /** Constructs a polynomial from the given string. */
   public Polynomial(final String string) {
     final String[] names = Variable.guessVariableNames(string);
