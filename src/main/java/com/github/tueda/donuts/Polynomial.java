@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.BinaryOperator;
 
-/** An immutable multivariate polynomial. */
+/** An immutable multivariate polynomial with integer coefficients. */
 public final class Polynomial implements Serializable {
   private static final long serialVersionUID = 1L;
 
@@ -42,11 +42,38 @@ public final class Polynomial implements Serializable {
     raw = RAW_ZERO.createConstant(value);
   }
 
-  /** Constructs a polynomial from the given string. */
+  /**
+   * Constructs a polynomial from the given string.
+   *
+   * @throws IllegalArgumentException when {@code string} does not represent a polynomial
+   */
+  @SuppressWarnings("PMD.AvoidCatchingGenericException")
   public Polynomial(final String string) {
     final String[] names = Variable.guessVariableNames(string);
     variables = VariableSet.createVariableSetFromRawArray(names);
-    raw = MultivariatePolynomial.parse(string, names);
+    try {
+      raw = MultivariatePolynomial.parse(string, names);
+    } catch (RuntimeException e) {
+      if (isParserError(e)) {
+        final String s = string.length() <= 32 ? string : string.substring(0, 32) + "...";
+        throw new IllegalArgumentException(String.format("Failed to parse \"%s\"", s), e);
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  private boolean isParserError(final Throwable e) {
+    final StackTraceElement el = e.getStackTrace()[0];
+    final String s = el.getClassName() + "." + el.getMethodName();
+    return s.startsWith("cc.redberry.rings.Ring.divideExact")
+        || s.startsWith("cc.redberry.rings.bigint.BigInteger.pow")
+        || s.startsWith("cc.redberry.rings.io.Coder.mkOperand")
+        || s.startsWith("cc.redberry.rings.io.Coder.parse")
+        || s.startsWith("cc.redberry.rings.io.Coder.popEvaluate")
+        || s.startsWith("cc.redberry.rings.io.Tokenizer.checkChar")
+        || s.startsWith("cc.redberry.rings.io.Tokenizer.nextToken")
+        || s.startsWith("java.util.ArrayDeque.removeFirst");
   }
 
   private Polynomial(
@@ -85,7 +112,11 @@ public final class Polynomial implements Serializable {
     return raw.toString(variables.getTable());
   }
 
-  /** Returns the same polynomial in a different variable set. */
+  /**
+   * Returns the same polynomial in a different variable set.
+   *
+   * @throws IllegalArgumentException when any of used variables are not in {@code newVariables}.
+   */
   @SuppressWarnings("PMD.CompareObjectsWithEquals")
   public Polynomial translate(final VariableSet newVariables) {
     if (variables == newVariables) {

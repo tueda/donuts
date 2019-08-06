@@ -1,6 +1,7 @@
 package com.github.tueda.donuts;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -14,6 +15,34 @@ public class PolynomialTest {
     p1 = new Polynomial("123");
     p2 = new Polynomial(123);
     assertThat(p1).isEqualTo(p2);
+
+    // java.lang.ArithmeticException (not divisible) at cc.redberry.rings.Ring.divideExact
+    assertThrows(IllegalArgumentException.class, () -> new Polynomial("2/x"));
+
+    // java.lang.ArithmeticException (Negative exponent) at cc.redberry.rings.bigint.BigInteger.pow
+    assertThrows(IllegalArgumentException.class, () -> new Polynomial("2^(-2)"));
+
+    // java.lang.RuntimeException (illegal operand) at cc.redberry.rings.io.Coder.mkOperand
+    assertThrows(IllegalArgumentException.class, () -> new Polynomial("1.2"));
+    assertThrows(IllegalArgumentException.class, () -> new Polynomial("x;"));
+
+    // java.lang.IllegalArgumentException (Can't parse) at cc.redberry.rings.io.Coder.parse
+    assertThrows(IllegalArgumentException.class, () -> new Polynomial("(("));
+
+    // java.lang.IllegalArgumentException (Exponents must be positive integers)
+    // at cc.redberry.rings.io.Coder.popEvaluate
+    assertThrows(IllegalArgumentException.class, () -> new Polynomial("x^x"));
+
+    // java.lang.IllegalArgumentException (Illegal character)
+    // at cc.redberry.rings.io.Tokenizer.checkChar
+    assertThrows(IllegalArgumentException.class, () -> new Polynomial("="));
+
+    // java.lang.IllegalArgumentException (spaces in variable name are forbidden)
+    // at cc.redberry.rings.io.Tokenizer.nextToken
+    assertThrows(IllegalArgumentException.class, () -> new Polynomial("x x"));
+
+    // java.util.NoSuchElementException at java.util.ArrayDeque.removeFirst
+    assertThrows(IllegalArgumentException.class, () -> new Polynomial(""));
   }
 
   @Test
