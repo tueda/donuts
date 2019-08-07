@@ -10,9 +10,13 @@ import cc.redberry.rings.poly.multivar.MultivariatePolynomial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /** An immutable multivariate polynomial with integer coefficients. */
 public final class Polynomial implements Serializable, Iterable<Polynomial>, Multivariate {
@@ -347,33 +351,38 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     }
   }
 
+  @SuppressWarnings("PMD.CompareObjectsWithEquals")
   private Polynomial performBinaryOperation(
-      final Polynomial other, final BinaryOperator<MultivariatePolynomial<BigInteger>> operator) {
-    // NOTE: MultivariatePolynomial is not immutable. We need a clone of one of the
-    // operands.
+      final Polynomial other,
+      final BinaryOperator<MultivariatePolynomial<BigInteger>> operator,
+      final boolean doClone) {
+    // NOTE: For many methods, MultivariatePolynomial is not immutable. In such cases, we need a
+    // clone of one of the operands.
     if (variables.equals(other.variables)) {
-      return new Polynomial(variables, operator.apply(raw.copy(), other.raw));
+      return new Polynomial(variables, operator.apply(doClone ? raw.copy() : raw, other.raw));
     } else {
       final VariableSet newVariables = variables.union(other.variables);
+      final MultivariatePolynomial<BigInteger> raw1 = translate(newVariables).raw;
       return new Polynomial(
           newVariables,
-          operator.apply(translate(newVariables).raw.copy(), other.translate(newVariables).raw));
+          operator.apply(
+              doClone && raw1 == raw1 ? raw1.copy() : raw1, other.translate(newVariables).raw));
     }
   }
 
   /** Returns the sum of this polynomial and the other. */
   public Polynomial add(final Polynomial other) {
-    return performBinaryOperation(other, MultivariatePolynomial<BigInteger>::add);
+    return performBinaryOperation(other, MultivariatePolynomial<BigInteger>::add, true);
   }
 
   /** Returns the difference of this polynomial from the other. */
   public Polynomial subtract(final Polynomial other) {
-    return performBinaryOperation(other, MultivariatePolynomial<BigInteger>::subtract);
+    return performBinaryOperation(other, MultivariatePolynomial<BigInteger>::subtract, true);
   }
 
   /** Returns the product of this polynomial and the other. */
   public Polynomial multiply(final Polynomial other) {
-    return performBinaryOperation(other, MultivariatePolynomial<BigInteger>::multiply);
+    return performBinaryOperation(other, MultivariatePolynomial<BigInteger>::multiply, true);
   }
 
   /**
@@ -382,7 +391,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
    * @throws ArithmeticException when exact division is impossible
    */
   public Polynomial divideExact(final Polynomial divisor) {
-    return performBinaryOperation(divisor, MultivariateDivision::divideExact);
+    return performBinaryOperation(divisor, MultivariateDivision::divideExact, false);
   }
 
   /**
@@ -401,5 +410,39 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
    */
   public Polynomial pow(final BigInteger exponent) {
     return new Polynomial(variables, PolynomialMethods.polyPow(raw, exponent));
+  }
+
+  /** Returns the sum of this polynomial and the other. */
+  public Polynomial gcd(final Polynomial other) {
+    return performBinaryOperation(other, PolynomialMethods::PolynomialGCD, false);
+  }
+
+  /** Returns the greatest common divisor of the given polynomials. */
+  public static Polynomial gcd(final Polynomial... polynomials) {
+    if (polynomials.length == 0) {
+      // gcd() -> 0
+      return new Polynomial();
+    }
+    if (polynomials.length == 1) {
+      // gcd(x) -> x
+      return polynomials[0];
+    }
+
+    final VariableSet newVariables = VariableSet.union(polynomials);
+
+    final List<MultivariatePolynomial<BigInteger>> polys =
+        Stream.of(polynomials).map(p -> p.translate(newVariables).raw).collect(Collectors.toList());
+
+    return new Polynomial(newVariables, PolynomialMethods.PolynomialGCD(polys));
+  }
+
+  /** Returns the greatest common divisor of the given polynomials. */
+  public static Polynomial gcd(final Iterable<Polynomial> polynomials) {
+    return gcd(StreamSupport.stream(polynomials.spliterator(), false).toArray(Polynomial[]::new));
+  }
+
+  /** Returns the greatest common divisor of the given polynomials. */
+  public static Polynomial gcd(final Stream<Polynomial> polynomials) {
+    return gcd(polynomials.toArray(Polynomial[]::new));
   }
 }

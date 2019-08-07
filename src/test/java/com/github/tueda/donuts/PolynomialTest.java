@@ -3,6 +3,9 @@ package com.github.tueda.donuts;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import cc.redberry.rings.bigint.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Test;
@@ -144,6 +147,60 @@ public class PolynomialTest {
   }
 
   @Test
+  public void immutability() {
+    checkUnaryOperatorImmutability(Polynomial::negate);
+    checkBinaryOperatorImmutability(Polynomial::add);
+    checkBinaryOperatorImmutability(Polynomial::subtract);
+    checkBinaryOperatorImmutability(Polynomial::multiply);
+    checkBinaryOperatorImmutability(Polynomial::divideExact);
+    checkUnaryOperatorImmutability(p -> p.pow(5));
+    checkUnaryOperatorImmutability(p -> p.pow(new BigInteger("5")));
+    checkBinaryOperatorImmutability((p1, p2) -> p1.gcd(p2));
+    checkBinaryOperatorImmutability((p1, p2) -> Polynomial.gcd(p1, p2));
+  }
+
+  void checkUnaryOperatorImmutability(UnaryOperator<Polynomial> operator) {
+    String s = "(1+a-b)*(2-x)";
+    Polynomial a = new Polynomial(s);
+    Polynomial b = new Polynomial(s);
+    VariableSet v = VariableSet.union(a, b);
+    a = a.translate(v);
+    b = b.translate(v);
+    operator.apply(a);
+    assertThat(a).isEqualTo(b);
+  }
+
+  void checkBinaryOperatorImmutability(BinaryOperator<Polynomial> operator) {
+    {
+      String s1 = "6*(1+a-b)*(2-x)*(1+x+y)";
+      String s2 = "2*(1+a-b)*(2-x)+z-z";
+      Polynomial a1 = new Polynomial(s1);
+      Polynomial a2 = new Polynomial(s2);
+      Polynomial b1 = new Polynomial(s1);
+      Polynomial b2 = new Polynomial(s2);
+      operator.apply(a1, a2);
+      assertThat(a1).isEqualTo(b1);
+      assertThat(a2).isEqualTo(b2);
+    }
+    {
+      String s1 = "6*(1+a-b)*(2-x)*(1+x+y)";
+      String s2 = "2*(1+a-b)*(2-x)+z-z";
+      Polynomial a1 = new Polynomial(s1);
+      Polynomial a2 = new Polynomial(s2);
+      Polynomial b1 = new Polynomial(s1);
+      Polynomial b2 = new Polynomial(s2);
+      VariableSet v = VariableSet.union(a1, a2, b1, b2);
+      a1 = a1.translate(v);
+      a2 = a2.translate(v);
+      b1 = b1.translate(v);
+      b2 = b2.translate(v);
+      operator.apply(a1, a2);
+      assertThat(a1).isEqualTo(b1);
+      assertThat(a2).isEqualTo(b2);
+    }
+  }
+
+  @Test
   public void iterator() {
     Polynomial p = new Polynomial("(x + y - 2 * z)^2");
     Polynomial q = new Polynomial();
@@ -249,43 +306,54 @@ public class PolynomialTest {
     Polynomial p5 = new Polynomial("(1-x+y)^3");
     assertThat(p2).isEqualTo(p4);
     assertThat(p3).isEqualTo(p5);
+
+    Polynomial p6 = new Polynomial("1-x").pow(new BigInteger("30"));
+    Polynomial p7 = new Polynomial("(1-x)^30");
+    assertThat(p6).isEqualTo(p7);
   }
 
   @Test
-  public void immutability() {
-    checkUnaryOperatorImmutability(Polynomial::negate);
-    checkBinaryOperatorImmutability(Polynomial::add);
-    checkBinaryOperatorImmutability(Polynomial::subtract);
-    checkBinaryOperatorImmutability(Polynomial::multiply);
-    checkBinaryOperatorImmutability(Polynomial::divideExact);
-    checkUnaryOperatorImmutability(p -> p.pow(5));
-  }
+  public void gcd() {
+    Polynomial p = new Polynomial("x + y");
+    Polynomial q = new Polynomial("y + z");
+    Polynomial r = new Polynomial("1 + x + w");
+    Polynomial g = new Polynomial("2 + x + y + z");
+    Polynomial a = g.multiply(p);
+    Polynomial b = g.multiply(q);
+    Polynomial c = g.multiply(r);
 
-  void checkUnaryOperatorImmutability(UnaryOperator<Polynomial> operator) {
-    String s = "(1+a-b)*(2-x)";
-    Polynomial a = new Polynomial(s);
-    Polynomial b = new Polynomial(s);
-    VariableSet v = VariableSet.union(a, b);
-    a = a.translate(v);
-    b = b.translate(v);
-    operator.apply(a);
-    assertThat(a).isEqualTo(b);
-  }
+    Polynomial gcd1 = a.gcd(b);
+    assertThat(gcd1).isEqualTo(g);
 
-  void checkBinaryOperatorImmutability(BinaryOperator<Polynomial> operator) {
-    String s1 = "6*(1+a-b)*(2-x)*(1+x+y)";
-    String s2 = "2*(1+a-b)*(2-x)";
-    Polynomial a1 = new Polynomial(s1);
-    Polynomial a2 = new Polynomial(s2);
-    Polynomial b1 = new Polynomial(s1);
-    Polynomial b2 = new Polynomial(s2);
-    VariableSet v = VariableSet.union(a1, a2, b1, b2);
-    a1 = a1.translate(v);
-    a2 = a2.translate(v);
-    b1 = b1.translate(v);
-    b2 = b2.translate(v);
-    operator.apply(a1, a2);
-    assertThat(a1).isEqualTo(b1);
-    assertThat(a2).isEqualTo(b2);
+    Polynomial gcd2 = Polynomial.gcd(a, b, c);
+    assertThat(gcd2).isEqualTo(g);
+
+    Polynomial[] polys2 = {a, b, c};
+    Polynomial gcd3 = Polynomial.gcd(polys2);
+    assertThat(gcd3).isEqualTo(g);
+
+    List<Polynomial> polys3 = new ArrayList<>();
+    polys3.add(a);
+    polys3.add(b);
+    polys3.add(c);
+    Polynomial gcd4 = Polynomial.gcd(polys3);
+    assertThat(gcd4).isEqualTo(g);
+
+    Polynomial d = a.divideExact(gcd1);
+    Polynomial e = b.divideExact(gcd1);
+    Polynomial f = c.divideExact(gcd1);
+    assertThat(d).isEqualTo(p);
+    assertThat(e).isEqualTo(q);
+    assertThat(f).isEqualTo(r);
+
+    List<Polynomial> polys4 = new ArrayList<>();
+    Polynomial gcd5 = Polynomial.gcd(polys4);
+    Polynomial zero = new Polynomial();
+    assertThat(gcd5).isEqualTo(zero);
+
+    List<Polynomial> polys5 = new ArrayList<>();
+    polys5.add(a);
+    Polynomial gcd6 = Polynomial.gcd(polys5);
+    assertThat(gcd6).isEqualTo(a);
   }
 }
