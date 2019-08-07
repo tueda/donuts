@@ -4,12 +4,13 @@ import java.io.Serializable;
 import java.util.AbstractSet;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /** An immutable set of variables. */
-public final class VariableSet extends AbstractSet<Variable> implements Serializable {
+public final class VariableSet extends AbstractSet<Variable> implements Serializable, Multivariate {
   private static final long serialVersionUID = 1L;
 
   /** Empty variable set. */
@@ -137,6 +138,11 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     return Stream.of(table).map(x -> Variable.createVariableWithoutCheck(x)).iterator();
   }
 
+  @Override
+  public VariableSet getVariables() {
+    return this;
+  }
+
   /**
    * Returns the union of this variable set and the other.
    *
@@ -158,6 +164,27 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     }
 
     return newVariables;
+  }
+
+  /** Returns the least common set that containing all the variables in the given objects. */
+  public static VariableSet union(final Multivariate... objects) {
+    return union(Stream.of(objects));
+  }
+
+  /** Returns the least common set that containing all the variables in the given objects. */
+  public static VariableSet union(final Iterable<Multivariate> objects) {
+    return union(StreamSupport.stream(objects.spliterator(), false));
+  }
+
+  /** Returns the least common set that containing all the variables in the given objects. */
+  public static VariableSet union(final Stream<Multivariate> objects) {
+    final Optional<VariableSet> result =
+        objects.map(obj -> obj.getVariables()).reduce((n1, n2) -> n1.union(n2));
+    if (result.isPresent()) {
+      return result.get();
+    } else {
+      return EMPTY;
+    }
   }
 
   /**

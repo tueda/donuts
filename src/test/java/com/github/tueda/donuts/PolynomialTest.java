@@ -3,6 +3,8 @@ package com.github.tueda.donuts;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.function.BinaryOperator;
+import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Test;
 
 public class PolynomialTest {
@@ -156,6 +158,14 @@ public class PolynomialTest {
   }
 
   @Test
+  public void getMinimalVariables() {
+    Polynomial p1 = new Polynomial("  + b + c + d + e");
+    Polynomial p2 = new Polynomial("a - b + c - d");
+    Polynomial p = p1.add(p2);
+    assertThat(p.getMinimalVariables()).isEqualTo(VariableSet.of("a", "c", "e"));
+  }
+
+  @Test
   public void degree() {
     Polynomial p = new Polynomial("(1 + x + y + z + w)^2 + (y + z + w)^3 + (z + w)^4 + x*y*z*w^5");
 
@@ -239,5 +249,43 @@ public class PolynomialTest {
     Polynomial p5 = new Polynomial("(1-x+y)^3");
     assertThat(p2).isEqualTo(p4);
     assertThat(p3).isEqualTo(p5);
+  }
+
+  @Test
+  public void immutability() {
+    checkUnaryOperatorImmutability(Polynomial::negate);
+    checkBinaryOperatorImmutability(Polynomial::add);
+    checkBinaryOperatorImmutability(Polynomial::subtract);
+    checkBinaryOperatorImmutability(Polynomial::multiply);
+    checkBinaryOperatorImmutability(Polynomial::divideExact);
+    checkUnaryOperatorImmutability(p -> p.pow(5));
+  }
+
+  void checkUnaryOperatorImmutability(UnaryOperator<Polynomial> operator) {
+    String s = "(1+a-b)*(2-x)";
+    Polynomial a = new Polynomial(s);
+    Polynomial b = new Polynomial(s);
+    VariableSet v = VariableSet.union(a, b);
+    a = a.translate(v);
+    b = b.translate(v);
+    operator.apply(a);
+    assertThat(a).isEqualTo(b);
+  }
+
+  void checkBinaryOperatorImmutability(BinaryOperator<Polynomial> operator) {
+    String s1 = "6*(1+a-b)*(2-x)*(1+x+y)";
+    String s2 = "2*(1+a-b)*(2-x)";
+    Polynomial a1 = new Polynomial(s1);
+    Polynomial a2 = new Polynomial(s2);
+    Polynomial b1 = new Polynomial(s1);
+    Polynomial b2 = new Polynomial(s2);
+    VariableSet v = VariableSet.union(a1, a2, b1, b2);
+    a1 = a1.translate(v);
+    a2 = a2.translate(v);
+    b1 = b1.translate(v);
+    b2 = b2.translate(v);
+    operator.apply(a1, a2);
+    assertThat(a1).isEqualTo(b1);
+    assertThat(a2).isEqualTo(b2);
   }
 }

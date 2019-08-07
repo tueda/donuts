@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /** An immutable object representing a variable. */
-public final class Variable implements Comparable<Variable>, Serializable {
+public final class Variable implements Comparable<Variable>, Serializable, Multivariate {
   private static final long serialVersionUID = 1L;
 
   /** The pattern for legal variable names. */
@@ -93,6 +93,11 @@ public final class Variable implements Comparable<Variable>, Serializable {
   @Override
   public String toString() {
     return name;
+  }
+
+  @Override
+  public VariableSet getVariables() {
+    return new VariableSet(this);
   }
 
   /**

@@ -12,9 +12,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.BinaryOperator;
+import java.util.stream.IntStream;
 
 /** An immutable multivariate polynomial with integer coefficients. */
-public final class Polynomial implements Serializable, Iterable<Polynomial> {
+public final class Polynomial implements Serializable, Iterable<Polynomial>, Multivariate {
   private static final long serialVersionUID = 1L;
 
   /** Zero polynomial. */
@@ -140,6 +141,40 @@ public final class Polynomial implements Serializable, Iterable<Polynomial> {
     public Polynomial next() {
       return new Polynomial(variables, raw.createZero().add(rawIterator.next()));
     }
+  }
+
+  @Override
+  public VariableSet getVariables() {
+    return variables;
+  }
+
+  @Override
+  public VariableSet getMinimalVariables() {
+    if (variables.isEmpty()) {
+      return variables;
+    }
+
+    final String[] table = variables.getRawTable();
+    final String[] newTable =
+        IntStream.range(0, table.length)
+            .filter(i -> polyUsesVariable(raw, i))
+            .mapToObj(i -> table[i])
+            .toArray(String[]::new);
+    return new VariableSet(VariableSet.createVariableSetFromRawArray(newTable));
+  }
+
+  /**
+   * Returns whether the polynomial actually uses the specified variable, i.e., has any terms
+   * involving the variable.
+   */
+  /* default */ static boolean polyUsesVariable(
+      final MultivariatePolynomial<BigInteger> rawPolynomial, final int variable) {
+    for (final Monomial<BigInteger> term : rawPolynomial) {
+      if (term.dvTotalDegree(variable) > 0) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** Returns the raw polynomial object. */
