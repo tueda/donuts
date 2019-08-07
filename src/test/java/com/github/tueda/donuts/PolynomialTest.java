@@ -46,16 +46,159 @@ public class PolynomialTest {
   }
 
   @Test
+  public void properties() {
+    Polynomial p;
+
+    p = new Polynomial();
+    assertThat(p.isZero()).isTrue();
+    assertThat(p.isOne()).isFalse();
+    assertThat(p.isMinusOne()).isFalse();
+    assertThat(p.isConstant()).isTrue();
+    assertThat(p.isMonomial()).isTrue();
+    assertThat(p.isMonic()).isFalse();
+    assertThat(p.isVariable()).isFalse();
+    assertThat(p.size()).isEqualTo(0);
+    assertThat(p.degree()).isEqualTo(0);
+    assertThat(p.toString()).isEqualTo("0");
+
+    p = new Polynomial(1);
+    assertThat(p.isZero()).isFalse();
+    assertThat(p.isOne()).isTrue();
+    assertThat(p.isMinusOne()).isFalse();
+    assertThat(p.isConstant()).isTrue();
+    assertThat(p.isMonomial()).isTrue();
+    assertThat(p.isMonic()).isTrue();
+    assertThat(p.isVariable()).isFalse();
+    assertThat(p.size()).isEqualTo(1);
+    assertThat(p.degree()).isEqualTo(0);
+    assertThat(p.toString()).isEqualTo("1");
+
+    p = new Polynomial(-1);
+    assertThat(p.isZero()).isFalse();
+    assertThat(p.isOne()).isFalse();
+    assertThat(p.isMinusOne()).isTrue();
+    assertThat(p.isConstant()).isTrue();
+    assertThat(p.isMonomial()).isTrue();
+    assertThat(p.isMonic()).isFalse();
+    assertThat(p.isVariable()).isFalse();
+    assertThat(p.size()).isEqualTo(1);
+    assertThat(p.degree()).isEqualTo(0);
+
+    p = new Polynomial("x");
+    assertThat(p.isZero()).isFalse();
+    assertThat(p.isOne()).isFalse();
+    assertThat(p.isMinusOne()).isFalse();
+    assertThat(p.isConstant()).isFalse();
+    assertThat(p.isMonomial()).isTrue();
+    assertThat(p.isMonic()).isTrue();
+    assertThat(p.isVariable()).isTrue();
+    assertThat(p.size()).isEqualTo(1);
+    assertThat(p.degree()).isEqualTo(1);
+    assertThat(p.toString()).isEqualTo("x");
+
+    p = new Polynomial("-x");
+    assertThat(p.isZero()).isFalse();
+    assertThat(p.isOne()).isFalse();
+    assertThat(p.isMinusOne()).isFalse();
+    assertThat(p.isConstant()).isFalse();
+    assertThat(p.isMonomial()).isTrue();
+    assertThat(p.isMonic()).isFalse();
+    assertThat(p.isVariable()).isFalse();
+    assertThat(p.size()).isEqualTo(1);
+    assertThat(p.degree()).isEqualTo(1);
+
+    p = new Polynomial("2*x");
+    assertThat(p.isZero()).isFalse();
+    assertThat(p.isOne()).isFalse();
+    assertThat(p.isMinusOne()).isFalse();
+    assertThat(p.isConstant()).isFalse();
+    assertThat(p.isMonomial()).isTrue();
+    assertThat(p.isMonic()).isFalse();
+    assertThat(p.isVariable()).isFalse();
+    assertThat(p.size()).isEqualTo(1);
+    assertThat(p.degree()).isEqualTo(1);
+
+    p = new Polynomial("x^2");
+    assertThat(p.isZero()).isFalse();
+    assertThat(p.isOne()).isFalse();
+    assertThat(p.isMinusOne()).isFalse();
+    assertThat(p.isConstant()).isFalse();
+    assertThat(p.isMonomial()).isTrue();
+    assertThat(p.isMonic()).isTrue();
+    assertThat(p.isVariable()).isFalse();
+    assertThat(p.size()).isEqualTo(1);
+    assertThat(p.degree()).isEqualTo(2);
+
+    p = new Polynomial("(1+x+y)^2");
+    assertThat(p.isZero()).isFalse();
+    assertThat(p.isOne()).isFalse();
+    assertThat(p.isMinusOne()).isFalse();
+    assertThat(p.isConstant()).isFalse();
+    assertThat(p.isMonomial()).isFalse();
+    assertThat(p.isMonic()).isTrue();
+    assertThat(p.isVariable()).isFalse();
+    assertThat(p.size()).isEqualTo(6);
+    assertThat(p.degree()).isEqualTo(2);
+  }
+
+  @Test
   public void iterator() {
     Polynomial p = new Polynomial("(x + y - 2 * z)^2");
     Polynomial q = new Polynomial();
     int n = 0;
     for (Polynomial t : p) {
+      assertThat(t.isMonomial()).isTrue();
       q = q.add(t);
       n++;
     }
     assertThat(q).isEqualTo(p);
     assertThat(n).isEqualTo(p.size());
+  }
+
+  @Test
+  public void degree() {
+    Polynomial p = new Polynomial("(1 + x + y + z + w)^2 + (y + z + w)^3 + (z + w)^4 + x*y*z*w^5");
+
+    assertThat(p.degree()).isEqualTo(8);
+
+    assertThat(p.degree(Variable.of("w"))).isEqualTo(5);
+    assertThat(p.degree(Variable.of("x"))).isEqualTo(2);
+    assertThat(p.degree(Variable.of("a"))).isEqualTo(0);
+
+    assertThat(p.degree(VariableSet.of("x", "z", "w"))).isEqualTo(7);
+    assertThat(p.degree(VariableSet.of("a", "x", "z", "z0", "z1"))).isEqualTo(4);
+    assertThat(p.degree(VariableSet.of("a", "b", "y"))).isEqualTo(3);
+    assertThat(p.degree(VariableSet.of("a", "b", "c"))).isEqualTo(0);
+  }
+
+  @Test
+  public void coefficientOf() {
+    Polynomial p = new Polynomial("(1 + x + y + z)^4");
+
+    assertThat(p.coefficientOf(Variable.of("x"), 0)).isEqualTo(new Polynomial("(1 + y + z)^4"));
+    assertThat(p.coefficientOf(Variable.of("x"), 1)).isEqualTo(new Polynomial("4 * (1 + y + z)^3"));
+    assertThat(p.coefficientOf(Variable.of("x"), 2)).isEqualTo(new Polynomial("6 * (1 + y + z)^2"));
+    assertThat(p.coefficientOf(Variable.of("y"), 3)).isEqualTo(new Polynomial("4 * (1 + x + z)"));
+    assertThat(p.coefficientOf(Variable.of("z"), 4)).isEqualTo(new Polynomial("1"));
+    assertThat(p.coefficientOf(Variable.of("a"), 1)).isEqualTo(new Polynomial("0"));
+
+    assertThat(p.coefficientOf(Variable.of("a", "y", "b"), new int[] {0, 2, 0}))
+        .isEqualTo(new Polynomial("6 * (1 + x + z)^2"));
+    assertThat(p.coefficientOf(Variable.of("y", "z"), new int[] {1, 2}))
+        .isEqualTo(new Polynomial("12 * (1 + x)"));
+    assertThat(p.coefficientOf(Variable.of("a", "x"), new int[] {1, 2}))
+        .isEqualTo(new Polynomial("0"));
+  }
+
+  @Test
+  public void negate() {
+    Polynomial zero = new Polynomial();
+    Polynomial p1 = zero.negate();
+    Polynomial p2 = new Polynomial("1 - x");
+    Polynomial p3 = p2.negate();
+    Polynomial p4 = p2.add(p3);
+    assertThat(p1).isEqualTo(zero);
+    assertThat(p4).isEqualTo(zero);
   }
 
   @Test

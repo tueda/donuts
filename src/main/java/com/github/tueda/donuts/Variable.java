@@ -26,6 +26,7 @@ public final class Variable implements Comparable<Variable>, Serializable {
    * Constructs a variable with the given name.
    *
    * @param name the name of the variable.
+   * @throws IllegalArgumentException when the given name is illegal for variables.
    */
   public Variable(final String name) {
     this(name, true);
@@ -40,6 +41,28 @@ public final class Variable implements Comparable<Variable>, Serializable {
 
   /* default */ static Variable createVariableWithoutCheck(final String name) {
     return new Variable(name, false);
+  }
+
+  /**
+   * Returns a variable with the given name.
+   *
+   * @param name the name.
+   * @throws IllegalArgumentException when the given name is illegal for variables.
+   */
+  @SuppressWarnings("PMD.ShortMethodName")
+  public static Variable of(final String name) {
+    return new Variable(name);
+  }
+
+  /**
+   * Returns an array of variables with the given names.
+   *
+   * @param names the names.
+   * @throws IllegalArgumentException when any of the given names are illegal for variables.
+   */
+  @SuppressWarnings("PMD.ShortMethodName")
+  public static Variable[] of(final String... names) {
+    return Stream.of(names).map(Variable::new).toArray(Variable[]::new);
   }
 
   @Override
@@ -221,7 +244,7 @@ public final class Variable implements Comparable<Variable>, Serializable {
 
     @Override
     public int hashCode() {
-      return 1;
+      return 1; // because it is stateless
     }
   }
 }

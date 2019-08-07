@@ -25,7 +25,17 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   }
 
   /**
-   * Constructs a set of variables.
+   * Constructs a set of variables from the given variable.
+   *
+   * @param variable the variable.
+   */
+  public VariableSet(final Variable variable) {
+    super();
+    table = new String[] {variable.getName()};
+  }
+
+  /**
+   * Constructs a set of variables from the given variables.
    *
    * @param variables the set of variables.
    */
@@ -36,7 +46,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   }
 
   /**
-   * Constructs a set of variables.
+   * Constructs a set of variables from the given variables.
    *
    * @param variables the set of variables.
    */
@@ -48,7 +58,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   }
 
   /**
-   * Constructs a set of variables.
+   * Constructs a set of variables from the given variables.
    *
    * @param variables the set of variables.
    */
@@ -77,6 +87,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
    * Returns a set of variables from the given name.
    *
    * @param name the name.
+   * @throws IllegalArgumentException when the given names is illegal for variables.
    */
   @SuppressWarnings("PMD.ShortMethodName")
   public static VariableSet of(final String name) {
@@ -87,6 +98,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
    * Returns a set of variables from the given names.
    *
    * @param names the set of names.
+   * @throws IllegalArgumentException when any of the given names are illegal for variables.
    */
   @SuppressWarnings("PMD.ShortMethodName")
   public static VariableSet of(final String... names) {
@@ -152,7 +164,8 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
    * Returns the mapping of the variables to those in the other.
    *
    * @param other The target set of variables.
-   * @throws IllegalArgumentException when the given variable set is incompatible.
+   * @throws IllegalArgumentException when the given variable set does not contain all variables in
+   *     this set.
    */
   public int[] map(final VariableSet other) {
     final int[] mapping = new int[table.length];
@@ -168,7 +181,19 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     return mapping;
   }
 
-  /* default */ String[] getTable() {
+  /* default */ String[] getRawTable() {
     return table.clone();
+  }
+
+  /* default */ Iterable<String> getRawIterable() {
+    return Arrays.asList(table);
+  }
+
+  /* default */ int indexOf(final String rawVariable) {
+    return Arrays.binarySearch(table, rawVariable);
+  }
+
+  /* default */ int indexOf(final String rawVariable, final int fromIndex) {
+    return Arrays.binarySearch(table, fromIndex, table.length, rawVariable);
   }
 }
