@@ -3,15 +3,17 @@ package com.github.tueda.donuts;
 import cc.redberry.rings.Rings;
 import cc.redberry.rings.bigint.BigInteger;
 import cc.redberry.rings.poly.PolynomialMethods;
+import cc.redberry.rings.poly.multivar.Monomial;
 import cc.redberry.rings.poly.multivar.MonomialOrder;
 import cc.redberry.rings.poly.multivar.MultivariateDivision;
 import cc.redberry.rings.poly.multivar.MultivariatePolynomial;
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.BinaryOperator;
 
 /** An immutable multivariate polynomial with integer coefficients. */
-public final class Polynomial implements Serializable {
+public final class Polynomial implements Serializable, Iterable<Polynomial> {
   private static final long serialVersionUID = 1L;
 
   /** Zero polynomial. */
@@ -110,6 +112,38 @@ public final class Polynomial implements Serializable {
   @Override
   public String toString() {
     return raw.toString(variables.getTable());
+  }
+
+  /** Returns an iterator for all terms (as polynomials) in this polynomial. */
+  @Override
+  public Iterator<Polynomial> iterator() {
+    return new TermIterator(raw.iterator());
+  }
+
+  /** Iterates terms in a polynomial. */
+  private class TermIterator implements Iterator<Polynomial> {
+    /** The raw iterator. */
+    private final Iterator<Monomial<BigInteger>> rawIterator;
+
+    /** Constructs an iterator. */
+    public TermIterator(final Iterator<Monomial<BigInteger>> iterator) {
+      rawIterator = iterator;
+    }
+
+    @Override
+    public boolean hasNext() {
+      return rawIterator.hasNext();
+    }
+
+    @Override
+    public Polynomial next() {
+      return new Polynomial(variables, raw.createZero().add(rawIterator.next()));
+    }
+  }
+
+  /** Returns the number of terms in this polynomial. */
+  public int size() {
+    return raw.size();
   }
 
   /**

@@ -46,6 +46,19 @@ public class PolynomialTest {
   }
 
   @Test
+  public void iterator() {
+    Polynomial p = new Polynomial("(x + y - 2 * z)^2");
+    Polynomial q = new Polynomial();
+    int n = 0;
+    for (Polynomial t : p) {
+      q = q.add(t);
+      n++;
+    }
+    assertThat(q).isEqualTo(p);
+    assertThat(n).isEqualTo(p.size());
+  }
+
+  @Test
   public void add() {
     Polynomial p1 = new Polynomial("x + y");
     Polynomial p2 = new Polynomial("y + z");
