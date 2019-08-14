@@ -54,7 +54,7 @@ public class PolynomialTest {
   public void properties() {
     Polynomial p;
 
-    p = new Polynomial();
+    p = Polynomial.of("0");
     assertThat(p.isZero()).isTrue();
     assertThat(p.isOne()).isFalse();
     assertThat(p.isMinusOne()).isFalse();
@@ -66,7 +66,7 @@ public class PolynomialTest {
     assertThat(p.degree()).isEqualTo(0);
     assertThat(p.toString()).isEqualTo("0");
 
-    p = new Polynomial(1);
+    p = Polynomial.of("1");
     assertThat(p.isZero()).isFalse();
     assertThat(p.isOne()).isTrue();
     assertThat(p.isMinusOne()).isFalse();
@@ -78,7 +78,7 @@ public class PolynomialTest {
     assertThat(p.degree()).isEqualTo(0);
     assertThat(p.toString()).isEqualTo("1");
 
-    p = new Polynomial(-1);
+    p = Polynomial.of("-1");
     assertThat(p.isZero()).isFalse();
     assertThat(p.isOne()).isFalse();
     assertThat(p.isMinusOne()).isTrue();
@@ -89,7 +89,7 @@ public class PolynomialTest {
     assertThat(p.size()).isEqualTo(1);
     assertThat(p.degree()).isEqualTo(0);
 
-    p = new Polynomial("x");
+    p = Polynomial.of("x");
     assertThat(p.isZero()).isFalse();
     assertThat(p.isOne()).isFalse();
     assertThat(p.isMinusOne()).isFalse();
@@ -101,7 +101,7 @@ public class PolynomialTest {
     assertThat(p.degree()).isEqualTo(1);
     assertThat(p.toString()).isEqualTo("x");
 
-    p = new Polynomial("-x");
+    p = Polynomial.of("-x");
     assertThat(p.isZero()).isFalse();
     assertThat(p.isOne()).isFalse();
     assertThat(p.isMinusOne()).isFalse();
@@ -112,7 +112,7 @@ public class PolynomialTest {
     assertThat(p.size()).isEqualTo(1);
     assertThat(p.degree()).isEqualTo(1);
 
-    p = new Polynomial("2*x");
+    p = Polynomial.of("2*x");
     assertThat(p.isZero()).isFalse();
     assertThat(p.isOne()).isFalse();
     assertThat(p.isMinusOne()).isFalse();
@@ -123,7 +123,7 @@ public class PolynomialTest {
     assertThat(p.size()).isEqualTo(1);
     assertThat(p.degree()).isEqualTo(1);
 
-    p = new Polynomial("x^2");
+    p = Polynomial.of("x^2");
     assertThat(p.isZero()).isFalse();
     assertThat(p.isOne()).isFalse();
     assertThat(p.isMinusOne()).isFalse();
@@ -134,7 +134,7 @@ public class PolynomialTest {
     assertThat(p.size()).isEqualTo(1);
     assertThat(p.degree()).isEqualTo(2);
 
-    p = new Polynomial("(1+x+y)^2");
+    p = Polynomial.of("(1+x+y)^2");
     assertThat(p.isZero()).isFalse();
     assertThat(p.isOne()).isFalse();
     assertThat(p.isMinusOne()).isFalse();
@@ -202,8 +202,8 @@ public class PolynomialTest {
 
   @Test
   public void iterator() {
-    Polynomial p = new Polynomial("(x + y - 2 * z)^2");
-    Polynomial q = new Polynomial();
+    Polynomial p = Polynomial.of("(x + y - 2 * z)^2");
+    Polynomial q = Polynomial.of("0");
     int n = 0;
     for (Polynomial t : p) {
       assertThat(t.isMonomial()).isTrue();
@@ -216,15 +216,15 @@ public class PolynomialTest {
 
   @Test
   public void getMinimalVariables() {
-    Polynomial p1 = new Polynomial("  + b + c + d + e");
-    Polynomial p2 = new Polynomial("a - b + c - d");
+    Polynomial p1 = Polynomial.of("  + b + c + d + e");
+    Polynomial p2 = Polynomial.of("a - b + c - d");
     Polynomial p = p1.add(p2);
     assertThat(p.getMinimalVariables()).isEqualTo(VariableSet.of("a", "c", "e"));
   }
 
   @Test
   public void degree() {
-    Polynomial p = new Polynomial("(1 + x + y + z + w)^2 + (y + z + w)^3 + (z + w)^4 + x*y*z*w^5");
+    Polynomial p = Polynomial.of("(1 + x + y + z + w)^2 + (y + z + w)^3 + (z + w)^4 + x*y*z*w^5");
 
     assertThat(p.degree()).isEqualTo(8);
 
@@ -242,26 +242,26 @@ public class PolynomialTest {
   public void coefficientOf() {
     Polynomial p = new Polynomial("(1 + x + y + z)^4");
 
-    assertThat(p.coefficientOf(Variable.of("x"), 0)).isEqualTo(new Polynomial("(1 + y + z)^4"));
-    assertThat(p.coefficientOf(Variable.of("x"), 1)).isEqualTo(new Polynomial("4 * (1 + y + z)^3"));
-    assertThat(p.coefficientOf(Variable.of("x"), 2)).isEqualTo(new Polynomial("6 * (1 + y + z)^2"));
-    assertThat(p.coefficientOf(Variable.of("y"), 3)).isEqualTo(new Polynomial("4 * (1 + x + z)"));
-    assertThat(p.coefficientOf(Variable.of("z"), 4)).isEqualTo(new Polynomial("1"));
-    assertThat(p.coefficientOf(Variable.of("a"), 1)).isEqualTo(new Polynomial("0"));
+    assertThat(p.coefficientOf(Variable.of("x"), 0)).isEqualTo(Polynomial.of("(1 + y + z)^4"));
+    assertThat(p.coefficientOf(Variable.of("x"), 1)).isEqualTo(Polynomial.of("4 * (1 + y + z)^3"));
+    assertThat(p.coefficientOf(Variable.of("x"), 2)).isEqualTo(Polynomial.of("6 * (1 + y + z)^2"));
+    assertThat(p.coefficientOf(Variable.of("y"), 3)).isEqualTo(Polynomial.of("4 * (1 + x + z)"));
+    assertThat(p.coefficientOf(Variable.of("z"), 4)).isEqualTo(Polynomial.of("1"));
+    assertThat(p.coefficientOf(Variable.of("a"), 1)).isEqualTo(Polynomial.of("0"));
 
     assertThat(p.coefficientOf(Variable.of("a", "y", "b"), new int[] {0, 2, 0}))
-        .isEqualTo(new Polynomial("6 * (1 + x + z)^2"));
+        .isEqualTo(Polynomial.of("6 * (1 + x + z)^2"));
     assertThat(p.coefficientOf(Variable.of("y", "z"), new int[] {1, 2}))
-        .isEqualTo(new Polynomial("12 * (1 + x)"));
+        .isEqualTo(Polynomial.of("12 * (1 + x)"));
     assertThat(p.coefficientOf(Variable.of("a", "x"), new int[] {1, 2}))
-        .isEqualTo(new Polynomial("0"));
+        .isEqualTo(Polynomial.of("0"));
   }
 
   @Test
   public void negate() {
     Polynomial zero = new Polynomial();
     Polynomial p1 = zero.negate();
-    Polynomial p2 = new Polynomial("1 - x");
+    Polynomial p2 = Polynomial.of("1 - x");
     Polynomial p3 = p2.negate();
     Polynomial p4 = p2.add(p3);
     assertThat(p1).isEqualTo(zero);
@@ -270,19 +270,19 @@ public class PolynomialTest {
 
   @Test
   public void add() {
-    Polynomial p1 = new Polynomial("x + y");
-    Polynomial p2 = new Polynomial("y + z");
-    Polynomial p3 = new Polynomial("z + x");
+    Polynomial p1 = Polynomial.of("x + y");
+    Polynomial p2 = Polynomial.of("y + z");
+    Polynomial p3 = Polynomial.of("z + x");
     Polynomial q = p1.add(p2).add(p3);
-    Polynomial r = new Polynomial("2 * x + 2 * y + 2 * z + w - 1 * w");
+    Polynomial r = Polynomial.of("2 * x + 2 * y + 2 * z + w - 1 * w");
     assertThat(q).isEqualTo(r);
   }
 
   @Test
   public void subtract() {
-    Polynomial p1 = new Polynomial("x + y + z");
-    Polynomial p2 = new Polynomial("x");
-    Polynomial p3 = new Polynomial("y + z");
+    Polynomial p1 = Polynomial.of("x + y + z");
+    Polynomial p2 = Polynomial.of("x");
+    Polynomial p3 = Polynomial.of("y + z");
     Polynomial q = p1.subtract(p2).subtract(p3);
     Polynomial r = new Polynomial();
     assertThat(q).isEqualTo(r);
@@ -290,34 +290,34 @@ public class PolynomialTest {
 
   @Test
   public void multiply() {
-    Polynomial p1 = new Polynomial("x + y + z");
-    Polynomial p2 = new Polynomial("x - y - z");
+    Polynomial p1 = Polynomial.of("x + y + z");
+    Polynomial p2 = Polynomial.of("x - y - z");
     Polynomial q = p1.multiply(p2);
-    Polynomial r = new Polynomial("x^2 - (y + z)^2");
+    Polynomial r = Polynomial.of("x^2 - (y + z)^2");
     assertThat(q).isEqualTo(r);
   }
 
   @Test
   public void pow() {
-    Polynomial p1 = new Polynomial("1-x+y");
+    Polynomial p1 = Polynomial.of("1-x+y");
     Polynomial p2 = p1.pow(2);
     Polynomial p3 = p1.pow(3);
-    Polynomial p4 = new Polynomial("(1-x+y)^2");
-    Polynomial p5 = new Polynomial("(1-x+y)^3");
+    Polynomial p4 = Polynomial.of("(1-x+y)^2");
+    Polynomial p5 = Polynomial.of("(1-x+y)^3");
     assertThat(p2).isEqualTo(p4);
     assertThat(p3).isEqualTo(p5);
 
-    Polynomial p6 = new Polynomial("1-x").pow(new BigInteger("30"));
-    Polynomial p7 = new Polynomial("(1-x)^30");
+    Polynomial p6 = Polynomial.of("1-x").pow(new BigInteger("30"));
+    Polynomial p7 = Polynomial.of("(1-x)^30");
     assertThat(p6).isEqualTo(p7);
   }
 
   @Test
   public void gcd() {
-    Polynomial p = new Polynomial("x + y");
-    Polynomial q = new Polynomial("y + z");
-    Polynomial r = new Polynomial("1 + x + w");
-    Polynomial g = new Polynomial("2 + x + y + z");
+    Polynomial p = Polynomial.of("x + y");
+    Polynomial q = Polynomial.of("y + z");
+    Polynomial r = Polynomial.of("1 + x + w");
+    Polynomial g = Polynomial.of("2 + x + y + z");
     Polynomial a = g.multiply(p);
     Polynomial b = g.multiply(q);
     Polynomial c = g.multiply(r);

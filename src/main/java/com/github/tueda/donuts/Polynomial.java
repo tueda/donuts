@@ -91,6 +91,28 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     raw = rawPoly;
   }
 
+  /**
+   * Returns a polynomial constructed from the given string.
+   *
+   * @param string the string representation
+   * @throws IllegalArgumentException when {@code string} does not represent a polynomial
+   */
+  @SuppressWarnings("PMD.ShortMethodName")
+  public static Polynomial of(final String string) {
+    return new Polynomial(string);
+  }
+
+  /**
+   * Returns an array of polynomials constructed from the given strings.
+   *
+   * @param strings the string representations
+   * @throws IllegalArgumentException when any of the given strings are invalid for polynomials.
+   */
+  @SuppressWarnings("PMD.ShortMethodName")
+  public static Polynomial[] of(final String... strings) {
+    return Stream.of(strings).map(Polynomial::new).toArray(Polynomial[]::new);
+  }
+
   @Override
   public boolean equals(final Object other) {
     if (this == other) {
