@@ -356,4 +356,26 @@ public class PolynomialTest {
     Polynomial gcd6 = Polynomial.gcd(polys5);
     assertThat(gcd6).isEqualTo(a);
   }
+
+  @Test
+  public void factorize() {
+    checkNoFactorization("0");
+    checkNoFactorization("-7*x^2*y");
+
+    assertThat(Polynomial.of("(x+y)").factorize()).isEqualTo(Polynomial.of(new String[] {"x+y"}));
+    assertThat(Polynomial.of("-(x+y)").factorize()).isEqualTo(Polynomial.of("-1", "x+y"));
+    assertThat(Polynomial.of("2*(x+y)").factorize()).isEqualTo(Polynomial.of("2", "x+y"));
+    assertThat(Polynomial.of("-2*(x+y)").factorize()).isEqualTo(Polynomial.of("-2", "x+y"));
+    assertThat(Polynomial.of("2*(x-y)").factorize()).isEqualTo(Polynomial.of("2", "x-y"));
+    assertThat(Polynomial.of("-2*(x-y)").factorize()).isEqualTo(Polynomial.of("-2", "x-y"));
+
+    assertThat(Polynomial.of("x^2-y^2").factorize()).isEqualTo(Polynomial.of("x-y", "x+y"));
+    assertThat(Polynomial.of("-3*x*z^2*(x^2-y^2)^3").factorize())
+        .isEqualTo(Polynomial.of("-3*x*z^2", "x-y", "x-y", "x-y", "x+y", "x+y", "x+y"));
+  }
+
+  void checkNoFactorization(String s) {
+    Polynomial p = new Polynomial(s);
+    assertThat(p.factorize()).isEqualTo(new Polynomial[] {p});
+  }
 }

@@ -2,12 +2,14 @@ package com.github.tueda.donuts;
 
 import cc.redberry.rings.Rings;
 import cc.redberry.rings.bigint.BigInteger;
+import cc.redberry.rings.poly.PolynomialFactorDecomposition;
 import cc.redberry.rings.poly.PolynomialMethods;
 import cc.redberry.rings.poly.multivar.Monomial;
 import cc.redberry.rings.poly.multivar.MonomialOrder;
 import cc.redberry.rings.poly.multivar.MultivariateDivision;
 import cc.redberry.rings.poly.multivar.MultivariatePolynomial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +24,7 @@ import java.util.stream.StreamSupport;
 public final class Polynomial implements Serializable, Iterable<Polynomial>, Multivariate {
   private static final long serialVersionUID = 1L;
 
-  /** Zero polynomial. */
+  /** Raw zero polynomial. */
   /* default */ static final MultivariatePolynomial<BigInteger> RAW_ZERO =
       MultivariatePolynomial.zero(0, Rings.Z, MonomialOrder.DEFAULT);
 
@@ -124,8 +126,13 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     }
 
     final Polynomial aPoly = (Polynomial) other;
+
     if (variables.equals(aPoly.variables)) {
       return raw.equals(aPoly.raw);
+    }
+
+    if (size() != aPoly.size()) {
+      return false;
     }
 
     final VariableSet newVariables = variables.union(aPoly.variables);
@@ -466,5 +473,51 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   /** Returns the greatest common divisor of the given polynomials. */
   public static Polynomial gcd(final Stream<Polynomial> polynomials) {
     return gcd(polynomials.toArray(Polynomial[]::new));
+  }
+
+  /** Returns the factors of the polynomial. */
+  public Polynomial[] factorize() {
+    // Trivial cases, in which the polynomial is a monomial.
+    if (isMonomial()) {
+      return new Polynomial[] {this};
+    }
+
+    // Perform the factorization.
+
+    final PolynomialFactorDecomposition<MultivariatePolynomial<BigInteger>> factors =
+        PolynomialMethods.Factor(raw);
+
+    factors.canonical();
+
+    final List<Polynomial> list = new ArrayList<>(factors.sumExponents() + 1);
+
+    // First, add the trivial factor (e.g., a monomial).
+
+    final MultivariatePolynomial<BigInteger> trivialFactor = factors.unit;
+
+    for (int i = 0; i < factors.size(); i++) {
+      final MultivariatePolynomial<BigInteger> p = factors.get(i);
+      if (p.isMonomial()) {
+        trivialFactor.multiply(p);
+      }
+    }
+
+    if (!trivialFactor.isOne()) {
+      list.add(new Polynomial(variables, trivialFactor));
+    }
+
+    // Then, the actual factors.
+
+    for (int i = 0; i < factors.size(); i++) {
+      final MultivariatePolynomial<BigInteger> p = factors.get(i);
+      if (!p.isMonomial()) {
+        final Polynomial aPoly = new Polynomial(variables, p);
+        for (int j = 0; j < factors.getExponent(i); j++) {
+          list.add(aPoly);
+        }
+      }
+    }
+
+    return list.toArray(new Polynomial[0]);
   }
 }
