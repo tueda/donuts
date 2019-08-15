@@ -1,7 +1,7 @@
 plugins {
   id 'jacoco'
   id 'java-library'
-  id 'com.diffplug.gradle.spotless' version '3.24.0'
+  id 'com.diffplug.gradle.spotless' version '3.24.1'
   id 'com.github.ben-manes.versions' version '0.22.0'
   id 'ru.vyarus.quality' version '3.4.0'
 }
@@ -63,6 +63,7 @@ afterEvaluate {
     config = resources.text.fromArchiveEntry(configurations.checkstyleConfig, 'google_checks.xml')
   }
   pmd {
+    incrementalAnalysis = true
     ruleSetFiles = files('config/pmd.xml')
   }
 }
