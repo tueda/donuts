@@ -51,6 +51,27 @@ public class PolynomialTest {
   }
 
   @Test
+  public void equals() {
+    Polynomial x = Polynomial.of("x");
+    Polynomial y = Polynomial.of("y");
+    Polynomial z = Polynomial.of("z");
+
+    Polynomial zero = Polynomial.of("0");
+
+    Polynomial p = x.add(y).add(z);
+    Polynomial q = z.add(y).add(x);
+
+    assertThat(x.equals(x)).isTrue();
+    assertThat(x.equals(y)).isFalse();
+
+    assertThat(x.equals(1)).isFalse();
+    assertThat(x.equals(y.add(z))).isFalse();
+    assertThat(p.subtract(p).equals(Polynomial.of("0"))).isTrue();
+
+    assertThat(Polynomial.of("1").equals(new Polynomial(new BigInteger("1")))).isTrue();
+  }
+
+  @Test
   public void properties() {
     Polynomial p;
 
@@ -157,6 +178,7 @@ public class PolynomialTest {
     checkUnaryOperatorImmutability(p -> p.pow(new BigInteger("5")));
     checkBinaryOperatorImmutability((p1, p2) -> p1.gcd(p2));
     checkBinaryOperatorImmutability((p1, p2) -> Polynomial.gcd(p1, p2));
+    checkUnaryOperatorImmutability(p -> p.factorize()[0]);
   }
 
   void checkUnaryOperatorImmutability(UnaryOperator<Polynomial> operator) {
@@ -216,6 +238,8 @@ public class PolynomialTest {
 
   @Test
   public void getMinimalVariables() {
+    assertThat(Polynomial.of("1").getMinimalVariables()).isEqualTo(VariableSet.of());
+
     Polynomial p1 = Polynomial.of("  + b + c + d + e");
     Polynomial p2 = Polynomial.of("a - b + c - d");
     Polynomial p = p1.add(p2);
@@ -255,6 +279,10 @@ public class PolynomialTest {
         .isEqualTo(Polynomial.of("12 * (1 + x)"));
     assertThat(p.coefficientOf(Variable.of("a", "x"), new int[] {1, 2}))
         .isEqualTo(Polynomial.of("0"));
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> p.coefficientOf(Variable.of("a", "b"), new int[] {1, 2, 3}));
   }
 
   @Test

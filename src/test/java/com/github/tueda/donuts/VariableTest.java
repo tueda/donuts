@@ -1,5 +1,6 @@
 package com.github.tueda.donuts;
 
+import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -12,6 +13,22 @@ public class VariableTest {
     assertThrows(IllegalArgumentException.class, () -> new Variable("1"));
     assertThrows(IllegalArgumentException.class, () -> new Variable("a_"));
     assertThrows(IllegalArgumentException.class, () -> new Variable("$a"));
+  }
+
+  @Test
+  public void equals() {
+    Variable x = Variable.of("x");
+    Variable y = Variable.of("y");
+    Variable x2 = Variable.of("x");
+
+    assertThat(x.equals(x)).isTrue();
+    assertThat(x.equals(x2)).isTrue();
+    assertThat(x.equals(y)).isFalse();
+
+    assertThat(x.equals(1)).isFalse();
+
+    assertThat(x.compareTo(x)).isEqualTo(0);
+    assertThat(x.compareTo(x2)).isEqualTo(0);
   }
 
   @Test
@@ -49,12 +66,21 @@ public class VariableTest {
       "b",
       "b1",
     };
-    for (int i = 0; i < vars.length - 1; i++) {
-      for (int j = i + 1; j < vars.length; j++) {
+    for (int i = 0; i < vars.length; i++) {
+      for (int j = i; j < vars.length; j++) {
         Variable v1 = new Variable(vars[i]);
         Variable v2 = new Variable(vars[j]);
-        assertWithMessage(v1 + " < " + v2).that(v1.compareTo(v2)).isLessThan(0);
-        assertWithMessage(v2 + " > " + v1).that(v2.compareTo(v1)).isGreaterThan(0);
+        if (i < j) {
+          assertThat(v1.equals(v2)).isFalse();
+          assertThat(v2.equals(v1)).isFalse();
+          assertWithMessage(v1 + " < " + v2).that(v1.compareTo(v2)).isLessThan(0);
+          assertWithMessage(v2 + " > " + v1).that(v2.compareTo(v1)).isGreaterThan(0);
+        } else if (i == j) {
+          assertThat(v1.equals(v2)).isTrue();
+          assertThat(v2.equals(v1)).isTrue();
+          assertWithMessage(v1 + " < " + v2).that(v1.compareTo(v2)).isEqualTo(0);
+          assertWithMessage(v2 + " > " + v1).that(v2.compareTo(v1)).isEqualTo(0);
+        }
       }
     }
   }

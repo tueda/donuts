@@ -92,7 +92,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
    */
   @SuppressWarnings("PMD.ShortMethodName")
   public static VariableSet of(final String name) {
-    return new VariableSet(Stream.of(name).map(Variable::new));
+    return new VariableSet(new Variable(name));
   }
 
   /**
