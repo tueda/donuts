@@ -28,6 +28,24 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   /* default */ static final MultivariatePolynomial<BigInteger> RAW_ZERO =
       MultivariatePolynomial.zero(0, Rings.Z, MonomialOrder.DEFAULT);
 
+  /** The minimum value of short. */
+  private static final BigInteger SHORT_MIN_VALUE = BigInteger.valueOf(Short.MIN_VALUE);
+
+  /** The maximum value of short. */
+  private static final BigInteger SHORT_MAX_VALUE = BigInteger.valueOf(Short.MAX_VALUE);
+
+  /** The minimum value of int. */
+  private static final BigInteger INT_MIN_VALUE = BigInteger.valueOf(Integer.MIN_VALUE);
+
+  /** The maximum value of int. */
+  private static final BigInteger INT_MAX_VALUE = BigInteger.valueOf(Integer.MAX_VALUE);
+
+  /** The minimum value of long. */
+  private static final BigInteger LONG_MIN_VALUE = BigInteger.valueOf(Long.MIN_VALUE);
+
+  /** The maximum value of long. */
+  private static final BigInteger LONG_MAX_VALUE = BigInteger.valueOf(Long.MAX_VALUE);
+
   /** The set of variables. */
   private final VariableSet variables;
 
@@ -187,13 +205,12 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
       return variables;
     }
 
-    final String[] table = variables.getRawTable();
     final String[] newTable =
-        IntStream.range(0, table.length)
+        IntStream.range(0, variables.size())
             .filter(i -> polyUsesVariable(raw, i))
-            .mapToObj(i -> table[i])
+            .mapToObj(i -> variables.getRawName(i))
             .toArray(String[]::new);
-    return new VariableSet(VariableSet.createVariableSetFromRawArray(newTable));
+    return VariableSet.createVariableSetFromRawArray(newTable);
   }
 
   /**
@@ -203,7 +220,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   /* default */ static boolean polyUsesVariable(
       final MultivariatePolynomial<BigInteger> rawPolynomial, final int variable) {
     for (final Monomial<BigInteger> term : rawPolynomial) {
-      if (term.dvTotalDegree(variable) > 0) {
+      if (term.exponents[variable] > 0) {
         return true;
       }
     }
@@ -239,6 +256,42 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return raw.isConstant();
   }
 
+  /** Returns whether this polynomial is constant fitting in a short. */
+  public boolean isShortValue() {
+    if (isZero()) {
+      return true;
+    }
+    if (!isConstant()) {
+      return false;
+    }
+    final BigInteger c = raw.lc();
+    return c.compareTo(SHORT_MIN_VALUE) >= 0 && c.compareTo(SHORT_MAX_VALUE) <= 0;
+  }
+
+  /** Returns whether this polynomial is constant fitting in a int. */
+  public boolean isIntValue() {
+    if (isZero()) {
+      return true;
+    }
+    if (!isConstant()) {
+      return false;
+    }
+    final BigInteger c = raw.lc();
+    return c.compareTo(INT_MIN_VALUE) >= 0 && c.compareTo(INT_MAX_VALUE) <= 0;
+  }
+
+  /** Returns whether this polynomial is constant fitting in a long. */
+  public boolean isLongValue() {
+    if (isZero()) {
+      return true;
+    }
+    if (!isConstant()) {
+      return false;
+    }
+    final BigInteger c = raw.lc();
+    return c.compareTo(LONG_MIN_VALUE) >= 0 && c.compareTo(LONG_MAX_VALUE) <= 0;
+  }
+
   /** Returns whether this polynomial is a monomial (including zero). */
   public boolean isMonomial() {
     return raw.isMonomial();
@@ -252,6 +305,72 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   /** Returns whether this polynomial is a plain variable (the coefficient is one). */
   public boolean isVariable() {
     return raw.size() == 1 && raw.degree() == 1 && raw.isMonic();
+  }
+
+  /**
+   * Returns this polynomial as {@code short}.
+   *
+   * @throws IllegalStateException when the polynomial is not a {@code short}.
+   */
+  @SuppressWarnings("PMD.AvoidUsingShortType")
+  public short asShortValue() {
+    if (isZero()) {
+      return 0;
+    }
+    if (!isShortValue()) {
+      throw new IllegalStateException("not a short");
+    }
+    return raw.lc().shortValue();
+  }
+
+  /**
+   * Returns this polynomial as a {@code int}.
+   *
+   * @throws IllegalStateException when the polynomial is not a {@code int}.
+   */
+  public int asIntValue() {
+    if (isZero()) {
+      return 0;
+    }
+    if (!isIntValue()) {
+      throw new IllegalStateException("not a int");
+    }
+    return raw.lc().intValue();
+  }
+
+  /**
+   * Returns this polynomial as a {@code long}.
+   *
+   * @throws IllegalStateException when the polynomial is not a {@code long}.
+   */
+  public long asLongValue() {
+    if (isZero()) {
+      return 0;
+    }
+    if (!isLongValue()) {
+      throw new IllegalStateException("not a long");
+    }
+    return raw.lc().longValue();
+  }
+
+  /**
+   * Returns this polynomial as a variable.
+   *
+   * @throws IllegalStateException when the polynomial is not a variable.
+   */
+  public Variable asVariable() {
+    if (!isVariable()) {
+      throw new IllegalStateException("not a variable");
+    }
+    final Monomial<BigInteger> term = raw.lt();
+    for (int i = 0; i < term.exponents.length; i++) {
+      assert term.exponents[i] == 0 || term.exponents[i] == 1;
+      if (term.exponents[i] != 0) {
+        return Variable.createVariableWithoutCheck(variables.getRawName(i));
+      }
+    }
+    assert false;
+    return null;
   }
 
   /** Returns the number of terms in this polynomial. */

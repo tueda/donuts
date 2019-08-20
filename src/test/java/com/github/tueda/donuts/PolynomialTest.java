@@ -48,6 +48,10 @@ public class PolynomialTest {
 
     // java.util.NoSuchElementException at java.util.ArrayDeque.removeFirst
     assertThrows(IllegalArgumentException.class, () -> new Polynomial(""));
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> new Polynomial("3.1415926535897932384626433832795028841971693993751"));
   }
 
   @Test
@@ -80,6 +84,9 @@ public class PolynomialTest {
     assertThat(p.isOne()).isFalse();
     assertThat(p.isMinusOne()).isFalse();
     assertThat(p.isConstant()).isTrue();
+    assertThat(p.isShortValue()).isTrue();
+    assertThat(p.isIntValue()).isTrue();
+    assertThat(p.isLongValue()).isTrue();
     assertThat(p.isMonomial()).isTrue();
     assertThat(p.isMonic()).isFalse();
     assertThat(p.isVariable()).isFalse();
@@ -92,6 +99,9 @@ public class PolynomialTest {
     assertThat(p.isOne()).isTrue();
     assertThat(p.isMinusOne()).isFalse();
     assertThat(p.isConstant()).isTrue();
+    assertThat(p.isShortValue()).isTrue();
+    assertThat(p.isIntValue()).isTrue();
+    assertThat(p.isLongValue()).isTrue();
     assertThat(p.isMonomial()).isTrue();
     assertThat(p.isMonic()).isTrue();
     assertThat(p.isVariable()).isFalse();
@@ -104,6 +114,9 @@ public class PolynomialTest {
     assertThat(p.isOne()).isFalse();
     assertThat(p.isMinusOne()).isTrue();
     assertThat(p.isConstant()).isTrue();
+    assertThat(p.isShortValue()).isTrue();
+    assertThat(p.isIntValue()).isTrue();
+    assertThat(p.isLongValue()).isTrue();
     assertThat(p.isMonomial()).isTrue();
     assertThat(p.isMonic()).isFalse();
     assertThat(p.isVariable()).isFalse();
@@ -115,6 +128,9 @@ public class PolynomialTest {
     assertThat(p.isOne()).isFalse();
     assertThat(p.isMinusOne()).isFalse();
     assertThat(p.isConstant()).isFalse();
+    assertThat(p.isShortValue()).isFalse();
+    assertThat(p.isIntValue()).isFalse();
+    assertThat(p.isLongValue()).isFalse();
     assertThat(p.isMonomial()).isTrue();
     assertThat(p.isMonic()).isTrue();
     assertThat(p.isVariable()).isTrue();
@@ -127,6 +143,9 @@ public class PolynomialTest {
     assertThat(p.isOne()).isFalse();
     assertThat(p.isMinusOne()).isFalse();
     assertThat(p.isConstant()).isFalse();
+    assertThat(p.isShortValue()).isFalse();
+    assertThat(p.isIntValue()).isFalse();
+    assertThat(p.isLongValue()).isFalse();
     assertThat(p.isMonomial()).isTrue();
     assertThat(p.isMonic()).isFalse();
     assertThat(p.isVariable()).isFalse();
@@ -138,6 +157,9 @@ public class PolynomialTest {
     assertThat(p.isOne()).isFalse();
     assertThat(p.isMinusOne()).isFalse();
     assertThat(p.isConstant()).isFalse();
+    assertThat(p.isShortValue()).isFalse();
+    assertThat(p.isIntValue()).isFalse();
+    assertThat(p.isLongValue()).isFalse();
     assertThat(p.isMonomial()).isTrue();
     assertThat(p.isMonic()).isFalse();
     assertThat(p.isVariable()).isFalse();
@@ -149,6 +171,9 @@ public class PolynomialTest {
     assertThat(p.isOne()).isFalse();
     assertThat(p.isMinusOne()).isFalse();
     assertThat(p.isConstant()).isFalse();
+    assertThat(p.isShortValue()).isFalse();
+    assertThat(p.isIntValue()).isFalse();
+    assertThat(p.isLongValue()).isFalse();
     assertThat(p.isMonomial()).isTrue();
     assertThat(p.isMonic()).isTrue();
     assertThat(p.isVariable()).isFalse();
@@ -160,11 +185,66 @@ public class PolynomialTest {
     assertThat(p.isOne()).isFalse();
     assertThat(p.isMinusOne()).isFalse();
     assertThat(p.isConstant()).isFalse();
+    assertThat(p.isShortValue()).isFalse();
+    assertThat(p.isIntValue()).isFalse();
+    assertThat(p.isLongValue()).isFalse();
     assertThat(p.isMonomial()).isFalse();
     assertThat(p.isMonic()).isTrue();
     assertThat(p.isVariable()).isFalse();
     assertThat(p.size()).isEqualTo(6);
     assertThat(p.degree()).isEqualTo(2);
+  }
+
+  @Test
+  public void asShortValue() {
+    assertThat(Polynomial.of("0").asShortValue()).isEqualTo(0);
+    assertThat(Polynomial.of("1").asShortValue()).isEqualTo(1);
+    assertThat(Polynomial.of("-2^15").asShortValue()).isEqualTo(-32768);
+    assertThat(Polynomial.of("2^15-1").asShortValue()).isEqualTo(32767);
+
+    assertThrows(IllegalStateException.class, () -> Polynomial.of("x").asShortValue());
+    assertThrows(IllegalStateException.class, () -> Polynomial.of("-2^15-1").asShortValue());
+    assertThrows(IllegalStateException.class, () -> Polynomial.of("2^15").asShortValue());
+  }
+
+  @Test
+  public void asIntValue() {
+    assertThat(Polynomial.of("0").asIntValue()).isEqualTo(0);
+    assertThat(Polynomial.of("1").asIntValue()).isEqualTo(1);
+    assertThat(Polynomial.of("-2^31").asIntValue()).isEqualTo(-2147483648);
+    assertThat(Polynomial.of("2^31-1").asIntValue()).isEqualTo(2147483647);
+
+    assertThrows(IllegalStateException.class, () -> Polynomial.of("x").asIntValue());
+    assertThrows(IllegalStateException.class, () -> Polynomial.of("-2^31-1").asIntValue());
+    assertThrows(IllegalStateException.class, () -> Polynomial.of("2^31").asIntValue());
+  }
+
+  @Test
+  public void asLongValue() {
+    assertThat(Polynomial.of("0").asLongValue()).isEqualTo(0);
+    assertThat(Polynomial.of("1").asLongValue()).isEqualTo(1);
+    assertThat(Polynomial.of("-2^63").asLongValue()).isEqualTo(-9223372036854775808L);
+    assertThat(Polynomial.of("2^63-1").asLongValue()).isEqualTo(9223372036854775807L);
+
+    assertThrows(IllegalStateException.class, () -> Polynomial.of("x").asLongValue());
+    assertThrows(IllegalStateException.class, () -> Polynomial.of("-2^63-1").asLongValue());
+    assertThrows(IllegalStateException.class, () -> Polynomial.of("2^63").asLongValue());
+  }
+
+  @Test
+  public void asVariable() {
+    Polynomial x = Polynomial.of("x");
+    Polynomial y = Polynomial.of("y");
+
+    Polynomial x2 = x.add(y).subtract(y);
+    Polynomial y2 = y.add(x).subtract(x);
+
+    assertThat(x.asVariable()).isEqualTo(Variable.of("x"));
+    assertThat(x2.asVariable()).isEqualTo(Variable.of("x"));
+    assertThat(y2.asVariable()).isEqualTo(Variable.of("y"));
+
+    assertThrows(IllegalStateException.class, () -> Polynomial.of("0").asVariable());
+    assertThrows(IllegalStateException.class, () -> Polynomial.of("x*y").asVariable());
   }
 
   @Test

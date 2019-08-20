@@ -285,6 +285,10 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     return Arrays.asList(table);
   }
 
+  /* default */ String getRawName(final int index) {
+    return table[index];
+  }
+
   /* default */ int indexOf(final String rawVariable) {
     return Arrays.binarySearch(table, rawVariable);
   }
