@@ -27,6 +27,7 @@ javadoc {
       'https://docs.oracle.com/javase/8/docs/api/',
       'https://static.javadoc.io/cc.redberry/rings/2.5.2/',
     ]
+    source = '8'
   }
 }
 
