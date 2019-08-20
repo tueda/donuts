@@ -9,7 +9,7 @@ public class VariableSetTest {
   @Test
   public void equals() {
     VariableSet s1 = VariableSet.of("x", "y", "z");
-    VariableSet s2 = VariableSet.of("x", "y", "z");
+    VariableSet s2 = VariableSet.of("x", "z", "y", "x");
     VariableSet s3 = VariableSet.of("a", "b", "c");
     VariableSet s4 = VariableSet.of("a");
 
@@ -22,12 +22,41 @@ public class VariableSetTest {
   }
 
   @Test
+  public void contains() {
+    assertThat(VariableSet.of("a", "b").contains(Variable.of("a"))).isTrue();
+    assertThat(VariableSet.of("a", "b").contains(Variable.of("x"))).isFalse();
+    assertThat(VariableSet.of("a", "b").contains(1)).isFalse();
+  }
+
+  @Test
   public void getVariables() {
     VariableSet s1 = VariableSet.of("a", "b");
     VariableSet empty = VariableSet.of();
 
     assertThat(s1.getVariables()).isEqualTo(s1);
     assertThat(s1.getMinimalVariables()).isEqualTo(empty);
+  }
+
+  @Test
+  public void intersects() {
+    assertThat(VariableSet.of("a", "d", "e").intersects(VariableSet.of("b", "c", "d", "f")))
+        .isTrue();
+    assertThat(VariableSet.of("a", "e", "g").intersects(VariableSet.of("b", "c", "d", "f")))
+        .isFalse();
+  }
+
+  @Test
+  public void intersection() {
+    assertThat(VariableSet.of("a", "b").intersection(VariableSet.of("a", "b")))
+        .isEqualTo(VariableSet.of("a", "b"));
+    assertThat(VariableSet.of().intersection(VariableSet.of("a", "b"))).isEqualTo(VariableSet.of());
+    assertThat(VariableSet.of("a", "b").intersection(VariableSet.of())).isEqualTo(VariableSet.of());
+    assertThat(VariableSet.of("a").intersection(VariableSet.of("a", "b")))
+        .isEqualTo(VariableSet.of("a"));
+    assertThat(VariableSet.of("a", "b").intersection(VariableSet.of("b")))
+        .isEqualTo(VariableSet.of("b"));
+    assertThat(VariableSet.of("a", "b").intersection(VariableSet.of("c", "d")))
+        .isEqualTo(VariableSet.of());
   }
 
   @Test

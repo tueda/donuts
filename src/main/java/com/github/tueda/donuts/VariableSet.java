@@ -2,8 +2,11 @@ package com.github.tueda.donuts;
 
 import java.io.Serializable;
 import java.util.AbstractSet;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -139,8 +142,65 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   }
 
   @Override
+  public boolean contains(final Object o) {
+    if (!(o instanceof Variable)) {
+      return false;
+    }
+    final Variable x = (Variable) o;
+    return Arrays.binarySearch(table, x.getName()) >= 0;
+  }
+
+  @Override
   public VariableSet getVariables() {
     return this;
+  }
+
+  /**
+   * Returns whether this variable set and the other have the intersection.
+   *
+   * @param other The set of variables to be checked.
+   */
+  public boolean intersects(final VariableSet other) {
+    return !Collections.disjoint(this, other);
+  }
+
+  /**
+   * Returns the intersection of this variable set and the other.
+   *
+   * @param other The set of variables with which the intersection is taken.
+   */
+  public VariableSet intersection(final VariableSet other) {
+    if (this.equals(other)) {
+      return this;
+    }
+
+    if (isEmpty()) {
+      return this;
+    }
+
+    if (other.isEmpty()) {
+      return other;
+    }
+
+    final List<String> list = new ArrayList<>();
+
+    for (final Variable x : other) {
+      if (contains(x)) {
+        list.add(x.getName());
+      }
+    }
+
+    final VariableSet newVariables = new VariableSet(list.toArray(new String[0]));
+
+    if (this.equals(newVariables)) {
+      return this;
+    }
+
+    if (other.equals(newVariables)) {
+      return other;
+    }
+
+    return newVariables;
   }
 
   /**
@@ -153,12 +213,21 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
       return this;
     }
 
+    if (this.isEmpty()) {
+      return other;
+    }
+
+    if (other.isEmpty()) {
+      return this;
+    }
+
     final VariableSet newVariables =
         VariableSet.fromVariableNames(Stream.concat(Stream.of(table), Stream.of(other.table)));
 
     if (this.equals(newVariables)) {
       return this;
     }
+
     if (other.equals(newVariables)) {
       return other;
     }
