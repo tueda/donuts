@@ -486,4 +486,43 @@ public class PolynomialTest {
     Polynomial p = new Polynomial(s);
     assertThat(p.factorize()).isEqualTo(new Polynomial[] {p});
   }
+
+  @Test
+  public void substitute() {
+    {
+      String s1 = "(1+x+y+z)^6";
+      String s2 = "x*y^2";
+      String s3 = "-z+w";
+      String s4 =
+          "1+60*w+15*w^2-54*z+150*z*w-150*z^2+180*z^2*w-160*z^3+60*z^3*w-45*"
+              + "z^4+6*z^5+z^6+6*y+60*y*w-30*y*z+120*y*z*w-60*y*z^2+60*y*z^2*w+30*"
+              + "y*z^4+6*y*z^5+15*y^2+30*y^2*w+30*y^2*z+30*y^2*z*w+60*y^2*z^2+60*"
+              + "y^2*z^3+15*y^2*z^4+20*y^3+6*y^3*w+54*y^3*z+60*y^3*z^2+20*y^3*z^3+"
+              + "15*y^4+30*y^4*z+15*y^4*z^2+6*y^5+6*y^5*z+y^6+6*x+90*x*w-60*x*z+"
+              + "180*x*z*w-120*x*z^2+90*x*z^2*w-30*x*z^3+30*x*z^4+6*x*z^5+30*x*y+"
+              + "60*x*y*w+60*x*y*z+60*x*y*z*w+120*x*y*z^2+120*x*y*z^3+30*x*y*z^4+"
+              + "15*x^2+60*x^2*w+60*x^2*z*w+30*x^2*z^2+60*x^2*z^3+15*x^2*z^4+60*"
+              + "x^2*y+20*x^2*y*w+160*x^2*y*z+180*x^2*y*z^2+60*x^2*y*z^3+20*x^3+15"
+              + "*x^3*w+45*x^3*z+60*x^3*z^2+20*x^3*z^3+60*x^3*y+120*x^3*y*z+60*x^3"
+              + "*y*z^2+15*x^4+30*x^4*z+15*x^4*z^2+30*x^4*y+30*x^4*y*z+6*x^5+6*x^5"
+              + "*z+6*x^5*y+x^6";
+      assertThat(Polynomial.of(s1).substitute(Polynomial.of(s2), Polynomial.of(s3)))
+          .isEqualTo(Polynomial.of(s4));
+    }
+    {
+      String s1 = "(1+x+y+z)^6";
+      String s2 = "a";
+      String s3 = "1";
+      String s4 = s1;
+      assertThat(Polynomial.of(s1).substitute(Polynomial.of(s2), Polynomial.of(s3)))
+          .isEqualTo(Polynomial.of(s4));
+    }
+    {
+      Polynomial p1 = Polynomial.of("(1+x+y+z)^6");
+      Polynomial p3 = Polynomial.of("1");
+      assertThrows(IllegalArgumentException.class, () -> p1.substitute(Polynomial.of("1"), p3));
+      assertThrows(IllegalArgumentException.class, () -> p1.substitute(Polynomial.of("2*x"), p3));
+      assertThrows(IllegalArgumentException.class, () -> p1.substitute(Polynomial.of("x+y+z"), p3));
+    }
+  }
 }

@@ -4,6 +4,7 @@ import cc.redberry.rings.Rings;
 import cc.redberry.rings.bigint.BigInteger;
 import cc.redberry.rings.poly.PolynomialFactorDecomposition;
 import cc.redberry.rings.poly.PolynomialMethods;
+import cc.redberry.rings.poly.multivar.DegreeVector;
 import cc.redberry.rings.poly.multivar.Monomial;
 import cc.redberry.rings.poly.multivar.MonomialOrder;
 import cc.redberry.rings.poly.multivar.MultivariateDivision;
@@ -638,5 +639,101 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     }
 
     return list.toArray(new Polynomial[0]);
+  }
+
+  /**
+   * Returns the result of the given substitution.
+   *
+   * @throws IllegalArgumentException when {@code lhs} is invalid.
+   */
+  public Polynomial substitute(final Polynomial lhs, final Polynomial rhs) {
+    checkLhs(lhs);
+
+    if (!getMinimalVariables().intersects(lhs.getMinimalVariables())) {
+      return this;
+    }
+
+    final VariableSet newVariables = variables.union(lhs.getVariables()).union(rhs.getVariables());
+    final MultivariatePolynomial<BigInteger> newRawPoly =
+        substituteImpl(
+            translate(newVariables).raw,
+            lhs.translate(newVariables).raw.first(),
+            rhs.translate(newVariables).raw);
+    return new Polynomial(newVariables, newRawPoly);
+  }
+
+  private static void checkLhs(final Polynomial lhs) {
+    if (!lhs.isMonomial() || lhs.isConstant() || !lhs.isMonic()) {
+      throw new IllegalArgumentException("illegal lhs for substitution");
+    }
+  }
+
+  private static MultivariatePolynomial<BigInteger> substituteImpl(
+      final MultivariatePolynomial<BigInteger> poly,
+      final Monomial<BigInteger> lhs,
+      final MultivariatePolynomial<BigInteger> rhs) {
+    final MultivariatePolynomial<BigInteger> result = poly.createZero();
+    final PrecomputedPowers powers = new PrecomputedPowers(rhs);
+    for (final Monomial<BigInteger> term : poly) {
+      int n = 0;
+      DegreeVector dv = term;
+      while (dv.dvDivisibleBy(lhs)) {
+        dv = dv.dvDivideExact(lhs);
+        n++;
+      }
+      if (n == 0) {
+        result.add(term);
+      } else {
+        result.add(powers.pow(n).multiply(new Monomial<>(dv, term.coefficient)));
+      }
+    }
+    return result;
+  }
+
+  /** Cache powers of a polynomial. */
+  private static class PrecomputedPowers {
+    /** The base. */
+    private final MultivariatePolynomial<BigInteger> base;
+
+    /** The cache for powers. */
+    @SuppressWarnings("PMD.LooseCoupling") // we want ArrayList.ensureCapacity().
+    private final ArrayList<MultivariatePolynomial<BigInteger>> cache;
+
+    /** Constructs a precomputed cache for powers of the given polynomial. */
+    public PrecomputedPowers(final MultivariatePolynomial<BigInteger> base) {
+      this.base = base;
+      this.cache = new ArrayList<>();
+    }
+
+    /** Returns the power of the polynomial. */
+    public MultivariatePolynomial<BigInteger> pow(final int exponent) {
+      assert exponent >= 0;
+
+      MultivariatePolynomial<BigInteger> result = get(exponent);
+      if (result == null) {
+        result = PolynomialMethods.polyPow(base, exponent, true);
+        set(exponent, result);
+      }
+      return result.copy();
+    }
+
+    private MultivariatePolynomial<BigInteger> get(final int index) {
+      ensureIndex(index);
+      return cache.get(index);
+    }
+
+    private void set(final int index, final MultivariatePolynomial<BigInteger> obj) {
+      ensureIndex(index);
+      cache.set(index, obj);
+    }
+
+    private void ensureIndex(final int minIndex) {
+      if (minIndex >= cache.size()) {
+        cache.ensureCapacity(minIndex + 1);
+        for (int i = cache.size(); i <= minIndex; i++) {
+          cache.add(null);
+        }
+      }
+    }
   }
 }
