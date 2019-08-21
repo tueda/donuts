@@ -6,6 +6,7 @@ import cc.redberry.rings.Rings;
 import cc.redberry.rings.bigint.BigInteger;
 import cc.redberry.rings.io.Coder;
 import cc.redberry.rings.poly.MultivariateRing;
+import cc.redberry.rings.poly.multivar.Monomial;
 import cc.redberry.rings.poly.multivar.MultivariatePolynomial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -138,6 +139,7 @@ public final class RationalFunction implements Serializable, Multivariate {
 
   private RationalFunction(
       final VariableSet rawVariables, final Rational<MultivariatePolynomial<BigInteger>> rawRat) {
+    assert rawVariables.size() == ((MultivariateRing<?>) rawRat.ring).nVariables();
     checkNumberOfVariables(rawVariables.size());
     variables = rawVariables;
     raw = rawRat;
@@ -150,7 +152,8 @@ public final class RationalFunction implements Serializable, Multivariate {
     }
   }
 
-  private static MultivariateRing<MultivariatePolynomial<BigInteger>> getRings(final int nvars) {
+  /* default */ static MultivariateRing<MultivariatePolynomial<BigInteger>> getRings(
+      final int nvars) {
     checkNumberOfVariables(nvars);
     return RAW_RINGS.get(nvars);
   }
@@ -295,7 +298,6 @@ public final class RationalFunction implements Serializable, Multivariate {
                 getRings(nvars),
                 raw.numerator().setNVariables(nvars),
                 raw.denominator().setNVariables(nvars)));
-
       } else {
         final int[] mapping = variables.map(newVariables);
         return new RationalFunction(
@@ -364,5 +366,32 @@ public final class RationalFunction implements Serializable, Multivariate {
   /** Returns this rational function to the given power. */
   public RationalFunction pow(final BigInteger exponent) {
     return new RationalFunction(variables, raw.pow(exponent));
+  }
+
+  /**
+   * Returns the result of the given substitution.
+   *
+   * @throws IllegalArgumentException when {@code lhs} is invalid.
+   */
+  public RationalFunction substitute(final Polynomial lhs, final RationalFunction rhs) {
+    SubstitutionUtils.checkLhs(lhs);
+
+    if (!getMinimalVariables().intersects(lhs.getMinimalVariables())) {
+      return this;
+    }
+
+    final VariableSet newVariables = variables.union(lhs.getVariables()).union(rhs.getVariables());
+
+    final Rational<MultivariatePolynomial<BigInteger>> rawRat = translate(newVariables).raw;
+    final Monomial<BigInteger> rawLhs =
+        lhs.translate(newVariables).getRawPolynomialWithoutCopy().first();
+    final Rational<MultivariatePolynomial<BigInteger>> rawRhs = rhs.translate(newVariables).raw;
+
+    final Rational<MultivariatePolynomial<BigInteger>> rawNum =
+        SubstitutionUtils.substitute(rawRat.numerator(), rawLhs, rawRhs);
+    final Rational<MultivariatePolynomial<BigInteger>> rawDen =
+        SubstitutionUtils.substitute(rawRat.denominator(), rawLhs, rawRhs);
+
+    return new RationalFunction(newVariables, rawNum.divide(rawDen));
   }
 }

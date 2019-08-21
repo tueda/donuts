@@ -19,6 +19,8 @@ repositories {
 dependencies {
   api 'cc.redberry:rings:2.5.2'
   compileOnly 'com.github.spotbugs:spotbugs-annotations:4.0.0-beta3'
+  compileOnly 'org.projectlombok:lombok:1.18.8'
+  annotationProcessor 'org.projectlombok:lombok:1.18.8'
   testImplementation 'com.google.truth:truth:1.0'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
