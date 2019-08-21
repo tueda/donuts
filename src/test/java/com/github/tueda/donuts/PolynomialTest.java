@@ -66,13 +66,19 @@ public class PolynomialTest {
     Polynomial q = z.add(y).add(x);
 
     assertThat(x.equals(x)).isTrue();
-    assertThat(x.equals(y)).isFalse();
 
-    assertThat(x.equals(1)).isFalse();
-    assertThat(x.equals(y.add(z))).isFalse();
-    assertThat(p.subtract(p).equals(Polynomial.of("0"))).isTrue();
+    assertThat(x).isEqualTo(x);
+    assertThat(x).isNotEqualTo(y);
 
-    assertThat(Polynomial.of("1").equals(new Polynomial(new BigInteger("1")))).isTrue();
+    assertThat(x).isNotEqualTo(1);
+    assertThat(x).isNotEqualTo(y.add(z));
+    assertThat(p.subtract(p)).isEqualTo(Polynomial.of("0"));
+
+    assertThat(Polynomial.of("1")).isEqualTo(new Polynomial(new BigInteger("1")));
+
+    // Unfortunately, the followings won't be equal.
+    assertThat(Polynomial.of("1")).isNotEqualTo(1);
+    assertThat(Polynomial.of("x")).isNotEqualTo(Variable.of("x"));
   }
 
   @Test
@@ -268,6 +274,7 @@ public class PolynomialTest {
     VariableSet v = VariableSet.union(a, b);
     a = a.translate(v);
     b = b.translate(v);
+    // At this point, a and b share the same variable set.
     operator.apply(a);
     assertThat(a).isEqualTo(b);
   }
@@ -296,6 +303,7 @@ public class PolynomialTest {
       a2 = a2.translate(v);
       b1 = b1.translate(v);
       b2 = b2.translate(v);
+      // At this point, a1, a2, b1 and b2 share the same variable set.
       operator.apply(a1, a2);
       assertThat(a1).isEqualTo(b1);
       assertThat(a2).isEqualTo(b2);

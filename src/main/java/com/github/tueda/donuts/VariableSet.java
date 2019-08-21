@@ -83,7 +83,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
         stream.sorted(Variable.NAME_COMPARATOR).distinct().toArray(String[]::new));
   }
 
-  /* default */ static VariableSet createVariableSetFromRawArray(final String... rawTable) {
+  /* default */ static VariableSet createFromRaw(final String... rawTable) {
     return new VariableSet(rawTable);
   }
 
@@ -138,7 +138,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
 
   @Override
   public Iterator<Variable> iterator() {
-    return Stream.of(table).map(x -> Variable.createVariableWithoutCheck(x)).iterator();
+    return Stream.of(table).map(x -> Variable.createWithoutCheck(x)).iterator();
   }
 
   @Override
@@ -277,12 +277,10 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     return mapping;
   }
 
+  @SuppressWarnings("PMD.MethodReturnsInternalArray")
   /* default */ String[] getRawTable() {
-    return table.clone();
-  }
-
-  /* default */ Iterable<String> getRawIterable() {
-    return Arrays.asList(table);
+    // !!! Never modify it!!!
+    return table;
   }
 
   /* default */ String getRawName(final int index) {

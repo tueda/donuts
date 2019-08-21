@@ -39,7 +39,7 @@ public final class Variable implements Comparable<Variable>, Serializable, Multi
     this.name = name;
   }
 
-  /* default */ static Variable createVariableWithoutCheck(final String name) {
+  /* default */ static Variable createWithoutCheck(final String name) {
     return new Variable(name, false);
   }
 

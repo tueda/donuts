@@ -79,7 +79,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   @SuppressWarnings("PMD.AvoidCatchingGenericException")
   public Polynomial(final String string) {
     final String[] names = Variable.guessVariableNames(string);
-    variables = VariableSet.createVariableSetFromRawArray(names);
+    variables = VariableSet.createFromRaw(names);
     try {
       raw = MultivariatePolynomial.parse(string, names);
     } catch (RuntimeException e) {
@@ -110,6 +110,11 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     assert rawVariables.size() == rawPoly.nVariables;
     variables = rawVariables;
     raw = rawPoly;
+  }
+
+  /* default */ static Polynomial createFromRaw(
+      final VariableSet rawVariables, final MultivariatePolynomial<BigInteger> rawPoly) {
+    return new Polynomial(rawVariables, rawPoly);
   }
 
   /**
@@ -211,7 +216,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
             .filter(i -> polyUsesVariable(raw, i))
             .mapToObj(i -> variables.getRawName(i))
             .toArray(String[]::new);
-    return VariableSet.createVariableSetFromRawArray(newTable);
+    return VariableSet.createFromRaw(newTable);
   }
 
   /**
@@ -233,6 +238,11 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return raw.copy();
   }
 
+  /* default */ MultivariatePolynomial<BigInteger> getRawPolynomialWithoutCopy() {
+    // !!! Never modify it!!!
+    return raw;
+  }
+
   /** Returns whether this polynomial is zero. */
   public boolean isZero() {
     return raw.isZero();
@@ -252,7 +262,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return lt.isZeroVector() && Rings.Z.isMinusOne(lt.coefficient);
   }
 
-  /** Returns whether this polynomial is constant. */
+  /** Returns whether this polynomial is constant, i.e., an integer. */
   public boolean isConstant() {
     return raw.isConstant();
   }
@@ -367,7 +377,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     for (int i = 0; i < term.exponents.length; i++) {
       assert term.exponents[i] == 0 || term.exponents[i] == 1;
       if (term.exponents[i] != 0) {
-        return Variable.createVariableWithoutCheck(variables.getRawName(i));
+        return Variable.createWithoutCheck(variables.getRawName(i));
       }
     }
     assert false;
@@ -399,7 +409,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     int n = 0;
 
     int i = 0;
-    for (final String x : variables.getRawIterable()) {
+    for (final String x : variables.getRawTable()) {
       final int j = this.variables.indexOf(x, i);
       if (j >= 0) {
         variableIndices[n++] = j;
@@ -480,7 +490,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     } else if (variables.equals(newVariables)) {
       return new Polynomial(newVariables, raw);
     } else {
-      if (variables.size() == 0) {
+      if (variables.isEmpty()) {
         return new Polynomial(newVariables, raw.setNVariables(newVariables.size()));
       } else {
         return new Polynomial(
