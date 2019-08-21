@@ -61,6 +61,16 @@ public class RationalFunctionTest {
       assertThat(r1).isEqualTo(r2);
     }
 
+    assertThrows(ArithmeticException.class, () -> new RationalFunction(1, 0));
+
+    assertThrows(
+        ArithmeticException.class,
+        () -> new RationalFunction(new BigInteger("1"), new BigInteger("0")));
+
+    assertThrows(
+        ArithmeticException.class,
+        () -> new RationalFunction(Polynomial.of("1"), Polynomial.of("0")));
+
     // Unfortunately it won't work.
     // java.lang.ArithmeticException (Negative exponent) at cc.redberry.rings.bigint.BigInteger.pow
     assertThrows(IllegalArgumentException.class, () -> new RationalFunction("2^(-2)"));

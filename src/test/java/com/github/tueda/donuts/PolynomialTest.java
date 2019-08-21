@@ -260,6 +260,7 @@ public class PolynomialTest {
     checkBinaryOperatorImmutability(Polynomial::subtract);
     checkBinaryOperatorImmutability(Polynomial::multiply);
     checkBinaryOperatorImmutability(Polynomial::divideExact);
+    checkBinaryOperatorImmutability((p1, p2) -> p1.divide(p2).getNumerator());
     checkUnaryOperatorImmutability(p -> p.pow(5));
     checkUnaryOperatorImmutability(p -> p.pow(new BigInteger("5")));
     checkBinaryOperatorImmutability((p1, p2) -> p1.gcd(p2));
@@ -411,6 +412,12 @@ public class PolynomialTest {
     Polynomial q = p1.multiply(p2);
     Polynomial r = Polynomial.of("x^2 - (y + z)^2");
     assertThat(q).isEqualTo(r);
+  }
+
+  @Test
+  public void divide() {
+    assertThat(Polynomial.of("1+x").divide(Polynomial.of("1-y")))
+        .isEqualTo(RationalFunction.of("(1+x)/(1-y)"));
   }
 
   @Test

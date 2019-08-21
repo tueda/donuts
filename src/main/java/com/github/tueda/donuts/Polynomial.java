@@ -553,6 +553,15 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   }
 
   /**
+   * Returns a rational function whose value is (this / divisor).
+   *
+   * @throws ArithmeticException when division by zero
+   */
+  public RationalFunction divide(final Polynomial divisor) {
+    return new RationalFunction(this, divisor);
+  }
+
+  /**
    * Returns this polynomial to the power {@code exponent}.
    *
    * @throws IllegalArgumentException when {@code exponent} is negative

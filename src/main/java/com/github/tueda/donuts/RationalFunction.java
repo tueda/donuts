@@ -74,7 +74,11 @@ public final class RationalFunction implements Serializable, Multivariate {
     raw = new Rational<>(getRings(variables.size()), poly.getRawPolynomialWithoutCopy());
   }
 
-  /** Constructs a rational function from the given numerator and denominator. */
+  /**
+   * Constructs a rational function from the given numerator and denominator.
+   *
+   * @throws ArithmeticException when division by zero
+   */
   public RationalFunction(final long numerator, final long denominator) {
     variables = VariableSet.EMPTY;
     raw =
@@ -84,7 +88,11 @@ public final class RationalFunction implements Serializable, Multivariate {
             Polynomial.RAW_ZERO.createConstant(denominator));
   }
 
-  /** Constructs a rational function from the given numerator and denominator. */
+  /**
+   * Constructs a rational function from the given numerator and denominator.
+   *
+   * @throws ArithmeticException when division by zero
+   */
   public RationalFunction(final BigInteger numerator, final BigInteger denominator) {
     variables = VariableSet.EMPTY;
     raw =
@@ -94,7 +102,11 @@ public final class RationalFunction implements Serializable, Multivariate {
             Polynomial.RAW_ZERO.createConstant(denominator));
   }
 
-  /** Constructs a rational function from the given numerator and denominator. */
+  /**
+   * Constructs a rational function from the given numerator and denominator.
+   *
+   * @throws ArithmeticException when division by zero
+   */
   public RationalFunction(final Polynomial numerator, final Polynomial denominator) {
     variables = numerator.getVariables().union(denominator.getVariables());
     raw =
