@@ -706,44 +706,22 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     private final MultivariatePolynomial<BigInteger> base;
 
     /** The cache for powers. */
-    @SuppressWarnings("PMD.LooseCoupling") // we want ArrayList.ensureCapacity().
-    private final ArrayList<MultivariatePolynomial<BigInteger>> cache;
+    private final IndexToObjectMap<MultivariatePolynomial<BigInteger>> cache;
 
     /** Constructs a precomputed cache for powers of the given polynomial. */
     public PrecomputedPowers(final MultivariatePolynomial<BigInteger> base) {
       this.base = base;
-      this.cache = new ArrayList<>();
+      this.cache = new IndexToObjectMap<>();
     }
 
     /** Returns the power of the polynomial. */
     public MultivariatePolynomial<BigInteger> pow(final int exponent) {
-      assert exponent >= 0;
-
-      MultivariatePolynomial<BigInteger> result = get(exponent);
+      MultivariatePolynomial<BigInteger> result = cache.get(exponent);
       if (result == null) {
         result = PolynomialMethods.polyPow(base, exponent, true);
-        set(exponent, result);
+        cache.put(exponent, result);
       }
       return result.copy();
-    }
-
-    private MultivariatePolynomial<BigInteger> get(final int index) {
-      ensureIndex(index);
-      return cache.get(index);
-    }
-
-    private void set(final int index, final MultivariatePolynomial<BigInteger> obj) {
-      ensureIndex(index);
-      cache.set(index, obj);
-    }
-
-    private void ensureIndex(final int minIndex) {
-      if (minIndex >= cache.size()) {
-        cache.ensureCapacity(minIndex + 1);
-        for (int i = cache.size(); i <= minIndex; i++) {
-          cache.add(null);
-        }
-      }
     }
   }
 }

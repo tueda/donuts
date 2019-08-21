@@ -10,6 +10,7 @@
     <exclude name="OnlyOneReturn" />
     <exclude name="LongVariable" />
     <exclude name="ShortVariable" />
+    <exclude name="UnnecessaryConstructor" />  <!-- Contradicts with AtLeastOneConstructor -->
   </rule>
   <rule ref="category/java/design.xml" >
     <exclude name="ExcessivePublicCount" />
