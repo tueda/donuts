@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-/** An immutable set of variables. */
+/** A set of variables. */
 public final class VariableSet extends AbstractSet<Variable> implements Serializable, Multivariate {
   private static final long serialVersionUID = 1L;
 

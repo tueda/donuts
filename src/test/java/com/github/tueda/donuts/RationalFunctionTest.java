@@ -226,6 +226,12 @@ public class RationalFunctionTest {
 
   @Test
   public void immutability() {
+    checkUnaryOperatorImmutability(
+        r -> {
+          r.getRawRational().numerator().increment();
+          r.getRawRational().denominator().decrement();
+          return new RationalFunction();
+        });
     checkUnaryOperatorImmutability(RationalFunction::negate);
     checkUnaryOperatorImmutability(RationalFunction::reciprocal);
     checkBinaryOperatorImmutability(RationalFunction::add);

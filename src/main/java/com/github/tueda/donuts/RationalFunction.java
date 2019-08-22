@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.function.BinaryOperator;
 import java.util.stream.Stream;
 
-/** An immutable multivariate rational function. */
+/** A multivariate rational function. */
 public final class RationalFunction implements Serializable, Multivariate {
   private static final long serialVersionUID = 1L;
 
@@ -149,14 +149,6 @@ public final class RationalFunction implements Serializable, Multivariate {
         || s.startsWith("java.util.ArrayDeque.removeFirst");
   }
 
-  private RationalFunction(
-      final VariableSet rawVariables, final Rational<MultivariatePolynomial<BigInteger>> rawRat) {
-    assert rawVariables.size() == ((MultivariateRing<?>) rawRat.ring).nVariables();
-    checkNumberOfVariables(rawVariables.size());
-    variables = rawVariables;
-    raw = rawRat;
-  }
-
   private static void checkNumberOfVariables(final int nvars) {
     if (nvars > MAX_VARIABLES) {
       throw new ArithmeticException(
@@ -180,6 +172,19 @@ public final class RationalFunction implements Serializable, Multivariate {
     return Coder.mkRationalsCoder(
         getFields(variables.size()),
         Coder.mkMultivariateCoder(getRings(variables.size()), variables.getRawTable()));
+  }
+
+  private RationalFunction(
+      final VariableSet newVariables, final Rational<MultivariatePolynomial<BigInteger>> rawRat) {
+    assert newVariables.size() == ((MultivariateRing<?>) rawRat.ring).nVariables();
+    checkNumberOfVariables(newVariables.size());
+    variables = newVariables;
+    raw = rawRat;
+  }
+
+  /* default */ static RationalFunction createFromRaw(
+      final VariableSet newVariables, final Rational<MultivariatePolynomial<BigInteger>> rawRat) {
+    return new RationalFunction(newVariables, rawRat);
   }
 
   /**
@@ -243,6 +248,16 @@ public final class RationalFunction implements Serializable, Multivariate {
   @Override
   public VariableSet getMinimalVariables() {
     return getNumerator().getMinimalVariables().union(getDenominator().getMinimalVariables());
+  }
+
+  /** Returns the raw rational function object. */
+  public Rational<MultivariatePolynomial<BigInteger>> getRawRational() {
+    return new Rational<>(raw.ring, raw.numerator().copy(), raw.denominator().copy());
+  }
+
+  /* default */ Rational<MultivariatePolynomial<BigInteger>> getRawRationalWithoutCopy() {
+    // !!! Never modify it!!!
+    return raw;
   }
 
   /** Returns whether this rational function is zero. */

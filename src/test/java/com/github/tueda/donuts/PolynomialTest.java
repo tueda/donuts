@@ -255,6 +255,8 @@ public class PolynomialTest {
 
   @Test
   public void immutability() {
+    checkUnaryOperatorImmutability(
+        p -> Polynomial.createFromRaw(p.getVariables(), p.getRawPolynomial().increment()));
     checkUnaryOperatorImmutability(Polynomial::negate);
     checkBinaryOperatorImmutability(Polynomial::add);
     checkBinaryOperatorImmutability(Polynomial::subtract);

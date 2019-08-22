@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-/** An immutable multivariate polynomial with integer coefficients. */
+/** A multivariate polynomial with integer coefficients. */
 public final class Polynomial implements Serializable, Iterable<Polynomial>, Multivariate {
   private static final long serialVersionUID = 1L;
 
@@ -105,15 +105,15 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   }
 
   private Polynomial(
-      final VariableSet rawVariables, final MultivariatePolynomial<BigInteger> rawPoly) {
-    assert rawVariables.size() == rawPoly.nVariables;
-    variables = rawVariables;
+      final VariableSet newVariables, final MultivariatePolynomial<BigInteger> rawPoly) {
+    assert newVariables.size() == rawPoly.nVariables;
+    variables = newVariables;
     raw = rawPoly;
   }
 
   /* default */ static Polynomial createFromRaw(
-      final VariableSet rawVariables, final MultivariatePolynomial<BigInteger> rawPoly) {
-    return new Polynomial(rawVariables, rawPoly);
+      final VariableSet newVariables, final MultivariatePolynomial<BigInteger> rawPoly) {
+    return new Polynomial(newVariables, rawPoly);
   }
 
   /**

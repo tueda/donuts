@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-/** An immutable object representing a variable. */
+/** A variable. */
 public final class Variable implements Comparable<Variable>, Serializable, Multivariate {
   private static final long serialVersionUID = 1L;
 
