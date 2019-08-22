@@ -388,6 +388,11 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return raw.size();
   }
 
+  /** Returns signum of the leading coefficient. */
+  public int signum() {
+    return raw.signumOfLC();
+  }
+
   /** Returns the total degree of this polynomial. */
   public int degree() {
     return raw.degree();

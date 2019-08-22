@@ -98,6 +98,7 @@ public class PolynomialTest {
     assertThat(p.isVariable()).isFalse();
     assertThat(p.size()).isEqualTo(0);
     assertThat(p.degree()).isEqualTo(0);
+    assertThat(p.signum()).isEqualTo(0);
     assertThat(p.toString()).isEqualTo("0");
 
     p = Polynomial.of("1");
@@ -113,6 +114,7 @@ public class PolynomialTest {
     assertThat(p.isVariable()).isFalse();
     assertThat(p.size()).isEqualTo(1);
     assertThat(p.degree()).isEqualTo(0);
+    assertThat(p.signum()).isEqualTo(1);
     assertThat(p.toString()).isEqualTo("1");
 
     p = Polynomial.of("-1");
@@ -128,6 +130,7 @@ public class PolynomialTest {
     assertThat(p.isVariable()).isFalse();
     assertThat(p.size()).isEqualTo(1);
     assertThat(p.degree()).isEqualTo(0);
+    assertThat(p.signum()).isEqualTo(-1);
 
     p = Polynomial.of("x");
     assertThat(p.isZero()).isFalse();
@@ -142,6 +145,7 @@ public class PolynomialTest {
     assertThat(p.isVariable()).isTrue();
     assertThat(p.size()).isEqualTo(1);
     assertThat(p.degree()).isEqualTo(1);
+    assertThat(p.signum()).isEqualTo(1);
     assertThat(p.toString()).isEqualTo("x");
 
     p = Polynomial.of("-x");
@@ -157,6 +161,7 @@ public class PolynomialTest {
     assertThat(p.isVariable()).isFalse();
     assertThat(p.size()).isEqualTo(1);
     assertThat(p.degree()).isEqualTo(1);
+    assertThat(p.signum()).isEqualTo(-1);
 
     p = Polynomial.of("2*x");
     assertThat(p.isZero()).isFalse();
@@ -171,6 +176,7 @@ public class PolynomialTest {
     assertThat(p.isVariable()).isFalse();
     assertThat(p.size()).isEqualTo(1);
     assertThat(p.degree()).isEqualTo(1);
+    assertThat(p.signum()).isEqualTo(1);
 
     p = Polynomial.of("x^2");
     assertThat(p.isZero()).isFalse();
@@ -185,6 +191,7 @@ public class PolynomialTest {
     assertThat(p.isVariable()).isFalse();
     assertThat(p.size()).isEqualTo(1);
     assertThat(p.degree()).isEqualTo(2);
+    assertThat(p.signum()).isEqualTo(1);
 
     p = Polynomial.of("(1+x+y)^2");
     assertThat(p.isZero()).isFalse();
@@ -199,6 +206,7 @@ public class PolynomialTest {
     assertThat(p.isVariable()).isFalse();
     assertThat(p.size()).isEqualTo(6);
     assertThat(p.degree()).isEqualTo(2);
+    assertThat(p.signum()).isEqualTo(1);
   }
 
   @Test

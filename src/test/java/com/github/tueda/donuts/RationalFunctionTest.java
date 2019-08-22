@@ -1,6 +1,7 @@
 package com.github.tueda.donuts;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import cc.redberry.rings.bigint.BigInteger;
@@ -222,6 +223,27 @@ public class RationalFunctionTest {
     assertThat(r.isInteger()).isFalse();
     assertThat(r.isVariable()).isFalse();
     assertThat(r.isPolynomial()).isFalse();
+
+    // Note: denominators have always positive signum.
+    for (int i1 = -1; i1 <= 1; i1++) {
+      for (int i2 = -1; i2 <= 1; i2++) {
+        for (int i3 = -1; i3 <= 1; i3++) {
+          for (int i4 = -1; i4 <= 1; i4++) {
+            for (int i5 = -1; i5 <= 1; i5++) {
+              for (int i6 = -1; i6 <= 1; i6++) {
+                Polynomial p = new Polynomial(String.format("(%d)+(%d)*x+(%d)*y", i1, i2, i3));
+                Polynomial q = new Polynomial(String.format("(%d)+(%d)*x+(%d)*y", i4, i5, i6));
+                if (!q.isZero()) {
+                  assertWithMessage(String.format("(%s)/(%s)", p, q))
+                      .that(new RationalFunction(p, q).getDenominator().signum())
+                      .isEqualTo(1);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   @Test
