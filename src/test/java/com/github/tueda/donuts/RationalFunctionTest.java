@@ -308,6 +308,37 @@ public class RationalFunctionTest {
   }
 
   @Test
+  public void translate() {
+    {
+      RationalFunction r = RationalFunction.of("a/b");
+      VariableSet vs = VariableSet.of("a", "b");
+      RationalFunction s = r.translate(vs);
+      assertThat(r).isEqualTo(s);
+      assertThat(s.getVariables() == vs).isTrue();
+    }
+    {
+      RationalFunction r = RationalFunction.of("a+c/d");
+      VariableSet vs = VariableSet.of("a", "b", "c", "d");
+      RationalFunction s = r.translate(vs);
+      assertThat(r).isEqualTo(s);
+      assertThat(s.getVariables() == vs).isTrue();
+    }
+    {
+      RationalFunction r = RationalFunction.of("(a+b+c)/(a+b+c)*d+f");
+      VariableSet vs = VariableSet.of("d", "e", "f");
+      RationalFunction s = r.translate(vs);
+      assertThat(r).isEqualTo(s);
+      assertThat(s.getVariables() == vs).isTrue();
+    }
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          RationalFunction r = RationalFunction.of("(a+b)/(c+d)+e+g-g");
+          RationalFunction s = r.translate(VariableSet.of("a", "b", "c", "d", "f", "g", "h"));
+        });
+  }
+
+  @Test
   void negate() {
     RationalFunction r = RationalFunction.of("(1-x)/(1-y)");
     RationalFunction s = r.negate();

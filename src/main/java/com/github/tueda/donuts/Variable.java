@@ -34,7 +34,7 @@ public final class Variable implements Comparable<Variable>, Serializable, Multi
 
   private Variable(final String name, final boolean check) {
     if (check && !isVariableName(name)) {
-      throw new IllegalArgumentException(String.format("illegal variable name: %s", name));
+      throw new IllegalArgumentException(String.format("illegal variable name: \"%s\"", name));
     }
     this.name = name;
   }
@@ -48,6 +48,7 @@ public final class Variable implements Comparable<Variable>, Serializable, Multi
    *
    * @param name the name.
    * @throws IllegalArgumentException when the given name is illegal for variables.
+   * @return a variable with the given name.
    */
   @SuppressWarnings("PMD.ShortMethodName")
   public static Variable of(final String name) {
@@ -59,6 +60,7 @@ public final class Variable implements Comparable<Variable>, Serializable, Multi
    *
    * @param names the names.
    * @throws IllegalArgumentException when any of the given names are illegal for variables.
+   * @return an array of variables with the given names.
    */
   @SuppressWarnings("PMD.ShortMethodName")
   public static Variable[] of(final String... names) {

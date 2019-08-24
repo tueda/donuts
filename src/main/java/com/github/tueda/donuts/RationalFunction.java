@@ -317,23 +317,12 @@ public final class RationalFunction implements Serializable, Multivariate {
     } else if (variables.equals(newVariables)) {
       return new RationalFunction(newVariables, raw);
     } else {
-      final int nvars = newVariables.size();
-      if (variables.isEmpty()) {
-        return new RationalFunction(
-            newVariables,
-            new Rational<>(
-                getRings(nvars),
-                raw.numerator().setNVariables(nvars),
-                raw.denominator().setNVariables(nvars)));
-      } else {
-        final int[] mapping = variables.map(newVariables);
-        return new RationalFunction(
-            newVariables,
-            new Rational<>(
-                getRings(nvars),
-                raw.numerator().mapVariables(mapping).setNVariables(nvars),
-                raw.denominator().mapVariables(mapping).setNVariables(nvars)));
-      }
+      return new RationalFunction(
+          newVariables,
+          new Rational<>(
+              getRings(newVariables.size()),
+              getNumerator().translate(newVariables).getRawPolynomialWithoutCopy(),
+              getDenominator().translate(newVariables).getRawPolynomialWithoutCopy()));
     }
     // Postcondition: `variables` of the returned-value is the given variable set.
   }

@@ -1,7 +1,6 @@
 package com.github.tueda.donuts;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -74,8 +73,6 @@ public class VariableSetTest {
     assertThat(VariableSet.of("a", "c", "e").map(VariableSet.of("a", "b", "c", "d", "e")))
         .isEqualTo(new int[] {0, 2, 4});
 
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> VariableSet.of("a", "c", "f").map(VariableSet.of("a", "b", "c", "d", "e")));
+    assertThat(VariableSet.of("a", "c", "f").map(VariableSet.of("a", "b", "c", "d", "e"))).isNull();
   }
 }

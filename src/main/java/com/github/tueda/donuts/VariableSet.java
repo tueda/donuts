@@ -92,6 +92,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
    *
    * @param name the name.
    * @throws IllegalArgumentException when the given names is illegal for variables.
+   * @return a set of variables constructed from the given name.
    */
   @SuppressWarnings("PMD.ShortMethodName")
   public static VariableSet of(final String name) {
@@ -103,6 +104,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
    *
    * @param names the set of names.
    * @throws IllegalArgumentException when any of the given names are illegal for variables.
+   * @return a set of variables constructed from the given names.
    */
   @SuppressWarnings("PMD.ShortMethodName")
   public static VariableSet of(final String... names) {
@@ -159,6 +161,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
    * Returns whether this variable set and the other have the intersection.
    *
    * @param other The set of variables to be checked.
+   * @return {@code true} if there is an intersection for this set and the other.
    */
   public boolean intersects(final VariableSet other) {
     return !Collections.disjoint(this, other);
@@ -168,6 +171,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
    * Returns the intersection of this variable set and the other.
    *
    * @param other The set of variables with which the intersection is taken.
+   * @return the intersection for this set and the other.
    */
   public VariableSet intersection(final VariableSet other) {
     if (this.equals(other)) {
@@ -207,6 +211,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
    * Returns the union of this variable set and the other.
    *
    * @param other The set of variables to be united.
+   * @return the union of this set and the other.
    */
   public VariableSet union(final VariableSet other) {
     if (this.equals(other)) {
@@ -257,22 +262,54 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   }
 
   /**
-   * Returns the mapping of the variables to those in the other.
+   * Returns the mapping of the variables to those in the other, or null when no mapping exists. The
+   * returned non-null array contains the mapping in such a way that {@code a[i] = j} (for {@code 0
+   * <= i < this.size()}) indicating the i-th variable of the current set is mapped to the j-th
+   * variable of the other. The mapping is injective but may be not surjective.
    *
    * @param other The target set of variables.
-   * @throws IllegalArgumentException when the given variable set does not contain all variables in
-   *     this set.
+   * @return the mapping of the variables, or null when the given variable set does not contain all
+   *     variables in the current set.
    */
+  @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+      justification = "Returning null indicates no mapping exists",
+      value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS")
   public int[] map(final VariableSet other) {
     final int[] mapping = new int[table.length];
+    int j = 0;
     for (int i = 0; i < mapping.length; i++) {
-      final int j = Arrays.binarySearch(other.table, table[i]);
+      j = Arrays.binarySearch(other.table, j, other.table.length, table[i]);
       if (j < 0) {
-        throw new IllegalArgumentException(
-            String.format(
-                "Failed to map %s from %s to %s", table[i], toString(), other.toString()));
+        return null;
       }
-      mapping[i] = j;
+      mapping[i] = j++;
+    }
+    return mapping;
+  }
+
+  /**
+   * Returns the mapping of the variables to those in the other. The returned array contains the
+   * mapping in such a way that {@code a[i] = j} (for {@code 0 <= i < this.size()}) indicating the
+   * i-th variable of the current set is mapped to the j-th variable of the other. When any variable
+   * in the current set is not contained in the other, then the variable is mapped to {@code
+   * defaultIndex}, so the mapping may be neither injective nor surjective.
+   *
+   * @param other The target set of variables.
+   * @param defaultIndex is used as the default image of any variables that are not contained in the
+   *     other set.
+   * @return the mapping of the variables.
+   */
+  public int[] map(final VariableSet other, final int defaultIndex) {
+    final int[] mapping = new int[table.length];
+    int j = 0;
+    for (int i = 0; i < mapping.length; i++) {
+      final int k = Arrays.binarySearch(other.table, j, other.table.length, table[i]);
+      if (k < 0) {
+        mapping[i] = defaultIndex;
+      } else {
+        mapping[i] = k;
+        j = k + 1;
+      }
     }
     return mapping;
   }

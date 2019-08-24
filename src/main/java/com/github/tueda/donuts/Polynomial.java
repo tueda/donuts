@@ -212,7 +212,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
 
     final String[] newTable =
         IntStream.range(0, variables.size())
-            .filter(i -> polyUsesVariable(raw, i))
+            .filter(i -> isVariableUsed(raw, i))
             .mapToObj(i -> variables.getRawName(i))
             .toArray(String[]::new);
     return VariableSet.createFromRaw(newTable);
@@ -222,7 +222,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
    * Returns whether the polynomial actually uses the specified variable, i.e., has any terms
    * involving the variable.
    */
-  /* default */ static boolean polyUsesVariable(
+  private static boolean isVariableUsed(
       final MultivariatePolynomial<BigInteger> rawPolynomial, final int variable) {
     for (final Monomial<BigInteger> term : rawPolynomial) {
       if (term.exponents[variable] > 0) {
@@ -495,11 +495,27 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
       return new Polynomial(newVariables, raw);
     } else {
       if (variables.isEmpty()) {
+        // 0 -> N variables (N >= 1).
         return new Polynomial(newVariables, raw.setNVariables(newVariables.size()));
       } else {
+        final int[] mapping = variables.map(newVariables);
+        if (mapping == null) {
+          // No direct mapping from the current set of variables to the new one.
+          // Then consider a composition of 2 mappings: first, shrinking the current set to
+          // the minimum one, and secondly to the new one.
+          final VariableSet minVariables = getMinimalVariables();
+          if (variables.equals(minVariables)) {
+            // Already the current set is minimal. No way to proceed.
+            throw new IllegalArgumentException(
+                String.format("Variables %s does not fit in %s", variables, newVariables));
+          }
+          final int[] minMapping = variables.map(minVariables, variables.size() - 1);
+          return new Polynomial(
+                  minVariables, raw.mapVariables(minMapping).setNVariables(minVariables.size()))
+              .translate(newVariables);
+        }
         return new Polynomial(
-            newVariables,
-            raw.mapVariables(variables.map(newVariables)).setNVariables(newVariables.size()));
+            newVariables, raw.mapVariables(mapping).setNVariables(newVariables.size()));
       }
     }
     // Postcondition: `variables` of the returned-value is the given variable set.

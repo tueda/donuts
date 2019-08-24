@@ -385,6 +385,37 @@ public class PolynomialTest {
   }
 
   @Test
+  public void translate() {
+    {
+      Polynomial p = Polynomial.of("a+b");
+      VariableSet vs = VariableSet.of("a", "b");
+      Polynomial q = p.translate(vs);
+      assertThat(p).isEqualTo(q);
+      assertThat(q.getVariables() == vs).isTrue();
+    }
+    {
+      Polynomial p = Polynomial.of("a+b");
+      VariableSet vs = VariableSet.of("a", "b", "c");
+      Polynomial q = p.translate(vs);
+      assertThat(p).isEqualTo(q);
+      assertThat(q.getVariables() == vs).isTrue();
+    }
+    {
+      Polynomial p = Polynomial.of("b+e+(a+c+d)-(a+c+d)");
+      VariableSet vs = VariableSet.of("a", "b", "c", "e");
+      Polynomial q = p.translate(vs);
+      assertThat(p).isEqualTo(q);
+      assertThat(q.getVariables() == vs).isTrue();
+    }
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          Polynomial p = Polynomial.of("b+e+(a+c+d)-(a+c+d)");
+          Polynomial q = p.translate(VariableSet.of("a", "b", "c", "d"));
+        });
+  }
+
+  @Test
   public void negate() {
     Polynomial zero = new Polynomial();
     Polynomial p1 = zero.negate();
