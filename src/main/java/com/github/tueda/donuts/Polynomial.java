@@ -164,7 +164,8 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
 
   @Override
   public int hashCode() {
-    return Objects.hash(variables, raw);
+    final Polynomial poly = translate(getMinimalVariables());
+    return Objects.hash(poly.variables, poly.raw);
   }
 
   @Override

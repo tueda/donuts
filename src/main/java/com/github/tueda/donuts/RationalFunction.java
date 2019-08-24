@@ -232,7 +232,8 @@ public final class RationalFunction implements Serializable, Multivariate {
 
   @Override
   public int hashCode() {
-    return Objects.hash(variables, raw);
+    final RationalFunction rat = translate(getMinimalVariables());
+    return Objects.hash(rat.variables, rat.raw);
   }
 
   @Override

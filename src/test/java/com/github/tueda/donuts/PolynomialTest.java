@@ -82,6 +82,14 @@ public class PolynomialTest {
   }
 
   @Test
+  public void hashCodeTest() {
+    Polynomial p = Polynomial.of("1+x");
+    Polynomial q = Polynomial.of("2+x+y-1-y");
+    assertThat(p).isEqualTo(q);
+    assertThat(p.hashCode()).isEqualTo(q.hashCode());
+  }
+
+  @Test
   public void properties() {
     Polynomial p;
 

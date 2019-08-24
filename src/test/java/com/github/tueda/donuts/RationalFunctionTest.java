@@ -126,6 +126,14 @@ public class RationalFunctionTest {
   }
 
   @Test
+  public void hashCodeTest() {
+    RationalFunction r = RationalFunction.of("(1+x+y)/(1+x+y)+z");
+    RationalFunction s = RationalFunction.of("(1+z)*(1-y)/(1-y)");
+    assertThat(r).isEqualTo(s);
+    assertThat(r.hashCode()).isEqualTo(s.hashCode());
+  }
+
+  @Test
   public void getMinimalVariables() {
     assertThat(RationalFunction.of("1").getMinimalVariables()).isEqualTo(VariableSet.of());
 
