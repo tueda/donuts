@@ -1,24 +1,31 @@
-test-jdk-8:
+.test:
+  script:
+    - java -version
+    - javac -version
+    - ./gradlew -version
+    - ./gradlew check jacocoTestReport javadoc
+  artifacts:
+    paths:
+      - build/docs
+      - build/reports
+    expire_in: 1 week
+
+jdk8:
+  extends: .test
   image: openjdk:8
-  script:
-    - ./scripts/testrun.sh
 
-test-jdk-9:
+jdk9:
+  extends: .test
   image: openjdk:9
-  script:
-    - ./scripts/testrun.sh
 
-test-jdk-10:
+jdk10:
+  extends: .test
   image: openjdk:10
-  script:
-    - ./scripts/testrun.sh
 
-test-jdk-11:
+jdk11:
+  extends: .test
   image: openjdk:11
-  script:
-    - ./scripts/testrun.sh
 
-test-jdk-12:
+jdk12:
+  extends: .test
   image: openjdk:12
-  script:
-    - ./scripts/testrun.sh
