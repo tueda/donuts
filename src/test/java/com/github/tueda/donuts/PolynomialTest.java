@@ -378,14 +378,23 @@ public class PolynomialTest {
     assertThat(p.coefficientOf(Variable.of("x"), 2)).isEqualTo(Polynomial.of("6 * (1 + y + z)^2"));
     assertThat(p.coefficientOf(Variable.of("y"), 3)).isEqualTo(Polynomial.of("4 * (1 + x + z)"));
     assertThat(p.coefficientOf(Variable.of("z"), 4)).isEqualTo(Polynomial.of("1"));
+    assertThat(p.coefficientOf(Variable.of("a"), 0)).isEqualTo(p);
     assertThat(p.coefficientOf(Variable.of("a"), 1)).isEqualTo(Polynomial.of("0"));
 
     assertThat(p.coefficientOf(Variable.of("a", "y", "b"), new int[] {0, 2, 0}))
         .isEqualTo(Polynomial.of("6 * (1 + x + z)^2"));
+    assertThat(p.coefficientOf(Variable.of("z", "y", "x"), new int[] {0, 0, 1}))
+        .isEqualTo(Polynomial.of("4"));
+    assertThat(p.coefficientOf(Variable.of("z", "y", "x"), new int[] {1, 1, 2}))
+        .isEqualTo(Polynomial.of("12"));
     assertThat(p.coefficientOf(Variable.of("y", "z"), new int[] {1, 2}))
         .isEqualTo(Polynomial.of("12 * (1 + x)"));
     assertThat(p.coefficientOf(Variable.of("a", "x"), new int[] {1, 2}))
         .isEqualTo(Polynomial.of("0"));
+    assertThat(p.coefficientOf(Variable.of("a", "b", "c"), new int[] {1, 1, 1}))
+        .isEqualTo(Polynomial.of("0"));
+    assertThat(p.coefficientOf(Variable.of("a", "b", "c"), new int[] {0, 0, 0})).isEqualTo(p);
+    assertThat(p.coefficientOf(Variable.of(), new int[] {})).isEqualTo(p);
 
     assertThrows(
         IllegalArgumentException.class,

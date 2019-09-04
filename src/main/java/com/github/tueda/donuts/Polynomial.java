@@ -436,6 +436,10 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   public Polynomial coefficientOf(final Variable variable, final int exponent) {
     final int j = variables.indexOf(variable.getName());
     if (j < 0) {
+      if (exponent == 0) {
+        // Example: coeff of (x + y) wrt z^0 => (x + y)
+        return this;
+      }
       return new Polynomial(variables, raw.createZero());
     }
     return new Polynomial(variables, raw.coefficientOf(j, exponent));
@@ -454,27 +458,24 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     final int[] newExponents = new int[length];
     int n = 0;
 
-    int i = 0;
-    int k = 0;
-    for (final Variable v : variables) {
+    for (int i = 0; i < variables.length; i++) {
+      final Variable v = variables[i];
+      final int p = exponents[i];
       final String x = v.getName();
-      final int j = this.variables.indexOf(x, i);
+      final int j = this.variables.indexOf(x);
       if (j >= 0) {
         variableIndices[n] = j;
-        newExponents[n++] = exponents[k];
-        i = j + 1;
-        if (i >= this.variables.size()) {
-          break;
-        }
-      } else if (exponents[k] != 0) {
-        n = 0;
-        break;
+        newExponents[n++] = exponents[i];
+      } else if (p != 0) {
+        // The polynomial doesn't contain x^p (p != 0), immediately 0.
+        return new Polynomial(this.variables, raw.createZero());
       }
-      k++;
     }
 
     if (n == 0) {
-      return new Polynomial(this.variables, raw.createZero());
+      // Example: coeff of (x + y) wrt a^0 b^0 => (x + y)
+      // Also the case with empty variables and exponents.
+      return this;
     }
 
     return new Polynomial(
