@@ -2,7 +2,7 @@ plugins {
   id 'jacoco'
   id 'java-library'
   id 'com.diffplug.gradle.spotless' version '3.24.2'
-  id 'com.github.ben-manes.versions' version '0.22.0'
+  id 'com.github.ben-manes.versions' version '0.24.0'
   id 'com.github.johnrengelman.shadow' version '5.1.0'
   id 'ru.vyarus.quality' version '3.4.0'
 }
@@ -53,13 +53,13 @@ configurations {
 }
 
 dependencies {
-  checkstyleConfig('com.puppycrawl.tools:checkstyle:8.23') {
+  checkstyleConfig('com.puppycrawl.tools:checkstyle:8.24') {
     transitive = false
   }
 }
 
 quality {
-  checkstyleVersion = '8.23'
+  checkstyleVersion = '8.24'
   pmdVersion = '6.17.0'
   spotbugsVersion = '4.0.0-beta3'
 
