@@ -4,6 +4,11 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import cc.redberry.rings.bigint.BigInteger;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BinaryOperator;
@@ -52,6 +57,34 @@ public class PolynomialTest {
     assertThrows(
         IllegalArgumentException.class,
         () -> new Polynomial("3.1415926535897932384626433832795028841971693993751"));
+  }
+
+  @Test
+  public void serialization() throws IOException, ClassNotFoundException {
+    // NOTE: this test is imperfect in the sense that the serialization and deserialization are
+    // done in the same process.
+    Polynomial a = Polynomial.of("(1+x+y)^2");
+
+    byte[] data;
+
+    {
+      ByteArrayOutputStream bstream = new ByteArrayOutputStream();
+      ObjectOutputStream ostream = new ObjectOutputStream(bstream);
+      ostream.writeObject(a);
+      ostream.close();
+      data = bstream.toByteArray();
+    }
+
+    Polynomial b;
+
+    {
+      ByteArrayInputStream bstream = new ByteArrayInputStream(data);
+      ObjectInputStream ostream = new ObjectInputStream(bstream);
+      b = (Polynomial) ostream.readObject();
+      ostream.close();
+    }
+
+    assertThat(a).isEqualTo(b);
   }
 
   @Test

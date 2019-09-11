@@ -8,6 +8,7 @@ import cc.redberry.rings.poly.multivar.Monomial;
 import cc.redberry.rings.poly.multivar.MonomialOrder;
 import cc.redberry.rings.poly.multivar.MultivariateDivision;
 import cc.redberry.rings.poly.multivar.MultivariatePolynomial;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -136,6 +137,13 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   @SuppressWarnings("PMD.ShortMethodName")
   public static Polynomial[] of(final String... strings) {
     return Stream.of(strings).map(Polynomial::new).toArray(Polynomial[]::new);
+  }
+
+  private Object readResolve() throws ObjectStreamException {
+    // Note that Rings.Z (Integers) doesn't override equals(), as of Rings v.2.5.2.
+    // In deserialization, we need to keep Rings.Z being singleton, otherwise we easily get
+    // "Mixing polynomials over different coefficient rings: Z and Z" errors.
+    return Polynomial.createFromRaw(variables, raw.setRingUnsafe(Rings.Z));
   }
 
   @Override
