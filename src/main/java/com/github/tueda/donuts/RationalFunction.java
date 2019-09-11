@@ -8,6 +8,8 @@ import cc.redberry.rings.io.Coder;
 import cc.redberry.rings.poly.MultivariateRing;
 import cc.redberry.rings.poly.multivar.Monomial;
 import cc.redberry.rings.poly.multivar.MultivariatePolynomial;
+import java.io.InvalidObjectException;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -208,6 +210,44 @@ public final class RationalFunction implements Serializable, Multivariate {
   @SuppressWarnings("PMD.ShortMethodName")
   public static RationalFunction[] of(final String... strings) {
     return Stream.of(strings).map(RationalFunction::new).toArray(RationalFunction[]::new);
+  }
+
+  private Object writeReplace() throws ObjectStreamException {
+    // Because Rational is not serializable (PoslavskySV/rings#61), the default serialization fails.
+    // A solution is to serialize the numerator and denominator, separately.
+    // We delegate the actual implementation to a serialization proxy class.
+    return new SerializationProxy(this);
+  }
+
+  private Object readResolve() throws ObjectStreamException {
+    throw new InvalidObjectException("Proxy required.");
+  }
+
+  /** Serialization proxy class. */
+  private static final class SerializationProxy implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    /** The set of variables. */
+    private final VariableSet variables;
+    /** The numerator. */
+    private final MultivariatePolynomial<BigInteger> numerator;
+    /** The denominator. */
+    private final MultivariatePolynomial<BigInteger> denominator;
+
+    /** Constructor. */
+    public SerializationProxy(final RationalFunction rat) {
+      variables = rat.variables;
+      numerator = rat.raw.numerator();
+      denominator = rat.raw.denominator();
+    }
+
+    private Object readResolve() throws ObjectStreamException {
+      // We need to treat Rings.Z as a singleton. The easiest way to avoid similar singleton issues
+      // of RationalFunction is to construct it via two Polynomial objects.
+      return new RationalFunction(
+          Polynomial.createFromRaw(variables, numerator.setRingUnsafe(Rings.Z)),
+          Polynomial.createFromRaw(variables, denominator.setRingUnsafe(Rings.Z)));
+    }
   }
 
   @Override

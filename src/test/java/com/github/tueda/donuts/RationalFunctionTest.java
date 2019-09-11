@@ -5,6 +5,11 @@ import static com.google.common.truth.Truth.assertWithMessage;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import cc.redberry.rings.bigint.BigInteger;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.function.BinaryOperator;
 import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Test;
@@ -101,6 +106,34 @@ public class RationalFunctionTest {
     assertThrows(
         IllegalArgumentException.class,
         () -> new RationalFunction("3.1415926535897932384626433832795028841971693993751"));
+  }
+
+  @Test
+  public void serialization() throws IOException, ClassNotFoundException {
+    // NOTE: this test is imperfect in the sense that the serialization and deserialization are
+    // done in the same process.
+    RationalFunction a = RationalFunction.of("(1+x+y)^2/(1-x-y)");
+
+    byte[] data;
+
+    {
+      ByteArrayOutputStream bstream = new ByteArrayOutputStream();
+      ObjectOutputStream ostream = new ObjectOutputStream(bstream);
+      ostream.writeObject(a);
+      ostream.close();
+      data = bstream.toByteArray();
+    }
+
+    RationalFunction b;
+
+    {
+      ByteArrayInputStream bstream = new ByteArrayInputStream(data);
+      ObjectInputStream ostream = new ObjectInputStream(bstream);
+      b = (RationalFunction) ostream.readObject();
+      ostream.close();
+    }
+
+    assertThat(a).isEqualTo(b);
   }
 
   @Test
