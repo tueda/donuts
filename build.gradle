@@ -2,7 +2,7 @@ plugins {
   id 'jacoco'
   id 'java-library'
   id 'com.diffplug.gradle.spotless' version '3.24.2'
-  id 'com.github.ben-manes.versions' version '0.24.0'
+  id 'com.github.ben-manes.versions' version '0.25.0'
   id 'com.github.johnrengelman.shadow' version '5.1.0'
   id 'ru.vyarus.quality' version '3.4.0'
 }
@@ -19,20 +19,20 @@ repositories {
 }
 
 dependencies {
-  api 'cc.redberry:rings:2.5.2'
-  compileOnly 'com.github.spotbugs:spotbugs-annotations:4.0.0-beta3'
-  compileOnly 'org.projectlombok:lombok:1.18.8'
-  annotationProcessor 'org.projectlombok:lombok:1.18.8'
+  api 'cc.redberry:rings:2.5.3'
+  compileOnly 'com.github.spotbugs:spotbugs-annotations:4.0.0-beta4'
+  compileOnly 'org.projectlombok:lombok:1.18.10'
+  annotationProcessor 'org.projectlombok:lombok:1.18.10'
   testImplementation 'com.google.truth:truth:1.0'
-  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
-  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
 }
 
 javadoc {
   configure(options) {
     links += [
       'https://docs.oracle.com/javase/8/docs/api/',
-      'https://static.javadoc.io/cc.redberry/rings/2.5.2/',
+      'https://static.javadoc.io/cc.redberry/rings/2.5.3/',
     ]
     source = '8'
   }
