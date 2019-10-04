@@ -1,7 +1,7 @@
 plugins {
   id 'jacoco'
   id 'java-library'
-  id 'com.diffplug.gradle.spotless' version '3.24.2'
+  id 'com.diffplug.gradle.spotless' version '3.24.3'
   id 'com.github.ben-manes.versions' version '0.25.0'
   id 'com.github.johnrengelman.shadow' version '5.1.0'
   id 'ru.vyarus.quality' version '3.4.0'
@@ -14,27 +14,36 @@ version = '0.0.1'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
+def versions = [
+  rings: '2.5.3',
+  checkstyle: '8.25',
+  pmd: '6.17.0',  // 6.18.0 has UnnecessaryFullyQualifiedName bugs
+  spotbugs: '4.0.0-beta4',
+]
+
 repositories {
   mavenCentral()
 }
 
 dependencies {
-  api 'cc.redberry:rings:2.5.3'
-  compileOnly 'com.github.spotbugs:spotbugs-annotations:4.0.0-beta4'
+  api "cc.redberry:rings:${versions.rings}"
+  compileOnly "com.github.spotbugs:spotbugs-annotations:${versions.spotbugs}"
   compileOnly 'org.projectlombok:lombok:1.18.10'
   annotationProcessor 'org.projectlombok:lombok:1.18.10'
   testImplementation 'com.google.truth:truth:1.0'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
+  // for dependencyUpdates
+  testRuntimeOnly "net.sourceforge.pmd:pmd:${versions.pmd}"
 }
 
 javadoc {
-  configure(options) {
-    links += [
-      'https://docs.oracle.com/javase/8/docs/api/',
-      'https://static.javadoc.io/cc.redberry/rings/2.5.3/',
-    ]
+  options.with {
     source = '8'
+    links += [
+      "https://docs.oracle.com/javase/${source}/docs/api/".toString(),
+      "https://static.javadoc.io/cc.redberry/rings/${versions.rings}/".toString(),
+    ]
   }
 }
 
@@ -53,19 +62,20 @@ configurations {
 }
 
 dependencies {
-  checkstyleConfig('com.puppycrawl.tools:checkstyle:8.24') {
+  checkstyleConfig("com.puppycrawl.tools:checkstyle:${versions.checkstyle}") {
     transitive = false
   }
 }
 
 quality {
-  checkstyleVersion = '8.24'
-  pmdVersion = '6.17.0'
-  spotbugsVersion = '4.0.0-beta3'
+  checkstyleVersion = versions.checkstyle
+  pmdVersion = versions.pmd
+  spotbugsVersion = versions.spotbugs
 
   spotbugsEffort = 'max'
   spotbugsLevel = 'low'
 }
+
 afterEvaluate {
   checkstyle {
     config = resources.text.fromArchiveEntry(configurations.checkstyleConfig, 'google_checks.xml')
