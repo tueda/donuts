@@ -256,6 +256,15 @@ public class RationalFunctionTest {
     assertThat(r.isVariable()).isFalse();
     assertThat(r.isPolynomial()).isTrue();
 
+    r = RationalFunction.of("-1/(1-x)");
+    assertThat(r.isZero()).isFalse();
+    assertThat(r.isOne()).isFalse();
+    assertThat(r.isMinusOne()).isFalse();
+    assertThat(r.isConstant()).isFalse();
+    assertThat(r.isInteger()).isFalse();
+    assertThat(r.isVariable()).isFalse();
+    assertThat(r.isPolynomial()).isFalse();
+
     r = RationalFunction.of("(1+x)/(1-x)");
     assertThat(r.isZero()).isFalse();
     assertThat(r.isOne()).isFalse();

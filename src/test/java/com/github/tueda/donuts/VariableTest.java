@@ -84,4 +84,19 @@ public class VariableTest {
       }
     }
   }
+
+  @Test
+  public void hashCodeTest() {
+    Variable v1 = Variable.of("x");
+    Variable v2 = Variable.of("x");
+    assertThat(v1).isEqualTo(v2);
+    assertThat(v1.hashCode()).isEqualTo(v2.hashCode());
+  }
+
+  @Test
+  public void getVariables() {
+    Variable v = Variable.of("x");
+    assertThat(v.getVariables()).isEqualTo(VariableSet.of("x"));
+    assertThat(v.getMinimalVariables()).isEqualTo(VariableSet.of());
+  }
 }

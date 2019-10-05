@@ -2,9 +2,31 @@ package com.github.tueda.donuts;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 public class VariableSetTest {
+  @Test
+  public void newInstance() {
+    VariableSet s1 = VariableSet.of("x", "y", "z");
+
+    // check auxiliary constructors
+
+    VariableSet s2 = new VariableSet(Variable.of("x"), Variable.of("y"), Variable.of("z"));
+
+    assertThat(s2).isEqualTo(s1);
+
+    List<Variable> v = new ArrayList<>();
+    v.add(Variable.of("x"));
+    v.add(Variable.of("y"));
+    v.add(Variable.of("z"));
+
+    VariableSet s3 = new VariableSet(v);
+
+    assertThat(s3).isEqualTo(s1);
+  }
+
   @Test
   public void equals() {
     VariableSet s1 = VariableSet.of("x", "y", "z");
@@ -65,7 +87,18 @@ public class VariableSetTest {
     VariableSet setC = VariableSet.of("a", "c");
     assertThat(setA.union(setB).union(setC)).isEqualTo(VariableSet.of("a", "b", "c"));
 
+    // check auxiliary methods
+
     assertThat(VariableSet.union()).isEqualTo(VariableSet.of());
+
+    assertThat(VariableSet.union(Polynomial.of("x+y"), Polynomial.of("y+z"), Polynomial.of("z+x")))
+        .isEqualTo(VariableSet.of("x", "y", "z"));
+
+    List<Multivariate> v = new ArrayList<>();
+    v.add(Polynomial.of("x+y"));
+    v.add(Polynomial.of("y+z"));
+    v.add(Polynomial.of("z+x"));
+    assertThat(VariableSet.union(v)).isEqualTo(VariableSet.of("x", "y", "z"));
   }
 
   @Test

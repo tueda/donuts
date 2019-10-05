@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.function.UnaryOperator;
@@ -57,6 +58,19 @@ public class PolynomialTest {
     assertThrows(
         IllegalArgumentException.class,
         () -> new Polynomial("3.1415926535897932384626433832795028841971693993751"));
+  }
+
+  @Test
+  public void of() {
+    RationalFunction r1 = RationalFunction.of("1+x/y");
+    RationalFunction r2 = RationalFunction.of("1+y/z");
+    RationalFunction r3 = RationalFunction.of("1+z/x");
+    RationalFunction[] rr = RationalFunction.of("1+x/y", "1+y/z", "1+z/x");
+
+    assertThat(rr.length).isEqualTo(3);
+    assertThat(rr[0]).isEqualTo(r1);
+    assertThat(rr[1]).isEqualTo(r2);
+    assertThat(rr[2]).isEqualTo(r3);
   }
 
   @Test
@@ -569,6 +583,12 @@ public class PolynomialTest {
     polys5.add(a);
     Polynomial gcd6 = Polynomial.gcd(polys5);
     assertThat(gcd6).isEqualTo(a);
+
+    // check auxiliary method
+    {
+      Polynomial[] pp = Polynomial.of("(1+x)*(1-x)", "(1+x)*(1-y)", "(1+x)^2");
+      assertThat(Polynomial.gcd(Arrays.stream(pp))).isEqualTo(Polynomial.of("1+x"));
+    }
   }
 
   @Test
