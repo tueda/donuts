@@ -6,32 +6,41 @@ A wrapper library for [Rings](https://github.com/PoslavskySV/rings).
 This library provides polynomial arithmetic operations based on the Rings
 library by Stanislav Poslavsky. The main difference from Rings is that it
 allows operations between different polynomial rings; for example, addition of
-two polynomials in Z[x,&nbsp;y] and Z[y,&nbsp;z] respectively gives a
+two polynomials in Z[x,&nbsp;y] and Z[y,&nbsp;z], respectively, gives a
 polynomial in Z[x,&nbsp;y,&nbsp;z].
+
+Currently, the following wrapper classes are available:
+
+| Donuts             | Rings                                          |
+| ------------------ | ---------------------------------------------- |
+| `Polynomial`       | `MultivariatePolynomial<BigInteger>`           |
+| `RationalFunction` | `Rational<MultivariatePolynomial<BigInteger>>` |
 
 
 Requirements
 ------------
 
-- Java 8 or later.
+- Java 8 or later
 
 
 Example
 -------
 
 ```shell
+$ git clone https://github.com/tueda/donuts.git
+$ cd donuts
 $ ./gradlew shadowJar && jshell --class-path build/libs/donuts-*-all.jar # jshell is available in JDK9+
 ```
 ```java
 jshell> import com.github.tueda.donuts.*
 
-jshell> var a = new Polynomial("1 + x + y")
+jshell> var a = new Polynomial("1 + x + y") // in Z[x, y]
 a ==> 1+y+x
 
-jshell> var b = new Polynomial("1 + y + z")
+jshell> var b = new Polynomial("1 + y + z") // in Z[y, z]
 b ==> 1+z+y
 
-jshell> var g = a.add(b)
+jshell> var g = a.add(b) // in Z[x, y, z]
 g ==> 2+z+2*y+x
 
 jshell> var ag = a.multiply(g)
