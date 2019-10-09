@@ -1,7 +1,7 @@
 plugins {
   id 'jacoco'
   id 'java-library'
-  id 'com.diffplug.gradle.spotless' version '3.24.3'
+  id 'com.diffplug.gradle.spotless' version '3.25.0'
   id 'com.github.ben-manes.versions' version '0.25.0'
   id 'com.github.johnrengelman.shadow' version '5.1.0'
   id 'ru.vyarus.quality' version '3.4.0'
@@ -54,6 +54,9 @@ test {
 spotless {
   java {
     googleJavaFormat('1.7')
+  }
+  groovyGradle {
+    greclipse().configFile('config/greclipse.properties')
   }
 }
 
