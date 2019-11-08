@@ -3,7 +3,7 @@ plugins {
   id 'java-library'
   id 'maven-publish'
   id 'com.diffplug.gradle.spotless' version '3.25.0'
-  id 'com.github.ben-manes.versions' version '0.25.0'
+  id 'com.github.ben-manes.versions' version '0.27.0'
   id 'com.github.johnrengelman.shadow' version '5.1.0'
   id 'ru.vyarus.quality' version '3.4.0'
 }
@@ -17,8 +17,8 @@ targetCompatibility = '1.8'
 
 def versions = [
   rings: '2.5.3',
-  checkstyle: '8.25',
-  pmd: '6.17.0',  // 6.18.0 has UnnecessaryFullyQualifiedName bugs
+  checkstyle: '8.26',
+  pmd: '6.19.0',
   spotbugs: '4.0.0-beta4',
 ]
 
@@ -88,6 +88,10 @@ afterEvaluate {
     incrementalAnalysis = true
     ruleSetFiles = files('config/pmd.xml')
   }
+}
+
+shadowJar {
+  minimize()
 }
 
 task sourcesJar(type: Jar) {
