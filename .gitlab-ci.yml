@@ -3,10 +3,11 @@
     - java -version
     - javac -version
     - ./gradlew -version
-    - ./gradlew check jacocoTestReport javadoc
+    - ./gradlew check jacocoTestReport javadoc shadowJar
   artifacts:
     paths:
       - build/docs
+      - build/libs
       - build/reports
     expire_in: 1 week
 
@@ -29,3 +30,7 @@ jdk11:
 jdk12:
   extends: .test
   image: openjdk:12
+
+jdk13:
+  extends: .test
+  image: openjdk:13
