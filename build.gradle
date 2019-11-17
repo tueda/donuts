@@ -2,10 +2,10 @@ plugins {
   id 'jacoco'
   id 'java-library'
   id 'maven-publish'
-  id 'com.diffplug.gradle.spotless' version '3.25.0'
+  id 'com.diffplug.gradle.spotless' version '3.26.0'
   id 'com.github.ben-manes.versions' version '0.27.0'
-  id 'com.github.johnrengelman.shadow' version '5.1.0'
-  id 'ru.vyarus.quality' version '3.4.0'
+  id 'com.github.johnrengelman.shadow' version '5.2.0'
+  id 'ru.vyarus.quality' version '4.0.0'
 }
 
 group = 'com.github.tueda'
