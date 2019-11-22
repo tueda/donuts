@@ -5,12 +5,12 @@ plugins {
   id 'com.diffplug.gradle.spotless' version '3.26.0'
   id 'com.github.ben-manes.versions' version '0.27.0'
   id 'com.github.johnrengelman.shadow' version '5.2.0'
+  id 'net.researchgate.release' version '2.8.1'
   id 'ru.vyarus.quality' version '4.0.0'
 }
 
 group = 'com.github.tueda'
 archivesBaseName = 'donuts'
-version = '0.0.1'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -143,3 +143,6 @@ publishing {
     }
   }
 }
+
+// See researchgate/gradle-release#107
+project.tasks.release.dependsOn check
