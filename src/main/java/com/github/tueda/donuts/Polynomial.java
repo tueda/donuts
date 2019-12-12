@@ -7,6 +7,8 @@ import cc.redberry.rings.poly.PolynomialMethods;
 import cc.redberry.rings.poly.multivar.Monomial;
 import cc.redberry.rings.poly.multivar.MonomialOrder;
 import cc.redberry.rings.poly.multivar.MultivariateDivision;
+import cc.redberry.rings.poly.multivar.MultivariateFactorization;
+import cc.redberry.rings.poly.multivar.MultivariateGCD;
 import cc.redberry.rings.poly.multivar.MultivariatePolynomial;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
@@ -610,9 +612,9 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return new Polynomial(variables, PolynomialMethods.polyPow(raw, exponent));
   }
 
-  /** Returns the sum of this polynomial and the other. */
+  /** Returns the greatest common divisor of this polynomial and the other. */
   public Polynomial gcd(final Polynomial other) {
-    return performBinaryOperation(other, PolynomialMethods::PolynomialGCD, false);
+    return performBinaryOperation(other, MultivariateGCD::PolynomialGCD, false);
   }
 
   /** Returns the greatest common divisor of the given polynomials. */
@@ -631,7 +633,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     final List<MultivariatePolynomial<BigInteger>> polys =
         Stream.of(polynomials).map(p -> p.translate(newVariables).raw).collect(Collectors.toList());
 
-    return new Polynomial(newVariables, PolynomialMethods.PolynomialGCD(polys));
+    return new Polynomial(newVariables, MultivariateGCD.PolynomialGCD(polys));
   }
 
   /** Returns the greatest common divisor of the given polynomials. */
@@ -654,7 +656,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     // Perform the factorization.
 
     final PolynomialFactorDecomposition<MultivariatePolynomial<BigInteger>> factors =
-        PolynomialMethods.Factor(raw);
+        MultivariateFactorization.Factor(raw);
 
     factors.canonical();
 
