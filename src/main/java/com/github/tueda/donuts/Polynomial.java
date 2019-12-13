@@ -557,7 +557,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
       return new Polynomial(
           newVariables,
           operator.apply(
-              doClone && raw1 == raw1 ? raw1.copy() : raw1, other.translate(newVariables).raw));
+              doClone && raw1 == raw ? raw1.copy() : raw1, other.translate(newVariables).raw));
     }
   }
 
