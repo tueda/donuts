@@ -330,6 +330,8 @@ public class PolynomialTest {
     checkUnaryOperatorImmutability(p -> p.pow(new BigInteger("5")));
     checkBinaryOperatorImmutability((p1, p2) -> p1.gcd(p2));
     checkBinaryOperatorImmutability((p1, p2) -> Polynomial.gcd(p1, p2));
+    checkBinaryOperatorImmutability((p1, p2) -> p1.lcm(p2));
+    checkBinaryOperatorImmutability((p1, p2) -> Polynomial.lcm(p1, p2));
     checkUnaryOperatorImmutability(p -> p.factorize()[0]);
   }
 
@@ -588,6 +590,54 @@ public class PolynomialTest {
     {
       Polynomial[] pp = Polynomial.of("(1+x)*(1-x)", "(1+x)*(1-y)", "(1+x)^2");
       assertThat(Polynomial.gcd(Arrays.stream(pp))).isEqualTo(Polynomial.of("1+x"));
+    }
+  }
+
+  @Test
+  public void lcm() {
+    {
+      String s1 = "(1 + x)^2 * (2 + y)             * (4 + w)^5";
+      String s2 = "(1 + x)   * (2 + y)^3 * (3 + z)";
+      String s3 = "(1 + x)^2 * (2 + y)^3 * (3 + z) * (4 + w)^5";
+
+      assertThat(Polynomial.of(s1).lcm(Polynomial.of(s2))).isEqualTo(Polynomial.of(s3));
+    }
+
+    {
+      Polynomial p1 = Polynomial.of("1+x");
+      Polynomial p2 = Polynomial.of("1-x");
+      Polynomial p3 = Polynomial.of("1-x^2");
+      assertThrows(IllegalArgumentException.class, () -> Polynomial.lcm());
+      assertThat(Polynomial.lcm(new Polynomial[] {p1})).isEqualTo(p1);
+      assertThat(Polynomial.lcm(p1, p2)).isEqualTo(p1.multiply(p2));
+      assertThat(Polynomial.lcm(p1, p2, p3)).isEqualTo(p1.multiply(p2));
+    }
+
+    {
+      Polynomial zero = Polynomial.of("0");
+      Polynomial one = Polynomial.of("1");
+      Polynomial p = Polynomial.of("1+x");
+
+      assertThat(zero.lcm(zero)).isEqualTo(zero);
+
+      assertThat(p.lcm(zero)).isEqualTo(zero);
+      assertThat(zero.lcm(p)).isEqualTo(zero);
+
+      assertThat(p.lcm(one)).isEqualTo(p);
+      assertThat(one.lcm(p)).isEqualTo(p);
+
+      assertThat(p.lcm(p)).isEqualTo(p);
+    }
+
+    // check auxiliary method
+    {
+      Polynomial p1 = Polynomial.of("(1+x)^2*(1+y)");
+      Polynomial p2 = Polynomial.of("(1+x)*(1+y)^2");
+      Polynomial p3 = Polynomial.of("(1+y)^2");
+      Polynomial p4 = Polynomial.of("(1+x)^2*(1+y)^2");
+      Polynomial[] pp = {p1, p2, p3};
+      assertThat(Polynomial.lcm(Arrays.asList(pp))).isEqualTo(p4);
+      assertThat(Polynomial.lcm(Arrays.stream(pp))).isEqualTo(p4);
     }
   }
 

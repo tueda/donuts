@@ -646,6 +646,82 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return gcd(polynomials.toArray(Polynomial[]::new));
   }
 
+  /** Returns the least common multiple of this polynomial and the other. */
+  public Polynomial lcm(final Polynomial other) {
+    return performBinaryOperation(other, Polynomial::polynomialLcm, true);
+  }
+
+  /**
+   * Returns the least common multiple of the given polynomials.
+   *
+   * @throws IllegalArgumentException when no polynomial is given
+   */
+  public static Polynomial lcm(final Polynomial... polynomials) {
+    if (polynomials.length == 0) {
+      // lcm() -> undefined
+      throw new IllegalArgumentException("lcm with 0 arguments");
+    }
+    if (polynomials.length == 1) {
+      // lcm(x) -> x
+      return polynomials[0];
+    }
+
+    final VariableSet newVariables = VariableSet.union(polynomials);
+
+    final List<MultivariatePolynomial<BigInteger>> polys =
+        Stream.of(polynomials).map(p -> p.translate(newVariables).raw).collect(Collectors.toList());
+
+    return new Polynomial(newVariables, Polynomial.polynomialLcm(polys));
+  }
+
+  /** Returns the least common multiple of the given polynomials. */
+  public static Polynomial lcm(final Iterable<Polynomial> polynomials) {
+    return lcm(StreamSupport.stream(polynomials.spliterator(), false).toArray(Polynomial[]::new));
+  }
+
+  /** Returns the least common multiple of the given polynomials. */
+  public static Polynomial lcm(final Stream<Polynomial> polynomials) {
+    return lcm(polynomials.toArray(Polynomial[]::new));
+  }
+
+  private static MultivariatePolynomial<BigInteger> polynomialLcm(
+      final MultivariatePolynomial<BigInteger> a, final MultivariatePolynomial<BigInteger> b) {
+    if (a.isZero()) {
+      // LCM(0, b) -> 0, including LCM(0, 0) -> 0
+      return a;
+    }
+    if (b.isZero()) {
+      // LCM(a, 0) -> 0
+      return b;
+    }
+    if (a.isOne()) {
+      // LCM(1, b) -> b
+      return b;
+    }
+    if (b.isOne()) {
+      // LCM(a, 1) -> a
+      return a;
+    }
+    final MultivariatePolynomial<BigInteger> gcd = MultivariateGCD.PolynomialGCD(a, b);
+    // CATION: the following line changes `a`.
+    return MultivariateDivision.divideExact(a.multiply(b), gcd);
+  }
+
+  private static MultivariatePolynomial<BigInteger> polynomialLcm(
+      final Iterable<MultivariatePolynomial<BigInteger>> array) {
+    boolean first = true;
+    MultivariatePolynomial<BigInteger> lcm = null;
+    for (final MultivariatePolynomial<BigInteger> poly : array) {
+      if (first) {
+        lcm = poly.copy();
+        first = false;
+      } else {
+        lcm = polynomialLcm(lcm, poly);
+      }
+    }
+    return lcm;
+  }
+
   /** Returns the factors of the polynomial. */
   public Polynomial[] factorize() {
     // Trivial cases, in which the polynomial is a monomial.
