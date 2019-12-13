@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Test;
 
@@ -330,8 +331,10 @@ public class PolynomialTest {
     checkUnaryOperatorImmutability(p -> p.pow(new BigInteger("5")));
     checkBinaryOperatorImmutability((p1, p2) -> p1.gcd(p2));
     checkBinaryOperatorImmutability((p1, p2) -> Polynomial.gcd(p1, p2));
+    checkMultaryOperatorImmutability((pp) -> Polynomial.gcd(pp));
     checkBinaryOperatorImmutability((p1, p2) -> p1.lcm(p2));
     checkBinaryOperatorImmutability((p1, p2) -> Polynomial.lcm(p1, p2));
+    checkMultaryOperatorImmutability((pp) -> Polynomial.lcm(pp));
     checkUnaryOperatorImmutability(p -> p.factorize()[0]);
   }
 
@@ -375,6 +378,39 @@ public class PolynomialTest {
       operator.apply(a1, a2);
       assertThat(a1).isEqualTo(b1);
       assertThat(a2).isEqualTo(b2);
+    }
+  }
+
+  void checkMultaryOperatorImmutability(Function<Polynomial[], Polynomial> operator) {
+    String s1 = "90*(1+a)";
+    String s2 = "-6*(1+a)*(2+b)";
+    String s3 = "-9*(1+a)*(2+b)*(3+d)";
+    String s4 = "12*(1+a)^2*(2+b)*(4+d)";
+    String s5 = "24*(1+a)*(2+c)*(5+e)";
+    String[] ss = {s1, s2, s3, s4, s5};
+    {
+      Polynomial[] a = Arrays.stream(ss).map(Polynomial::new).toArray(Polynomial[]::new);
+      Polynomial[] b = Arrays.stream(ss).map(Polynomial::new).toArray(Polynomial[]::new);
+      operator.apply(a);
+      for (int i = 0; i < b.length; i++) {
+        assertThat(a[i]).isEqualTo(b[i]);
+      }
+    }
+    {
+      Polynomial[] a = Arrays.stream(ss).map(Polynomial::new).toArray(Polynomial[]::new);
+      Polynomial[] b = Arrays.stream(ss).map(Polynomial::new).toArray(Polynomial[]::new);
+      VariableSet va = VariableSet.union(a);
+      VariableSet vb = VariableSet.union(b);
+      VariableSet v = va.union(vb);
+      for (int i = 0; i < b.length; i++) {
+        a[i] = a[i].translate(v);
+        b[i] = b[i].translate(v);
+      }
+      // At this point, all the polynomials share the same variable set.
+      operator.apply(a);
+      for (int i = 0; i < b.length; i++) {
+        assertThat(a[i]).isEqualTo(b[i]);
+      }
     }
   }
 
