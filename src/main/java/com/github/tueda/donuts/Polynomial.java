@@ -723,49 +723,43 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   }
 
   /** Returns the factors of the polynomial. */
-  public Polynomial[] factorize() {
-    // Trivial cases, in which the polynomial is a monomial.
-    if (isMonomial()) {
+  public Polynomial[] factors() {
+    if (isConstant()) {
       return new Polynomial[] {this};
     }
 
     // Perform the factorization.
 
-    final PolynomialFactorDecomposition<MultivariatePolynomial<BigInteger>> factors =
+    final PolynomialFactorDecomposition<MultivariatePolynomial<BigInteger>> decomposition =
         MultivariateFactorization.Factor(raw);
 
-    factors.canonical();
+    decomposition.canonical();
 
-    final List<Polynomial> list = new ArrayList<>(factors.sumExponents() + 1);
+    // Construct the result.
 
-    // First, add the trivial factor (e.g., a monomial).
+    final List<Polynomial> factors = new ArrayList<>();
 
-    final MultivariatePolynomial<BigInteger> trivialFactor = factors.unit;
+    if (!decomposition.unit.isOne()) {
+      factors.add(new Polynomial(variables, decomposition.unit));
+    }
 
-    for (int i = 0; i < factors.size(); i++) {
-      final MultivariatePolynomial<BigInteger> p = factors.get(i);
-      if (p.isMonomial()) {
-        trivialFactor.multiply(p);
+    for (int i = 0; i < decomposition.size(); i++) {
+      final MultivariatePolynomial<BigInteger> factor = decomposition.get(i);
+      Polynomial poly;
+      int exponent = decomposition.getExponent(i);
+      if (exponent == 1 && factor.isMonomial() && factor.isEffectiveUnivariate()) {
+        final int variable = factor.univariateVariable();
+        exponent = factor.degree(variable);
+        poly = new Polynomial(variables, factor.createMonomial(variable, 1));
+      } else {
+        poly = new Polynomial(variables, factor);
+      }
+      for (int j = 0; j < exponent; j++) {
+        factors.add(poly);
       }
     }
 
-    if (!trivialFactor.isOne()) {
-      list.add(new Polynomial(variables, trivialFactor));
-    }
-
-    // Then, the actual factors.
-
-    for (int i = 0; i < factors.size(); i++) {
-      final MultivariatePolynomial<BigInteger> p = factors.get(i);
-      if (!p.isMonomial()) {
-        final Polynomial aPoly = new Polynomial(variables, p);
-        for (int j = 0; j < factors.getExponent(i); j++) {
-          list.add(aPoly);
-        }
-      }
-    }
-
-    return list.toArray(new Polynomial[0]);
+    return factors.toArray(new Polynomial[0]);
   }
 
   /**

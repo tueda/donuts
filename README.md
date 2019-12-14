@@ -55,8 +55,8 @@ $7 ==> 2+z+2*y+x
 jshell> ag.divide(bg) // same as new RationalFunction(ag, bg)
 $8 ==> (1+y+x)/(1+z+y)
 
-jshell> new Polynomial("-2*x^4*y^3 + 2*x^3*y^4 + 2*x^2*y^5 - 2*x*y^6").factorize()
-$9 ==> Polynomial[4] { -2*x*y^2, -1*y+x, -1*y+x, y+x }
+jshell> new Polynomial("-2*x^4*y^3 + 2*x^3*y^4 + 2*x^2*y^5 - 2*x*y^6").factors()
+$9 ==> Polynomial[8] { -2, y, y, y, x, -y+x, -y+x, y+x }
 ```
 
 Development

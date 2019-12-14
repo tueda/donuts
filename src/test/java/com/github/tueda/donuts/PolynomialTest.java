@@ -335,7 +335,7 @@ public class PolynomialTest {
     checkBinaryOperatorImmutability((p1, p2) -> p1.lcm(p2));
     checkBinaryOperatorImmutability((p1, p2) -> Polynomial.lcmOf(p1, p2));
     checkMultaryOperatorImmutability((pp) -> Polynomial.lcmOf(pp));
-    checkUnaryOperatorImmutability(p -> p.factorize()[0]);
+    checkUnaryOperatorImmutability(p -> p.factors()[0]);
   }
 
   void checkUnaryOperatorImmutability(UnaryOperator<Polynomial> operator) {
@@ -678,25 +678,30 @@ public class PolynomialTest {
   }
 
   @Test
-  public void factorize() {
+  public void factors() {
     checkNoFactorization("0");
-    checkNoFactorization("-7*x^2*y");
+    checkNoFactorization("12");
+    checkNoFactorization("x");
 
-    assertThat(Polynomial.of("(x+y)").factorize()).isEqualTo(Polynomial.of(new String[] {"x+y"}));
-    assertThat(Polynomial.of("-(x+y)").factorize()).isEqualTo(Polynomial.of("-1", "x+y"));
-    assertThat(Polynomial.of("2*(x+y)").factorize()).isEqualTo(Polynomial.of("2", "x+y"));
-    assertThat(Polynomial.of("-2*(x+y)").factorize()).isEqualTo(Polynomial.of("-2", "x+y"));
-    assertThat(Polynomial.of("2*(x-y)").factorize()).isEqualTo(Polynomial.of("2", "x-y"));
-    assertThat(Polynomial.of("-2*(x-y)").factorize()).isEqualTo(Polynomial.of("-2", "x-y"));
+    assertThat(Polynomial.of("-3*x^2").factors())
+        .isEqualTo(Polynomial.of(new String[] {"-3", "x", "x"}));
+    assertThat(Polynomial.of("-7*x^2*y").factors())
+        .isEqualTo(Polynomial.of(new String[] {"-7", "y", "x", "x"}));
+    assertThat(Polynomial.of("(x+y)").factors()).isEqualTo(Polynomial.of(new String[] {"x+y"}));
+    assertThat(Polynomial.of("-(x+y)").factors()).isEqualTo(Polynomial.of("-1", "x+y"));
+    assertThat(Polynomial.of("2*(x+y)").factors()).isEqualTo(Polynomial.of("2", "x+y"));
+    assertThat(Polynomial.of("-2*(x+y)").factors()).isEqualTo(Polynomial.of("-2", "x+y"));
+    assertThat(Polynomial.of("2*(x-y)").factors()).isEqualTo(Polynomial.of("2", "x-y"));
+    assertThat(Polynomial.of("-2*(x-y)").factors()).isEqualTo(Polynomial.of("-2", "x-y"));
 
-    assertThat(Polynomial.of("x^2-y^2").factorize()).isEqualTo(Polynomial.of("x-y", "x+y"));
-    assertThat(Polynomial.of("-3*x*z^2*(x^2-y^2)^3").factorize())
-        .isEqualTo(Polynomial.of("-3*x*z^2", "x-y", "x-y", "x-y", "x+y", "x+y", "x+y"));
+    assertThat(Polynomial.of("x^2-y^2").factors()).isEqualTo(Polynomial.of("x-y", "x+y"));
+    assertThat(Polynomial.of("-3*x*z^2*(x^2-y^2)^3").factors())
+        .isEqualTo(Polynomial.of("-3", "z", "z", "x", "x-y", "x-y", "x-y", "x+y", "x+y", "x+y"));
   }
 
   void checkNoFactorization(String s) {
     Polynomial p = new Polynomial(s);
-    assertThat(p.factorize()).isEqualTo(new Polynomial[] {p});
+    assertThat(p.factors()).isEqualTo(new Polynomial[] {p});
   }
 
   @Test
