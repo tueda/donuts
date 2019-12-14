@@ -11,6 +11,14 @@
       - build/reports
     expire_in: 1 week
 
+lint:
+  image: python:latest
+  before_script:
+    - pip install gitlint pre-commit
+  script:
+    - gitlint
+    - pre-commit run --all-files
+
 jdk8:
   extends: .test
   image: openjdk:8
