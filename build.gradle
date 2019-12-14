@@ -16,8 +16,8 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 def versions = [
-  rings: '2.5.5',
-  checkstyle: '8.26',
+  rings: '2.5.7',
+  checkstyle: '8.27',
   pmd: '6.20.0',
   spotbugs: '4.0.0-beta4',
 ]
