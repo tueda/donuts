@@ -89,16 +89,17 @@ public class VariableSetTest {
 
     // check auxiliary methods
 
-    assertThat(VariableSet.union()).isEqualTo(VariableSet.of());
+    assertThat(VariableSet.unionOf()).isEqualTo(VariableSet.of());
 
-    assertThat(VariableSet.union(Polynomial.of("x+y"), Polynomial.of("y+z"), Polynomial.of("z+x")))
+    assertThat(
+            VariableSet.unionOf(Polynomial.of("x+y"), Polynomial.of("y+z"), Polynomial.of("z+x")))
         .isEqualTo(VariableSet.of("x", "y", "z"));
 
     List<Multivariate> v = new ArrayList<>();
     v.add(Polynomial.of("x+y"));
     v.add(Polynomial.of("y+z"));
     v.add(Polynomial.of("z+x"));
-    assertThat(VariableSet.union(v)).isEqualTo(VariableSet.of("x", "y", "z"));
+    assertThat(VariableSet.unionOf(v)).isEqualTo(VariableSet.of("x", "y", "z"));
   }
 
   @Test

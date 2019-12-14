@@ -330,11 +330,11 @@ public class PolynomialTest {
     checkUnaryOperatorImmutability(p -> p.pow(5));
     checkUnaryOperatorImmutability(p -> p.pow(new BigInteger("5")));
     checkBinaryOperatorImmutability((p1, p2) -> p1.gcd(p2));
-    checkBinaryOperatorImmutability((p1, p2) -> Polynomial.gcd(p1, p2));
-    checkMultaryOperatorImmutability((pp) -> Polynomial.gcd(pp));
+    checkBinaryOperatorImmutability((p1, p2) -> Polynomial.gcdOf(p1, p2));
+    checkMultaryOperatorImmutability((pp) -> Polynomial.gcdOf(pp));
     checkBinaryOperatorImmutability((p1, p2) -> p1.lcm(p2));
-    checkBinaryOperatorImmutability((p1, p2) -> Polynomial.lcm(p1, p2));
-    checkMultaryOperatorImmutability((pp) -> Polynomial.lcm(pp));
+    checkBinaryOperatorImmutability((p1, p2) -> Polynomial.lcmOf(p1, p2));
+    checkMultaryOperatorImmutability((pp) -> Polynomial.lcmOf(pp));
     checkUnaryOperatorImmutability(p -> p.factorize()[0]);
   }
 
@@ -342,7 +342,7 @@ public class PolynomialTest {
     String s = "(1+a-b)*(2-x)";
     Polynomial a = new Polynomial(s);
     Polynomial b = new Polynomial(s);
-    VariableSet v = VariableSet.union(a, b);
+    VariableSet v = VariableSet.unionOf(a, b);
     a = a.translate(v);
     b = b.translate(v);
     // At this point, a and b share the same variable set.
@@ -369,7 +369,7 @@ public class PolynomialTest {
       Polynomial a2 = new Polynomial(s2);
       Polynomial b1 = new Polynomial(s1);
       Polynomial b2 = new Polynomial(s2);
-      VariableSet v = VariableSet.union(a1, a2, b1, b2);
+      VariableSet v = VariableSet.unionOf(a1, a2, b1, b2);
       a1 = a1.translate(v);
       a2 = a2.translate(v);
       b1 = b1.translate(v);
@@ -399,8 +399,8 @@ public class PolynomialTest {
     {
       Polynomial[] a = Arrays.stream(ss).map(Polynomial::new).toArray(Polynomial[]::new);
       Polynomial[] b = Arrays.stream(ss).map(Polynomial::new).toArray(Polynomial[]::new);
-      VariableSet va = VariableSet.union(a);
-      VariableSet vb = VariableSet.union(b);
+      VariableSet va = VariableSet.unionOf(a);
+      VariableSet vb = VariableSet.unionOf(b);
       VariableSet v = va.union(vb);
       for (int i = 0; i < b.length; i++) {
         a[i] = a[i].translate(v);
@@ -591,18 +591,18 @@ public class PolynomialTest {
     Polynomial gcd1 = a.gcd(b);
     assertThat(gcd1).isEqualTo(g);
 
-    Polynomial gcd2 = Polynomial.gcd(a, b, c);
+    Polynomial gcd2 = Polynomial.gcdOf(a, b, c);
     assertThat(gcd2).isEqualTo(g);
 
     Polynomial[] polys2 = {a, b, c};
-    Polynomial gcd3 = Polynomial.gcd(polys2);
+    Polynomial gcd3 = Polynomial.gcdOf(polys2);
     assertThat(gcd3).isEqualTo(g);
 
     List<Polynomial> polys3 = new ArrayList<>();
     polys3.add(a);
     polys3.add(b);
     polys3.add(c);
-    Polynomial gcd4 = Polynomial.gcd(polys3);
+    Polynomial gcd4 = Polynomial.gcdOf(polys3);
     assertThat(gcd4).isEqualTo(g);
 
     Polynomial d = a.divideExact(gcd1);
@@ -613,19 +613,19 @@ public class PolynomialTest {
     assertThat(f).isEqualTo(r);
 
     List<Polynomial> polys4 = new ArrayList<>();
-    Polynomial gcd5 = Polynomial.gcd(polys4);
+    Polynomial gcd5 = Polynomial.gcdOf(polys4);
     Polynomial zero = new Polynomial();
     assertThat(gcd5).isEqualTo(zero);
 
     List<Polynomial> polys5 = new ArrayList<>();
     polys5.add(a);
-    Polynomial gcd6 = Polynomial.gcd(polys5);
+    Polynomial gcd6 = Polynomial.gcdOf(polys5);
     assertThat(gcd6).isEqualTo(a);
 
     // check auxiliary method
     {
       Polynomial[] pp = Polynomial.of("(1+x)*(1-x)", "(1+x)*(1-y)", "(1+x)^2");
-      assertThat(Polynomial.gcd(Arrays.stream(pp))).isEqualTo(Polynomial.of("1+x"));
+      assertThat(Polynomial.gcdOf(Arrays.stream(pp))).isEqualTo(Polynomial.of("1+x"));
     }
   }
 
@@ -643,10 +643,10 @@ public class PolynomialTest {
       Polynomial p1 = Polynomial.of("1+x");
       Polynomial p2 = Polynomial.of("1-x");
       Polynomial p3 = Polynomial.of("1-x^2");
-      assertThrows(IllegalArgumentException.class, () -> Polynomial.lcm());
-      assertThat(Polynomial.lcm(new Polynomial[] {p1})).isEqualTo(p1);
-      assertThat(Polynomial.lcm(p1, p2)).isEqualTo(p1.multiply(p2));
-      assertThat(Polynomial.lcm(p1, p2, p3)).isEqualTo(p1.multiply(p2));
+      assertThrows(IllegalArgumentException.class, () -> Polynomial.lcmOf());
+      assertThat(Polynomial.lcmOf(new Polynomial[] {p1})).isEqualTo(p1);
+      assertThat(Polynomial.lcmOf(p1, p2)).isEqualTo(p1.multiply(p2));
+      assertThat(Polynomial.lcmOf(p1, p2, p3)).isEqualTo(p1.multiply(p2));
     }
 
     {
@@ -672,8 +672,8 @@ public class PolynomialTest {
       Polynomial p3 = Polynomial.of("(1+y)^2");
       Polynomial p4 = Polynomial.of("(1+x)^2*(1+y)^2");
       Polynomial[] pp = {p1, p2, p3};
-      assertThat(Polynomial.lcm(Arrays.asList(pp))).isEqualTo(p4);
-      assertThat(Polynomial.lcm(Arrays.stream(pp))).isEqualTo(p4);
+      assertThat(Polynomial.lcmOf(Arrays.asList(pp))).isEqualTo(p4);
+      assertThat(Polynomial.lcmOf(Arrays.stream(pp))).isEqualTo(p4);
     }
   }
 

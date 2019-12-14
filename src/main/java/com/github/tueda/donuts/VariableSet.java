@@ -241,17 +241,17 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   }
 
   /** Returns the least common set that containing all the variables in the given objects. */
-  public static VariableSet union(final Multivariate... objects) {
-    return union(Stream.of(objects));
+  public static VariableSet unionOf(final Multivariate... objects) {
+    return unionOf(Stream.of(objects));
   }
 
   /** Returns the least common set that containing all the variables in the given objects. */
-  public static VariableSet union(final Iterable<Multivariate> objects) {
-    return union(StreamSupport.stream(objects.spliterator(), false));
+  public static VariableSet unionOf(final Iterable<Multivariate> objects) {
+    return unionOf(StreamSupport.stream(objects.spliterator(), false));
   }
 
   /** Returns the least common set that containing all the variables in the given objects. */
-  public static VariableSet union(final Stream<Multivariate> objects) {
+  public static VariableSet unionOf(final Stream<Multivariate> objects) {
     final Optional<VariableSet> result =
         objects.map(obj -> obj.getVariables()).reduce((n1, n2) -> n1.union(n2));
     if (result.isPresent()) {

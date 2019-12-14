@@ -618,7 +618,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   }
 
   /** Returns the greatest common divisor of the given polynomials. */
-  public static Polynomial gcd(final Polynomial... polynomials) {
+  public static Polynomial gcdOf(final Polynomial... polynomials) {
     if (polynomials.length == 0) {
       // gcd() -> 0
       return new Polynomial();
@@ -628,7 +628,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
       return polynomials[0];
     }
 
-    final VariableSet newVariables = VariableSet.union(polynomials);
+    final VariableSet newVariables = VariableSet.unionOf(polynomials);
 
     final List<MultivariatePolynomial<BigInteger>> polys =
         Stream.of(polynomials).map(p -> p.translate(newVariables).raw).collect(Collectors.toList());
@@ -637,13 +637,13 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   }
 
   /** Returns the greatest common divisor of the given polynomials. */
-  public static Polynomial gcd(final Iterable<Polynomial> polynomials) {
-    return gcd(StreamSupport.stream(polynomials.spliterator(), false).toArray(Polynomial[]::new));
+  public static Polynomial gcdOf(final Iterable<Polynomial> polynomials) {
+    return gcdOf(StreamSupport.stream(polynomials.spliterator(), false).toArray(Polynomial[]::new));
   }
 
   /** Returns the greatest common divisor of the given polynomials. */
-  public static Polynomial gcd(final Stream<Polynomial> polynomials) {
-    return gcd(polynomials.toArray(Polynomial[]::new));
+  public static Polynomial gcdOf(final Stream<Polynomial> polynomials) {
+    return gcdOf(polynomials.toArray(Polynomial[]::new));
   }
 
   /** Returns the least common multiple of this polynomial and the other. */
@@ -656,7 +656,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
    *
    * @throws IllegalArgumentException when no polynomial is given
    */
-  public static Polynomial lcm(final Polynomial... polynomials) {
+  public static Polynomial lcmOf(final Polynomial... polynomials) {
     if (polynomials.length == 0) {
       // lcm() -> undefined
       throw new IllegalArgumentException("lcm with 0 arguments");
@@ -666,7 +666,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
       return polynomials[0];
     }
 
-    final VariableSet newVariables = VariableSet.union(polynomials);
+    final VariableSet newVariables = VariableSet.unionOf(polynomials);
 
     final List<MultivariatePolynomial<BigInteger>> polys =
         Stream.of(polynomials).map(p -> p.translate(newVariables).raw).collect(Collectors.toList());
@@ -675,13 +675,13 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   }
 
   /** Returns the least common multiple of the given polynomials. */
-  public static Polynomial lcm(final Iterable<Polynomial> polynomials) {
-    return lcm(StreamSupport.stream(polynomials.spliterator(), false).toArray(Polynomial[]::new));
+  public static Polynomial lcmOf(final Iterable<Polynomial> polynomials) {
+    return lcmOf(StreamSupport.stream(polynomials.spliterator(), false).toArray(Polynomial[]::new));
   }
 
   /** Returns the least common multiple of the given polynomials. */
-  public static Polynomial lcm(final Stream<Polynomial> polynomials) {
-    return lcm(polynomials.toArray(Polynomial[]::new));
+  public static Polynomial lcmOf(final Stream<Polynomial> polynomials) {
+    return lcmOf(polynomials.toArray(Polynomial[]::new));
   }
 
   private static MultivariatePolynomial<BigInteger> polynomialLcm(

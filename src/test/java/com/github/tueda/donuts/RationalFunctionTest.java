@@ -318,7 +318,7 @@ public class RationalFunctionTest {
     String s = "(1+a-b)/(2-x)";
     RationalFunction a = new RationalFunction(s);
     RationalFunction b = new RationalFunction(s);
-    VariableSet v = VariableSet.union(a, b);
+    VariableSet v = VariableSet.unionOf(a, b);
     a = a.translate(v);
     b = b.translate(v);
     // At this point, a and b share the same variable set.
@@ -345,7 +345,7 @@ public class RationalFunctionTest {
       RationalFunction a2 = new RationalFunction(s2);
       RationalFunction b1 = new RationalFunction(s1);
       RationalFunction b2 = new RationalFunction(s2);
-      VariableSet v = VariableSet.union(a1, a2, b1, b2);
+      VariableSet v = VariableSet.unionOf(a1, a2, b1, b2);
       a1 = a1.translate(v);
       a2 = a2.translate(v);
       b1 = b1.translate(v);
