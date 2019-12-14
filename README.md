@@ -59,6 +59,23 @@ jshell> new Polynomial("-2*x^4*y^3 + 2*x^3*y^4 + 2*x^2*y^5 - 2*x*y^6").factorize
 $9 ==> Polynomial[4] { -2*x*y^2, -1*y+x, -1*y+x, y+x }
 ```
 
+Development
+-------
+
+```shell
+./gradlew spotlessApply      # code formatter
+./gradlew check              # build and test
+./gradlew jacocoTestReport   # code coverage
+./gradlew javadoc            # build documents
+./gradlew dependencyUpdates  # check dependency updates
+./gradlew release            # release a new version
+
+# Git hooks.
+pre-commit install
+pre-commit install --hook-type commit-msg
+```
+
+
 License
 -------
 

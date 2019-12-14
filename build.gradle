@@ -146,3 +146,7 @@ publishing {
 
 // See researchgate/gradle-release#107
 project.tasks.release.dependsOn check
+
+release {
+  tagTemplate = 'v${version}'
+}
