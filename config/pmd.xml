@@ -14,6 +14,7 @@
   </rule>
   <rule ref="category/java/design.xml" >
     <exclude name="ExcessivePublicCount" />
+    <exclude name="GodClass" />
     <exclude name="LawOfDemeter" />
     <exclude name="LoosePackageCoupling" />
     <exclude name="TooManyMethods" />

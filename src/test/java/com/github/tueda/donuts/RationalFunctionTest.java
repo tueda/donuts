@@ -310,26 +310,46 @@ public class RationalFunctionTest {
     checkBinaryOperatorImmutability(RationalFunction::subtract);
     checkBinaryOperatorImmutability(RationalFunction::multiply);
     checkBinaryOperatorImmutability(RationalFunction::divide);
-    checkUnaryOperatorImmutability(p -> p.pow(5));
-    checkUnaryOperatorImmutability(p -> p.pow(new BigInteger("5")));
+    checkUnaryOperatorImmutability(r -> r.pow(5));
+    checkUnaryOperatorImmutability(r -> r.pow(new BigInteger("5")));
+    checkUnaryOperatorImmutability(r -> r.derivative(new Variable("x")));
+    checkUnaryOperatorImmutability(r -> r.derivative(new Variable("x"), 2));
   }
 
   void checkUnaryOperatorImmutability(UnaryOperator<RationalFunction> operator) {
-    String s = "(1+a-b)/(2-x)";
-    RationalFunction a = new RationalFunction(s);
-    RationalFunction b = new RationalFunction(s);
-    VariableSet v = VariableSet.unionOf(a, b);
-    a = a.translate(v);
-    b = b.translate(v);
-    // At this point, a and b share the same variable set.
-    operator.apply(a);
-    assertThat(a).isEqualTo(b);
+    checkUnaryOperatorImmutability(operator, "(1+a+b)/(1+c+d)");
+    checkUnaryOperatorImmutability(operator, "(1+a+b+x)/(1+c+d)");
+    checkUnaryOperatorImmutability(operator, "(1+a+b)/(1+c+d-x)");
+    checkUnaryOperatorImmutability(operator, "(1+a+b+2*x)/(1+c+d+3*x)");
+    checkUnaryOperatorImmutability(operator, "(1+a+b^2+x+x^2+x^3)/(1+c+d^2+3*x+5*x^5)");
+  }
+
+  void checkUnaryOperatorImmutability(UnaryOperator<RationalFunction> operator, String s) {
+    {
+      RationalFunction a = new RationalFunction(s);
+      RationalFunction b = new RationalFunction(s);
+      operator.apply(a);
+      assertThat(a).isEqualTo(b);
+    }
+    {
+      RationalFunction a = new RationalFunction(s);
+      RationalFunction b = new RationalFunction(s);
+      VariableSet v = VariableSet.unionOf(a, b);
+      a = a.translate(v);
+      b = b.translate(v);
+      // At this point, a and b share the same variable set.
+      operator.apply(a);
+      assertThat(a).isEqualTo(b);
+    }
   }
 
   void checkBinaryOperatorImmutability(BinaryOperator<RationalFunction> operator) {
+    checkBinaryOperatorImmutability(operator, "6*(1+a-b)*(2-x)*(1+x+y)", "2*(1+a-b)*(2-x)+z-z");
+  }
+
+  void checkBinaryOperatorImmutability(
+      BinaryOperator<RationalFunction> operator, String s1, String s2) {
     {
-      String s1 = "6*(1+a-b)*(2-x)*(1+x+y)";
-      String s2 = "2*(1+a-b)*(2-x)+z-z";
       RationalFunction a1 = new RationalFunction(s1);
       RationalFunction a2 = new RationalFunction(s2);
       RationalFunction b1 = new RationalFunction(s1);
@@ -339,8 +359,6 @@ public class RationalFunctionTest {
       assertThat(a2).isEqualTo(b2);
     }
     {
-      String s1 = "6*(1+a-b)*(2-x)*(1+x+y)";
-      String s2 = "2*(1+a-b)*(2-x)+z-z";
       RationalFunction a1 = new RationalFunction(s1);
       RationalFunction a2 = new RationalFunction(s2);
       RationalFunction b1 = new RationalFunction(s1);
@@ -523,6 +541,54 @@ public class RationalFunctionTest {
       assertThrows(IllegalArgumentException.class, () -> r1.substitute(Polynomial.of("1"), r3));
       assertThrows(IllegalArgumentException.class, () -> r1.substitute(Polynomial.of("2*x"), r3));
       assertThrows(IllegalArgumentException.class, () -> r1.substitute(Polynomial.of("x+y+z"), r3));
+    }
+  }
+
+  @Test
+  public void derivative() {
+    {
+      RationalFunction r1 = RationalFunction.of("(1+x+y)^3/(1-3*x+y)^2");
+      RationalFunction r2 = RationalFunction.of("0");
+      assertThat(r1.derivative(Variable.of("z"))).isEqualTo(r2);
+    }
+    {
+      RationalFunction r1 = RationalFunction.of("(1+x+y)^3/(1-3*x+y)^2");
+      RationalFunction r2 = RationalFunction.of("-3*(1+x+y)^2*(x-3*(1+y))/(1-3*x+y)^3");
+      assertThat(r1.derivative(Variable.of("x"))).isEqualTo(r2);
+    }
+    {
+      RationalFunction r1 = RationalFunction.of("(1+x+y)^3/(1-3*a+y)^2");
+      RationalFunction r2 = RationalFunction.of("3*(1+x+y)^2/(1-3*a+y)^2");
+      assertThat(r1.derivative(Variable.of("x"))).isEqualTo(r2);
+    }
+    {
+      RationalFunction r1 = RationalFunction.of("(1+a+y)^3/(1-3*x+y)^2");
+      RationalFunction r2 = RationalFunction.of("6*(1+a+y)^3/(1-3*x+y)^3");
+      assertThat(r1.derivative(Variable.of("x"))).isEqualTo(r2);
+    }
+    {
+      RationalFunction r1 = RationalFunction.of("(1+a+y)^3/(1-3*b+y)^2+x-x");
+      RationalFunction r2 = RationalFunction.of("0");
+      assertThat(r1.derivative(Variable.of("x"))).isEqualTo(r2);
+    }
+    {
+      RationalFunction r1 = RationalFunction.of("(1+x+y)^3/(1-3*x+y)^2");
+      RationalFunction r2 = r1;
+      assertThat(r1.derivative(Variable.of("x"), 0)).isEqualTo(r2);
+    }
+    {
+      RationalFunction r1 = RationalFunction.of("(1+x+y)^3/(1-3*x+y)^2");
+      RationalFunction r2 = RationalFunction.of("96*(1+y)^2*(1+x+y)/(1-3*x+y)^4");
+      assertThat(r1.derivative(Variable.of("x"), 2)).isEqualTo(r2);
+    }
+    {
+      RationalFunction r1 = RationalFunction.of("(1+x+y)^3/(1-3*x+y)^2");
+      RationalFunction r2 = RationalFunction.of("(51840*(1+y)^2*(7+3*x+7*y))/(1-3*x+y)^7");
+      assertThat(r1.derivative(Variable.of("x"), 5)).isEqualTo(r2);
+    }
+    {
+      RationalFunction r1 = RationalFunction.of("(1+x+y)^3/(1-3*x+y)^2");
+      assertThrows(IllegalArgumentException.class, () -> r1.derivative(Variable.of("x"), -1));
     }
   }
 }

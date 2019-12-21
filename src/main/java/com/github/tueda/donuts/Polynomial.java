@@ -782,4 +782,30 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
             rhs.translate(newVariables).raw);
     return new Polynomial(newVariables, newRawPoly);
   }
+
+  /** Returns the partial derivative with respect to the given variable. */
+  public Polynomial derivative(final Variable variable) {
+    return derivative(variable, 1);
+  }
+
+  /**
+   * Returns the partial derivative of the specified order with respect to the given variable.
+   *
+   * @throws IllegalArgumentException when {@code order} is negative.
+   */
+  public Polynomial derivative(final Variable variable, final int order) {
+    if (order < 0) {
+      throw new IllegalArgumentException(String.format("Negative order given: %s", order));
+    }
+    if (order == 0) {
+      return this;
+    }
+
+    final int i = variables.indexOf(variable.getName());
+    if (i < 0) {
+      return new Polynomial();
+    }
+
+    return new Polynomial(variables, raw.derivative(i, order));
+  }
 }

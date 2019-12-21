@@ -336,24 +336,40 @@ public class PolynomialTest {
     checkBinaryOperatorImmutability((p1, p2) -> Polynomial.lcmOf(p1, p2));
     checkMultaryOperatorImmutability((pp) -> Polynomial.lcmOf(pp));
     checkUnaryOperatorImmutability(p -> p.factors()[0]);
+    checkUnaryOperatorImmutability(p -> p.derivative(new Variable("x")));
+    checkUnaryOperatorImmutability(p -> p.derivative(new Variable("x"), 2));
   }
 
   void checkUnaryOperatorImmutability(UnaryOperator<Polynomial> operator) {
-    String s = "(1+a-b)*(2-x)";
-    Polynomial a = new Polynomial(s);
-    Polynomial b = new Polynomial(s);
-    VariableSet v = VariableSet.unionOf(a, b);
-    a = a.translate(v);
-    b = b.translate(v);
-    // At this point, a and b share the same variable set.
-    operator.apply(a);
-    assertThat(a).isEqualTo(b);
+    checkUnaryOperatorImmutability(operator, "(1+a-b)");
+    checkUnaryOperatorImmutability(operator, "(1+a-b)*(2-x)");
+  }
+
+  void checkUnaryOperatorImmutability(UnaryOperator<Polynomial> operator, String s) {
+    {
+      Polynomial a = new Polynomial(s);
+      Polynomial b = new Polynomial(s);
+      operator.apply(a);
+      assertThat(a).isEqualTo(b);
+    }
+    {
+      Polynomial a = new Polynomial(s);
+      Polynomial b = new Polynomial(s);
+      VariableSet v = VariableSet.unionOf(a, b);
+      a = a.translate(v);
+      b = b.translate(v);
+      // At this point, a and b share the same variable set.
+      operator.apply(a);
+      assertThat(a).isEqualTo(b);
+    }
   }
 
   void checkBinaryOperatorImmutability(BinaryOperator<Polynomial> operator) {
+    checkBinaryOperatorImmutability(operator, "6*(1+a-b)*(2-x)*(1+x+y)", "2*(1+a-b)*(2-x)+z-z");
+  }
+
+  void checkBinaryOperatorImmutability(BinaryOperator<Polynomial> operator, String s1, String s2) {
     {
-      String s1 = "6*(1+a-b)*(2-x)*(1+x+y)";
-      String s2 = "2*(1+a-b)*(2-x)+z-z";
       Polynomial a1 = new Polynomial(s1);
       Polynomial a2 = new Polynomial(s2);
       Polynomial b1 = new Polynomial(s1);
@@ -363,8 +379,6 @@ public class PolynomialTest {
       assertThat(a2).isEqualTo(b2);
     }
     {
-      String s1 = "6*(1+a-b)*(2-x)*(1+x+y)";
-      String s2 = "2*(1+a-b)*(2-x)+z-z";
       Polynomial a1 = new Polynomial(s1);
       Polynomial a2 = new Polynomial(s2);
       Polynomial b1 = new Polynomial(s1);
@@ -740,6 +754,34 @@ public class PolynomialTest {
       assertThrows(IllegalArgumentException.class, () -> p1.substitute(Polynomial.of("1"), p3));
       assertThrows(IllegalArgumentException.class, () -> p1.substitute(Polynomial.of("2*x"), p3));
       assertThrows(IllegalArgumentException.class, () -> p1.substitute(Polynomial.of("x+y+z"), p3));
+    }
+  }
+
+  @Test
+  public void derivative() {
+    {
+      Polynomial p1 = Polynomial.of("(1+x+y)^3");
+      Polynomial p2 = Polynomial.of("0");
+      assertThat(p1.derivative(Variable.of("z"))).isEqualTo(p2);
+    }
+    {
+      Polynomial p1 = Polynomial.of("(1+x+y)^3");
+      Polynomial p2 = Polynomial.of("3*(1+x+y)^2");
+      assertThat(p1.derivative(Variable.of("x"))).isEqualTo(p2);
+    }
+    {
+      Polynomial p1 = Polynomial.of("(1+x+y)^3");
+      Polynomial p2 = Polynomial.of("6*(1+x+y)");
+      assertThat(p1.derivative(Variable.of("x"), 2)).isEqualTo(p2);
+    }
+    {
+      Polynomial p1 = Polynomial.of("(1+x+y)^3");
+      Polynomial p2 = p1;
+      assertThat(p1.derivative(Variable.of("x"), 0)).isEqualTo(p2);
+    }
+    {
+      Polynomial p1 = Polynomial.of("(1+x+y)^3");
+      assertThrows(IllegalArgumentException.class, () -> p1.derivative(Variable.of("x"), -1));
     }
   }
 }

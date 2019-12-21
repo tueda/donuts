@@ -451,4 +451,69 @@ public final class RationalFunction implements Serializable, Multivariate {
 
     return new RationalFunction(newVariables, rawNum.divide(rawDen));
   }
+
+  /** Returns the partial derivative with respect to the given variable. */
+  public RationalFunction derivative(final Variable variable) {
+    return derivative(variable, 1);
+  }
+
+  /**
+   * Returns the partial derivative of the specified order with respect to the given variable.
+   *
+   * @throws IllegalArgumentException when {@code order} is negative.
+   */
+  public RationalFunction derivative(final Variable variable, final int order) {
+    if (order < 0) {
+      throw new IllegalArgumentException(String.format("Negative order given: %s", order));
+    }
+    if (order == 0) {
+      return this;
+    }
+
+    final int i = variables.indexOf(variable.getName());
+    if (i < 0) {
+      return new RationalFunction();
+    }
+
+    Rational<MultivariatePolynomial<BigInteger>> r = raw;
+
+    for (int j = 0; j < order; j++) {
+      r = derivativeImpl(r, i);
+      if (r == null) {
+        return new RationalFunction();
+      }
+    }
+
+    return new RationalFunction(variables, r);
+  }
+
+  private static Rational<MultivariatePolynomial<BigInteger>> derivativeImpl(
+      final Rational<MultivariatePolynomial<BigInteger>> r, final int variable) {
+    final MultivariatePolynomial<BigInteger> p = r.numerator();
+    final MultivariatePolynomial<BigInteger> q = r.denominator();
+
+    final MultivariatePolynomial<BigInteger> p1 = p.derivative(variable);
+    final MultivariatePolynomial<BigInteger> q1 = q.derivative(variable);
+
+    if (p1.isZero()) {
+      if (q1.isZero()) {
+        // p' == 0, q' == 0.
+        return null;
+      } else {
+        // p' == 0, q' != 0.
+        return new Rational<>(r.ring, q1.multiply(p).negate(), q.copy().multiply(q));
+      }
+    } else {
+      if (q1.isZero()) {
+        // p' != 0, q' == 0.
+        return new Rational<>(r.ring, p1, q);
+      } else {
+        // p' != 0, q' != 0.
+        final Rational<MultivariatePolynomial<BigInteger>> term1 = new Rational<>(r.ring, p1, q);
+        final Rational<MultivariatePolynomial<BigInteger>> term2 =
+            new Rational<>(r.ring, q1.multiply(p).negate(), q.copy().multiply(q));
+        return term1.add(term2);
+      }
+    }
+  }
 }
