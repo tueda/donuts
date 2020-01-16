@@ -149,7 +149,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
       return false;
     }
     final Variable x = (Variable) o;
-    return Arrays.binarySearch(table, x.getName()) >= 0;
+    return Arrays.binarySearch(table, x.getName(), Variable.NAME_COMPARATOR) >= 0;
   }
 
   @Override
@@ -278,7 +278,9 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     final int[] mapping = new int[table.length];
     int j = 0;
     for (int i = 0; i < mapping.length; i++) {
-      j = Arrays.binarySearch(other.table, j, other.table.length, table[i]);
+      j =
+          Arrays.binarySearch(
+              other.table, j, other.table.length, table[i], Variable.NAME_COMPARATOR);
       if (j < 0) {
         return null;
       }
@@ -303,7 +305,9 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     final int[] mapping = new int[table.length];
     int j = 0;
     for (int i = 0; i < mapping.length; i++) {
-      final int k = Arrays.binarySearch(other.table, j, other.table.length, table[i]);
+      final int k =
+          Arrays.binarySearch(
+              other.table, j, other.table.length, table[i], Variable.NAME_COMPARATOR);
       if (k < 0) {
         mapping[i] = defaultIndex;
       } else {
@@ -325,10 +329,11 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   }
 
   /* default */ int indexOf(final String rawVariable) {
-    return Arrays.binarySearch(table, rawVariable);
+    return Arrays.binarySearch(table, rawVariable, Variable.NAME_COMPARATOR);
   }
 
   /* default */ int indexOf(final String rawVariable, final int fromIndex) {
-    return Arrays.binarySearch(table, fromIndex, table.length, rawVariable);
+    return Arrays.binarySearch(
+        table, fromIndex, table.length, rawVariable, Variable.NAME_COMPARATOR);
   }
 }

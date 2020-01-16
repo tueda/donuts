@@ -47,6 +47,8 @@ public class VariableSetTest {
     assertThat(VariableSet.of("a", "b").contains(Variable.of("a"))).isTrue();
     assertThat(VariableSet.of("a", "b").contains(Variable.of("x"))).isFalse();
     assertThat(VariableSet.of("a", "b").contains(1)).isFalse();
+
+    assertThat(VariableSet.of("x2", "x10").contains(Variable.of("x10"))).isTrue();
   }
 
   @Test
@@ -108,5 +110,7 @@ public class VariableSetTest {
         .isEqualTo(new int[] {0, 2, 4});
 
     assertThat(VariableSet.of("a", "c", "f").map(VariableSet.of("a", "b", "c", "d", "e"))).isNull();
+
+    assertThat(VariableSet.of("x10").map(VariableSet.of("x2", "x10"))).isEqualTo(new int[] {1});
   }
 }
