@@ -17,13 +17,27 @@ jobs:
       - run: gitlint
       - run: pre-commit run --all-files
   build:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 8, 8.0.192, 9.0.x, 10, 11.0.x, 11.0.3, 12, 13 ]
+        java:
+          - 8
+          - 9
+          - 10
+          - 11
+          - 12
+          - 13
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+        architecture:
+          - x64
+          - x86
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
+          architecture: ${{ matrix.architecture }}
       - run: ./gradlew check jacocoTestReport javadoc shadowJar
