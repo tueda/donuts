@@ -36,12 +36,6 @@
       <property name="ignoreMagicNumbers" value="-1,0,1" />
     </properties>
   </rule>
-  <!-- workaround: pmd/pmd#1922 -->
-  <rule ref="category/java/errorprone.xml/CloseResource">
-    <properties>
-      <property name="allowedResourceTypes" value="java.io.ByteArrayOutputStream|java.io.ByteArrayInputStream|java.io.StringWriter|java.io.CharArrayWriter|java.util.stream.Stream" />
-    </properties>
-  </rule>
   <rule ref="category/java/multithreading.xml" ></rule>
   <rule ref="category/java/performance.xml" >
     <exclude name="AvoidInstantiatingObjectsInLoops" />
