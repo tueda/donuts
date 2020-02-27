@@ -1,4 +1,4 @@
-package com.github.tueda.donuts;
+package com.github.tueda.donuts.util;
 
 import java.util.ArrayList;
 

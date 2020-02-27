@@ -7,6 +7,7 @@ import cc.redberry.rings.poly.PolynomialMethods;
 import cc.redberry.rings.poly.multivar.DegreeVector;
 import cc.redberry.rings.poly.multivar.Monomial;
 import cc.redberry.rings.poly.multivar.MultivariatePolynomial;
+import com.github.tueda.donuts.util.IndexToObjectMap;
 import lombok.experimental.UtilityClass;
 
 /** This class consists of static utility methods for substitutions. */
