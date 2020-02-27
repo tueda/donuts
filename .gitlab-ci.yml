@@ -1,8 +1,15 @@
 .test:
-  script:
+  variables:
+    GRADLE_USER_HOME: "$CI_PROJECT_DIR/.cache/gradle"
+  cache:
+    paths:
+      - $GRADLE_USER_HOME/caches
+      - $GRADLE_USER_HOME/wrapper
+  before_script:
     - java -version
     - javac -version
     - ./gradlew -version
+  script:
     - ./gradlew check jacocoTestReport javadoc shadowJar
   artifacts:
     paths:
@@ -12,9 +19,21 @@
     expire_in: 1 week
 
 lint:
-  image: python:latest
+  image: python:3.8
+  variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+    PRE_COMMIT_HOME: "$CI_PROJECT_DIR/.cache/pre-commit"
+    PYTHONUSERBASE: "$CI_PROJECT_DIR/.cache/python-user-packages"
+  cache:
+    key: "$CI_JOB_NAME"
+    paths:
+      - $PIP_CACHE_DIR
+      - $PRE_COMMIT_HOME
+      - $PYTHONUSERBASE
   before_script:
-    - pip install gitlint pre-commit
+    - python -V
+    - export PATH="$PATH:$PYTHONUSERBASE/bin"
+    - pip install --user gitlint pre-commit
   script:
     - gitlint
     - pre-commit run --all-files
