@@ -352,4 +352,8 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     return Arrays.binarySearch(
         table, fromIndex, table.length, rawVariable, Variable.NAME_COMPARATOR);
   }
+
+  /* default */ int indexOf(final Variable variable) {
+    return indexOf(variable.getName());
+  }
 }

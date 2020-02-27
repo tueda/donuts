@@ -489,7 +489,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
    * @return the degree in the variable
    */
   public int degree(final Variable variable) {
-    final int j = variables.indexOf(variable.getName());
+    final int j = variables.indexOf(variable);
     if (j < 0) {
       return 0;
     }
@@ -533,7 +533,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
    * @return the coefficient
    */
   public Polynomial coefficientOf(final Variable variable, final int exponent) {
-    final int j = variables.indexOf(variable.getName());
+    final int j = variables.indexOf(variable);
     if (j < 0) {
       if (exponent == 0) {
         // Example: coeff of (x + y) wrt z^0 => (x + y)
@@ -982,7 +982,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
       return this;
     }
 
-    final int i = variables.indexOf(variable.getName());
+    final int i = variables.indexOf(variable);
     if (i < 0) {
       return new Polynomial();
     }

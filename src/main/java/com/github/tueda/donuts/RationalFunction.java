@@ -591,7 +591,7 @@ public final class RationalFunction implements Serializable, Multivariate {
       return this;
     }
 
-    final int i = variables.indexOf(variable.getName());
+    final int i = variables.indexOf(variable);
     if (i < 0) {
       return new RationalFunction();
     }
