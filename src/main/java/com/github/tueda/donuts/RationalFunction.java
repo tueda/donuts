@@ -128,12 +128,24 @@ public final class RationalFunction implements Serializable, Multivariate {
    * @throws ArithmeticException when division by zero
    */
   public RationalFunction(final Polynomial numerator, final Polynomial denominator) {
-    variables = numerator.getVariables().union(denominator.getVariables());
-    raw =
-        new Rational<>(
-            getRings(variables.size()),
-            numerator.translate(variables).getRawPolynomialWithoutCopy(),
-            denominator.translate(variables).getRawPolynomialWithoutCopy());
+    final VariableSet numeratorVariables = numerator.getVariables();
+    final VariableSet denominatorVariables = denominator.getVariables();
+
+    if (numeratorVariables.equals(denominatorVariables)) {
+      variables = numeratorVariables;
+      raw =
+          new Rational<>(
+              getRings(variables.size()),
+              numerator.getRawPolynomialWithoutCopy(),
+              denominator.getRawPolynomialWithoutCopy());
+    } else {
+      variables = numeratorVariables.union(denominatorVariables);
+      raw =
+          new Rational<>(
+              getRings(variables.size()),
+              numerator.translate(variables).getRawPolynomialWithoutCopy(),
+              denominator.translate(variables).getRawPolynomialWithoutCopy());
+    }
   }
 
   /**
