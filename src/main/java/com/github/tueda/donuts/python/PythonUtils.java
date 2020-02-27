@@ -25,7 +25,13 @@ public class PythonUtils {
     }
   }
 
-  /** Construct an object input stream, which avoids JDK-4340158. */
+  /**
+   * Construct an object input stream. This function avoids JDK-4340158.
+   *
+   * @param in the input stream to read from
+   * @return the resultant input stream
+   * @throws IOException when an I/O error occurs
+   */
   public static ObjectInputStream createObjectInputStream(final InputStream in) throws IOException {
     return new ObjectInputStream2(in);
   }
@@ -33,7 +39,12 @@ public class PythonUtils {
   // The following methods are defined in order to avoid the issues of overloading static methods
   // with variable arguments in Pyjnius.
 
-  /** Returns the greatest common divisor of the given polynomials. */
+  /**
+   * Returns the greatest common divisor of the given polynomials.
+   *
+   * @param polynomials the polynomials for which the GCD is to be computed
+   * @return {@code GCD(polynomial1, ..., polynomialN)}
+   */
   @SuppressWarnings("PMD.UseVarargs")
   public static Polynomial gcdOf(final Polynomial[] polynomials) {
     return Polynomial.gcdOf(polynomials);
@@ -42,6 +53,8 @@ public class PythonUtils {
   /**
    * Returns the least common multiple of the given polynomials.
    *
+   * @param polynomials the polynomials for which the LCM is to be computed
+   * @return {@code LCM(polynomial1, ..., polynomialN)}
    * @throws IllegalArgumentException when no polynomial is given
    */
   @SuppressWarnings("PMD.UseVarargs")

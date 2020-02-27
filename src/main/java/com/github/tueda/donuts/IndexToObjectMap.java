@@ -3,10 +3,10 @@ package com.github.tueda.donuts;
 import java.util.ArrayList;
 
 /** An object that maps indices to values. */
-public final class IndexToObjectMap<T> {
+public final class IndexToObjectMap<V> {
   /** The table to store mappings. */
-  @SuppressWarnings("PMD.LooseCoupling") // we want ArrayList.ensureCapacity().
-  private final ArrayList<T> table = new ArrayList<>();
+  @SuppressWarnings("PMD.LooseCoupling") // we want to use ArrayList.ensureCapacity().
+  private final ArrayList<V> table = new ArrayList<>();
 
   /** Constructs a map. */
   public IndexToObjectMap() {
@@ -17,20 +17,21 @@ public final class IndexToObjectMap<T> {
    * Returns the value specified by the given index, or {@code null} if the index has no mapping.
    *
    * @param index whose associated value is to be returned
-   * @return the value to which the specified index is mapped, or null if no mapping is stored
+   * @return the value to which the specified index is mapped, or {@code null} if no mapping is
+   *     stored
    */
-  public T get(final int index) {
+  public V get(final int index) {
     ensureIndex(index);
     return table.get(index);
   }
 
   /**
-   * Associates the specified value with the specified index.
+   * Associates the given value with the specified index.
    *
-   * @param index with which the specified value is to be associated
+   * @param index with which the value is to be associated
    * @param value to be associated to the index
    */
-  public void put(final int index, final T value) {
+  public void put(final int index, final V value) {
     ensureIndex(index);
     table.set(index, value);
   }

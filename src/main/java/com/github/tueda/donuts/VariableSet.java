@@ -31,7 +31,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   /**
    * Constructs a set of variables from the given variable.
    *
-   * @param variable the variable.
+   * @param variable the variable
    */
   public VariableSet(final Variable variable) {
     super();
@@ -41,7 +41,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   /**
    * Constructs a set of variables from the given variables.
    *
-   * @param variables the set of variables.
+   * @param variables the set of variables
    */
   public VariableSet(final Variable... variables) {
     super();
@@ -52,7 +52,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   /**
    * Constructs a set of variables from the given variables.
    *
-   * @param variables the set of variables.
+   * @param variables the set of variables
    */
   public VariableSet(final Iterable<Variable> variables) {
     super();
@@ -64,7 +64,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   /**
    * Constructs a set of variables from the given variables.
    *
-   * @param variables the set of variables.
+   * @param variables the set of variables
    */
   public VariableSet(final Stream<Variable> variables) {
     super();
@@ -78,7 +78,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     this.table = rawTable;
   }
 
-  private static VariableSet fromVariableNames(final Stream<String> stream) {
+  private static VariableSet createFromVariableNames(final Stream<String> stream) {
     return new VariableSet(
         stream.sorted(Variable.NAME_COMPARATOR).distinct().toArray(String[]::new));
   }
@@ -90,9 +90,9 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   /**
    * Returns a set of variables from the given name.
    *
-   * @param name the name.
-   * @throws IllegalArgumentException when the given names is illegal for variables.
-   * @return a set of variables constructed from the given name.
+   * @param name the name
+   * @return a set of variables constructed from the given name
+   * @throws IllegalArgumentException when the given names is illegal for variables
    */
   @SuppressWarnings("PMD.ShortMethodName")
   public static VariableSet of(final String name) {
@@ -102,9 +102,9 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   /**
    * Returns a set of variables from the given names.
    *
-   * @param names the set of names.
-   * @throws IllegalArgumentException when any of the given names are illegal for variables.
-   * @return a set of variables constructed from the given names.
+   * @param names the set of names
+   * @return a set of variables constructed from the given names
+   * @throws IllegalArgumentException when any of the given names are illegal for variables
    */
   @SuppressWarnings("PMD.ShortMethodName")
   public static VariableSet of(final String... names) {
@@ -158,10 +158,10 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   }
 
   /**
-   * Returns whether this variable set and the other have the intersection.
+   * Returns {@code true} if this variable set and the other have any intersection.
    *
-   * @param other The set of variables to be checked.
-   * @return {@code true} if there is an intersection for this set and the other.
+   * @param other The set of variables to be checked
+   * @return {@code true} if there is an intersection for this set and the other
    */
   public boolean intersects(final VariableSet other) {
     return !Collections.disjoint(this, other);
@@ -170,8 +170,8 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   /**
    * Returns the intersection of this variable set and the other.
    *
-   * @param other The set of variables with which the intersection is taken.
-   * @return the intersection for this set and the other.
+   * @param other The set of variables with which the intersection is taken
+   * @return the intersection for this set and the other
    */
   public VariableSet intersection(final VariableSet other) {
     if (this.equals(other)) {
@@ -210,8 +210,8 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   /**
    * Returns the union of this variable set and the other.
    *
-   * @param other The set of variables to be united.
-   * @return the union of this set and the other.
+   * @param other The set of variables to be united
+   * @return the union of this set and the other
    */
   public VariableSet union(final VariableSet other) {
     if (this.equals(other)) {
@@ -227,7 +227,8 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     }
 
     final VariableSet newVariables =
-        VariableSet.fromVariableNames(Stream.concat(Stream.of(table), Stream.of(other.table)));
+        VariableSet.createFromVariableNames(
+            Stream.concat(Stream.of(table), Stream.of(other.table)));
 
     if (this.equals(newVariables)) {
       return this;
@@ -240,17 +241,32 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     return newVariables;
   }
 
-  /** Returns the least common set that containing all the variables in the given objects. */
+  /**
+   * Returns the least common set that containing all the variables in the given objects.
+   *
+   * @param objects the objects to be examined
+   * @return the least common set of the variables in the objects
+   */
   public static VariableSet unionOf(final Multivariate... objects) {
     return unionOf(Stream.of(objects));
   }
 
-  /** Returns the least common set that containing all the variables in the given objects. */
+  /**
+   * Returns the least common set that containing all the variables in the given objects.
+   *
+   * @param objects the objects to be examined
+   * @return the least common set of the variables in the objects
+   */
   public static VariableSet unionOf(final Iterable<Multivariate> objects) {
     return unionOf(StreamSupport.stream(objects.spliterator(), false));
   }
 
-  /** Returns the least common set that containing all the variables in the given objects. */
+  /**
+   * Returns the least common set that containing all the variables in the given objects.
+   *
+   * @param objects the objects to be examined
+   * @return the least common set of the variables in the objects
+   */
   public static VariableSet unionOf(final Stream<Multivariate> objects) {
     final Optional<VariableSet> result =
         objects.map(obj -> obj.getVariables()).reduce((n1, n2) -> n1.union(n2));
@@ -262,14 +278,14 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   }
 
   /**
-   * Returns the mapping of the variables to those in the other, or null when no mapping exists. The
-   * returned non-null array contains the mapping in such a way that {@code a[i] = j} (for {@code 0
-   * <= i < this.size()}) indicating the i-th variable of the current set is mapped to the j-th
-   * variable of the other. The mapping is injective but may be not surjective.
+   * Returns the mapping of the variables to those in the other, or {@code null} when no mapping
+   * exists. The returned non-null array contains the mapping in such a way that {@code a[i] = j}
+   * (for {@code 0 <= i < this.size()}) indicating the i-th variable of the current set is mapped to
+   * the j-th variable of the other. The mapping is injective but may be not surjective.
    *
-   * @param other The target set of variables.
-   * @return the mapping of the variables, or null when the given variable set does not contain all
-   *     variables in the current set.
+   * @param other The target set of variables
+   * @return the mapping of the variables, or {@code null} when the given variable set does not
+   *     contain all variables in the current set
    */
   @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
       justification = "Returning null indicates no mapping exists",
@@ -296,10 +312,10 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
    * in the current set is not contained in the other, then the variable is mapped to {@code
    * defaultIndex}, so the mapping may be neither injective nor surjective.
    *
-   * @param other The target set of variables.
+   * @param other The target set of variables
    * @param defaultIndex is used as the default image of any variables that are not contained in the
-   *     other set.
-   * @return the mapping of the variables.
+   *     other set
+   * @return the mapping of the variables
    */
   public int[] map(final VariableSet other, final int defaultIndex) {
     final int[] mapping = new int[table.length];

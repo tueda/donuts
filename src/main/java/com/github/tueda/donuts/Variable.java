@@ -25,8 +25,8 @@ public final class Variable implements Comparable<Variable>, Serializable, Multi
   /**
    * Constructs a variable with the given name.
    *
-   * @param name the name of the variable.
-   * @throws IllegalArgumentException when the given name is illegal for variables.
+   * @param name the name of the variable
+   * @throws IllegalArgumentException when the given name is illegal for variables
    */
   public Variable(final String name) {
     this(name, true);
@@ -46,9 +46,9 @@ public final class Variable implements Comparable<Variable>, Serializable, Multi
   /**
    * Returns a variable with the given name.
    *
-   * @param name the name.
-   * @throws IllegalArgumentException when the given name is illegal for variables.
-   * @return a variable with the given name.
+   * @param name the name of the variable
+   * @return a variable with the given name
+   * @throws IllegalArgumentException when the given name is illegal for variables
    */
   @SuppressWarnings("PMD.ShortMethodName")
   public static Variable of(final String name) {
@@ -58,9 +58,9 @@ public final class Variable implements Comparable<Variable>, Serializable, Multi
   /**
    * Returns an array of variables with the given names.
    *
-   * @param names the names.
-   * @throws IllegalArgumentException when any of the given names are illegal for variables.
+   * @param names the names
    * @return an array of variables with the given names.
+   * @throws IllegalArgumentException when any of the given names are illegal for variables
    */
   @SuppressWarnings("PMD.ShortMethodName")
   public static Variable[] of(final String... names) {
@@ -105,17 +105,17 @@ public final class Variable implements Comparable<Variable>, Serializable, Multi
   /**
    * Returns the name of this variable.
    *
-   * @return the name of variable.
+   * @return the name of variable
    */
   public String getName() {
     return name;
   }
 
   /**
-   * Returns whether the given name is legal for variables.
+   * Returns {@code true} if the given name is legal for variables.
    *
-   * @param name the name to be tested.
-   * @return {@code true} if the name is legal.
+   * @param name the name to be tested
+   * @return {@code true} if the name is legal
    */
   public static boolean isVariableName(final String name) {
     if (name.isEmpty()) {
@@ -135,8 +135,8 @@ public final class Variable implements Comparable<Variable>, Serializable, Multi
   /**
    * Returns strings that look like variable names.
    *
-   * @param string the string to be examined.
-   * @return variable names found in the string, sorted and distinct.
+   * @param string the string to be examined
+   * @return variable names found in the string, sorted and distinct
    */
   public static String[] guessVariableNames(final String string) {
     final Matcher matcher = IDENTIFIER_PATTERN.matcher(string);

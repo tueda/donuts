@@ -12,14 +12,26 @@ import lombok.experimental.UtilityClass;
 /** This class consists of static utility methods for substitutions. */
 @UtilityClass
 public class SubstitutionUtils {
-  /** Checks if the given polynomial is valid for a LHS of a substitution. */
+  /**
+   * Checks if the given polynomial is valid for a LHS of a substitution.
+   *
+   * @param lhs the polynomial to be checked
+   * @throws IllegalArgumentException when the polynomial is invalid
+   */
   public static void checkLhs(final Polynomial lhs) {
     if (!lhs.isMonomial() || lhs.isConstant() || !lhs.isMonic()) {
       throw new IllegalArgumentException("illegal lhs for substitution");
     }
   }
 
-  /** Returns the result of the given substitution. */
+  /**
+   * Returns the result of the given substitution.
+   *
+   * @param poly the input polynomial
+   * @param lhs the left-hand side
+   * @param rhs the right-hand side
+   * @return the resultant polynomial
+   */
   public static MultivariatePolynomial<BigInteger> substitute(
       final MultivariatePolynomial<BigInteger> poly,
       final Monomial<BigInteger> lhs,
@@ -42,7 +54,14 @@ public class SubstitutionUtils {
     return result;
   }
 
-  /** Returns the result of the given substitution. */
+  /**
+   * Returns the result of the given substitution.
+   *
+   * @param poly the input polynomial
+   * @param lhs the left-hand side
+   * @param rhs the right-hand side
+   * @return the resultant polynomial
+   */
   public static Rational<MultivariatePolynomial<BigInteger>> substitute(
       final MultivariatePolynomial<BigInteger> poly,
       final Monomial<BigInteger> lhs,
@@ -78,7 +97,7 @@ public class SubstitutionUtils {
     }
   }
 
-  /** Cache powers of a polynomial. */
+  /** Cache powers of a raw polynomial object. */
   private static class PolynomialPowers {
     /** The base. */
     private final MultivariatePolynomial<BigInteger> base;
@@ -86,13 +105,22 @@ public class SubstitutionUtils {
     /** The cache for powers. */
     private final IndexToObjectMap<MultivariatePolynomial<BigInteger>> cache;
 
-    /** Constructs a precomputed cache for powers of the given polynomial. */
+    /**
+     * Constructs a precomputed cache for powers of the given polynomial.
+     *
+     * @param base the base polynomial
+     */
     public PolynomialPowers(final MultivariatePolynomial<BigInteger> base) {
       this.base = base;
       this.cache = new IndexToObjectMap<>();
     }
 
-    /** Returns the power of the polynomial. */
+    /**
+     * Returns the power of the polynomial.
+     *
+     * @param exponent the exponent
+     * @return the result
+     */
     public MultivariatePolynomial<BigInteger> pow(final int exponent) {
       MultivariatePolynomial<BigInteger> result = cache.get(exponent);
       if (result == null) {
@@ -103,7 +131,7 @@ public class SubstitutionUtils {
     }
   }
 
-  /** Cache powers of a rational. */
+  /** Cache powers of a raw rational function object. */
   private static class RationalPowers {
     /** The base. */
     private final Rational<MultivariatePolynomial<BigInteger>> base;
@@ -111,13 +139,22 @@ public class SubstitutionUtils {
     /** The cache for powers. */
     private final IndexToObjectMap<Rational<MultivariatePolynomial<BigInteger>>> cache;
 
-    /** Constructs a precomputed cache for powers of the given polynomial. */
+    /**
+     * Constructs a precomputed cache for powers of the given rational function.
+     *
+     * @param base the base rational function
+     */
     public RationalPowers(final Rational<MultivariatePolynomial<BigInteger>> base) {
       this.base = base;
       this.cache = new IndexToObjectMap<>();
     }
 
-    /** Returns the power of the polynomial. */
+    /**
+     * Returns the power of the rational function.
+     *
+     * @param exponent the exponent
+     * @return the result
+     */
     public Rational<MultivariatePolynomial<BigInteger>> pow(final int exponent) {
       Rational<MultivariatePolynomial<BigInteger>> result = cache.get(exponent);
       if (result == null) {

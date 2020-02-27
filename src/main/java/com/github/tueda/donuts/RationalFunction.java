@@ -58,19 +58,31 @@ public final class RationalFunction implements Serializable, Multivariate {
     raw = RAW_ZERO;
   }
 
-  /** Constructs a rational function from the given integer. */
+  /**
+   * Constructs a rational function from the given integer.
+   *
+   * @param value the integer to be converted to a rational function
+   */
   public RationalFunction(final long value) {
     variables = VariableSet.EMPTY;
     raw = new Rational<>(getRings(0), Polynomial.RAW_ZERO.createConstant(value));
   }
 
-  /** Constructs a rational function from the given integer. */
+  /**
+   * Constructs a rational function from the given integer.
+   *
+   * @param value the integer to be converted to a rational function
+   */
   public RationalFunction(final BigInteger value) {
     variables = VariableSet.EMPTY;
     raw = new Rational<>(getRings(0), Polynomial.RAW_ZERO.createConstant(value));
   }
 
-  /** Constructs a rational function from the given polynomial. */
+  /**
+   * Constructs a rational function from the given polynomial.
+   *
+   * @param poly the polynomial to be converted to a rational function
+   */
   public RationalFunction(final Polynomial poly) {
     variables = poly.getVariables();
     raw = new Rational<>(getRings(variables.size()), poly.getRawPolynomialWithoutCopy());
@@ -79,6 +91,8 @@ public final class RationalFunction implements Serializable, Multivariate {
   /**
    * Constructs a rational function from the given numerator and denominator.
    *
+   * @param numerator the numerator
+   * @param denominator the denominator
    * @throws ArithmeticException when division by zero
    */
   public RationalFunction(final long numerator, final long denominator) {
@@ -93,6 +107,8 @@ public final class RationalFunction implements Serializable, Multivariate {
   /**
    * Constructs a rational function from the given numerator and denominator.
    *
+   * @param numerator the numerator
+   * @param denominator the denominator
    * @throws ArithmeticException when division by zero
    */
   public RationalFunction(final BigInteger numerator, final BigInteger denominator) {
@@ -107,6 +123,8 @@ public final class RationalFunction implements Serializable, Multivariate {
   /**
    * Constructs a rational function from the given numerator and denominator.
    *
+   * @param numerator the numerator
+   * @param denominator the denominator
    * @throws ArithmeticException when division by zero
    */
   public RationalFunction(final Polynomial numerator, final Polynomial denominator) {
@@ -121,6 +139,7 @@ public final class RationalFunction implements Serializable, Multivariate {
   /**
    * Constructs a rational function from the given string.
    *
+   * @param string the string to be parsed
    * @throws IllegalArgumentException when {@code string} does not represent a rational function
    */
   @SuppressWarnings("PMD.AvoidCatchingGenericException")
@@ -192,7 +211,8 @@ public final class RationalFunction implements Serializable, Multivariate {
   /**
    * Returns a rational function constructed from the given string.
    *
-   * @param string the string representation
+   * @param string the string to be parsed
+   * @return the resultant rational function
    * @throws IllegalArgumentException when {@code string} does not represent a rational function
    */
   @SuppressWarnings("PMD.ShortMethodName")
@@ -203,9 +223,10 @@ public final class RationalFunction implements Serializable, Multivariate {
   /**
    * Returns an array of rational functions constructed from the given strings.
    *
-   * @param strings the string representations
+   * @param strings the array of strings to be parsed
+   * @return the resultant array of rational functions
    * @throws IllegalArgumentException when any of the given strings are invalid for rational
-   *     functions.
+   *     functions
    */
   @SuppressWarnings("PMD.ShortMethodName")
   public static RationalFunction[] of(final String... strings) {
@@ -234,7 +255,11 @@ public final class RationalFunction implements Serializable, Multivariate {
     /** The denominator. */
     private final MultivariatePolynomial<BigInteger> denominator;
 
-    /** Constructor. */
+    /**
+     * Constructor.
+     *
+     * @param rat the rational function to be serialized
+     */
     public SerializationProxy(final RationalFunction rat) {
       variables = rat.variables;
       numerator = rat.raw.numerator();
@@ -291,7 +316,11 @@ public final class RationalFunction implements Serializable, Multivariate {
     return getNumerator().getMinimalVariables().union(getDenominator().getMinimalVariables());
   }
 
-  /** Returns the raw rational function object. */
+  /**
+   * Returns the raw rational function object of the Rings library.
+   *
+   * @return the raw rational function object
+   */
   public Rational<MultivariatePolynomial<BigInteger>> getRawRational() {
     return new Rational<>(raw.ring, raw.numerator().copy(), raw.denominator().copy());
   }
@@ -301,55 +330,94 @@ public final class RationalFunction implements Serializable, Multivariate {
     return raw;
   }
 
-  /** Returns whether this rational function is zero. */
+  /**
+   * Returns {@code true} if this rational function is equal to zero.
+   *
+   * @return {@code true} if this rational function is {@code 0}
+   */
   public boolean isZero() {
     return raw.isZero();
   }
 
-  /** Returns whether this rational function is one. */
+  /**
+   * Returns {@code true} if this rational function is equal to unity.
+   *
+   * @return {@code true} if this rational function is {@code 1}.
+   */
   public boolean isOne() {
     return raw.isOne();
   }
 
-  /** Returns whether this rational function is minus one. */
+  /**
+   * Returns {@code true} if this rational function is equal to minus one.
+   *
+   * @return {@code true} if this rational function is {@code -1}.
+   */
   public boolean isMinusOne() {
     return raw.isIntegral() && getNumerator().isMinusOne();
   }
 
-  /** Returns whether this rational function is constant, i.e., a rational number. */
+  /**
+   * Returns {@code true} if this rational function is constant, i.e., a rational number (including
+   * zero).
+   *
+   * @return {@code true} if this rational function is constant.
+   */
   public boolean isConstant() {
     return raw.numerator().isConstant() && raw.denominator().isConstant();
   }
 
-  /** Returns whether this rational function is an integer. */
+  /**
+   * Returns {@code true} if this rational function is an integer.
+   *
+   * @return {@code true} if this rational function is an integer
+   */
   public boolean isInteger() {
     return raw.isIntegral() && raw.numerator().isConstant();
   }
 
-  /** Returns whether this rational function is a variable. */
+  /**
+   * Returns {@code true} if this rational function is a plain variable (the coefficient is one).
+   *
+   * @return {@code true} if this rational function is a variable
+   */
   public boolean isVariable() {
     return raw.isIntegral() && getNumerator().isVariable();
   }
 
-  /** Returns whether this rational function is an integer polynomial. */
+  /**
+   * Returns {@code true} if this rational function is a polynomial with integer coefficient.
+   *
+   * @return {@code true} if this rational function is a polynomial
+   */
   public boolean isPolynomial() {
     return raw.isIntegral();
   }
 
-  /** Returns the numerator. */
+  /**
+   * Returns the numerator of this polynomial.
+   *
+   * @return the numerator
+   */
   public Polynomial getNumerator() {
     return Polynomial.createFromRaw(variables, raw.numerator());
   }
 
-  /** Returns the denominator. */
+  /**
+   * Returns the denominator of this polynomial.
+   *
+   * @return the denominator
+   */
   public Polynomial getDenominator() {
     return Polynomial.createFromRaw(variables, raw.denominator());
   }
 
   /**
-   * Returns the same rational function in a different variable set.
+   * Returns this rational function in a different variable set.
    *
-   * @throws IllegalArgumentException when any of used variables are not in {@code newVariables}.
+   * @param newVariables the new variables to be used
+   * @return the resultant rational function
+   * @throws IllegalArgumentException when any of used variables are not in {@code newVariables}
    */
   @SuppressWarnings("PMD.CompareObjectsWithEquals")
   public RationalFunction translate(final VariableSet newVariables) {
@@ -368,7 +436,11 @@ public final class RationalFunction implements Serializable, Multivariate {
     // Postcondition: `variables` of the returned-value is the given variable set.
   }
 
-  /** Returns the negation of this rational function. */
+  /**
+   * Returns the negation of this rational function.
+   *
+   * @return {@code -this}
+   */
   public RationalFunction negate() {
     if (isZero()) {
       return this;
@@ -377,7 +449,11 @@ public final class RationalFunction implements Serializable, Multivariate {
     }
   }
 
-  /** Returns the reciprocal of this rational function. */
+  /**
+   * Returns the reciprocal of this rational function.
+   *
+   * @return {@code 1/this}
+   */
   public RationalFunction reciprocal() {
     return new RationalFunction(variables, raw.reciprocal());
   }
@@ -395,40 +471,77 @@ public final class RationalFunction implements Serializable, Multivariate {
     }
   }
 
-  /** Returns the sum of this rational function and the other. */
+  /**
+   * Returns the sum of this rational function and the other.
+   *
+   * @param other the other rational function to be added to this rational function
+   * @return {@code this + other}
+   */
   public RationalFunction add(final RationalFunction other) {
     return performBinaryOperation(other, Rational<MultivariatePolynomial<BigInteger>>::add);
   }
 
-  /** Returns the difference of this rational function from the other. */
+  /**
+   * Returns the difference of this rational function from the other.
+   *
+   * @param other the other rational function to be subtracted from this rational function
+   * @return {@code this - other}
+   */
   public RationalFunction subtract(final RationalFunction other) {
     return performBinaryOperation(other, Rational<MultivariatePolynomial<BigInteger>>::subtract);
   }
 
-  /** Returns the product of this rational function and the other. */
+  /**
+   * Returns the product of this rational function and the other.
+   *
+   * @param other the other rational function to be multiplied by this rational function
+   * @return {@code this * other}
+   */
   public RationalFunction multiply(final RationalFunction other) {
     return performBinaryOperation(other, Rational<MultivariatePolynomial<BigInteger>>::multiply);
   }
 
-  /** Returns the quotient of this polynomial divided by the given divisor. */
+  /**
+   * Returns the quotient of this rational function divided by the given divisor.
+   *
+   * @param divisor the divisor
+   * @return {@code this / divisor}
+   * @throws ArithmeticException when division by zero
+   */
   public RationalFunction divide(final RationalFunction divisor) {
     return performBinaryOperation(divisor, Rational<MultivariatePolynomial<BigInteger>>::divide);
   }
 
-  /** Returns this rational function to the given power. */
+  /**
+   * Returns this rational function raised to the given power.
+   *
+   * @param exponent the exponent to which this rational function is to be raised
+   * @return {@code this ^ exponent}
+   * @throws ArithmeticException when division by zero
+   */
   public RationalFunction pow(final int exponent) {
     return new RationalFunction(variables, raw.pow(exponent));
   }
 
-  /** Returns this rational function to the given power. */
+  /**
+   * Returns this rational function raised to the given power.
+   *
+   * @param exponent the exponent to which this rational function is to be raised
+   * @return {@code this ^ exponent}
+   * @throws ArithmeticException when division by zero
+   */
   public RationalFunction pow(final BigInteger exponent) {
     return new RationalFunction(variables, raw.pow(exponent));
   }
 
   /**
-   * Returns the result of the given substitution.
+   * Returns the result of the given substitution. The left-hand side must be a non-constant monic
+   * monomial.
    *
-   * @throws IllegalArgumentException when {@code lhs} is invalid.
+   * @param lhs the left-hand side
+   * @param rhs the right-hand side
+   * @return the resultant rational function
+   * @throws IllegalArgumentException when {@code lhs} is invalid
    */
   public RationalFunction substitute(final Polynomial lhs, final RationalFunction rhs) {
     SubstitutionUtils.checkLhs(lhs);
@@ -452,7 +565,12 @@ public final class RationalFunction implements Serializable, Multivariate {
     return new RationalFunction(newVariables, rawNum.divide(rawDen));
   }
 
-  /** Returns the partial derivative with respect to the given variable. */
+  /**
+   * Returns the partial derivative with respect to the given variable.
+   *
+   * @param variable the variable
+   * @return the resultant rational function
+   */
   public RationalFunction derivative(final Variable variable) {
     return derivative(variable, 1);
   }
@@ -460,7 +578,10 @@ public final class RationalFunction implements Serializable, Multivariate {
   /**
    * Returns the partial derivative of the specified order with respect to the given variable.
    *
-   * @throws IllegalArgumentException when {@code order} is negative.
+   * @param variable the variable
+   * @param order the order
+   * @return the resultant rational function
+   * @throws IllegalArgumentException when {@code order} is negative
    */
   public RationalFunction derivative(final Variable variable, final int order) {
     if (order < 0) {

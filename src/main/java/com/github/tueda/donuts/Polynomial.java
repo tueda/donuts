@@ -61,13 +61,21 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     raw = RAW_ZERO;
   }
 
-  /** Constructs a polynomial from the given integer. */
+  /**
+   * Constructs a polynomial from the given integer.
+   *
+   * @param value the integer to be converted to a polynomial
+   */
   public Polynomial(final long value) {
     variables = VariableSet.EMPTY;
     raw = RAW_ZERO.createConstant(value);
   }
 
-  /** Constructs a polynomial from the given integer. */
+  /**
+   * Constructs a polynomial from the given integer.
+   *
+   * @param value the integer to be converted to a polynomial
+   */
   public Polynomial(final BigInteger value) {
     variables = VariableSet.EMPTY;
     raw = RAW_ZERO.createConstant(value);
@@ -76,6 +84,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   /**
    * Constructs a polynomial from the given string.
    *
+   * @param string the string to be parsed
    * @throws IllegalArgumentException when {@code string} does not represent a polynomial
    */
   @SuppressWarnings("PMD.AvoidCatchingGenericException")
@@ -122,7 +131,8 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   /**
    * Returns a polynomial constructed from the given string.
    *
-   * @param string the string representation
+   * @param string the string to be parsed
+   * @return the resultant polynomial
    * @throws IllegalArgumentException when {@code string} does not represent a polynomial
    */
   @SuppressWarnings("PMD.ShortMethodName")
@@ -131,10 +141,11 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   }
 
   /**
-   * Returns an array of polynomials constructed from the given strings.
+   * Returns an array of polynomials constructed from the given array of strings.
    *
-   * @param strings the string representations
-   * @throws IllegalArgumentException when any of the given strings are invalid for polynomials.
+   * @param strings the array of strings to be parsed
+   * @return the resultant array of polynomials
+   * @throws IllegalArgumentException when any of the given strings are invalid for polynomials
    */
   @SuppressWarnings("PMD.ShortMethodName")
   public static Polynomial[] of(final String... strings) {
@@ -230,8 +241,8 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   }
 
   /**
-   * Returns whether the polynomial actually uses the specified variable, i.e., has any terms
-   * involving the variable.
+   * Returns {@code true} if the polynomial actually uses the specified variable, i.e., has any
+   * terms involving the variable.
    */
   private static boolean isVariableUsed(
       final MultivariatePolynomial<BigInteger> rawPolynomial, final int variable) {
@@ -243,7 +254,11 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return false;
   }
 
-  /** Returns the raw polynomial object. */
+  /**
+   * Returns the raw polynomial object of the Rings library.
+   *
+   * @return the raw polynomial object
+   */
   public MultivariatePolynomial<BigInteger> getRawPolynomial() {
     return raw.copy();
   }
@@ -253,17 +268,29 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return raw;
   }
 
-  /** Returns whether this polynomial is zero. */
+  /**
+   * Returns {@code true} if this polynomial is equal to zero, i.e., has no terms.
+   *
+   * @return {@code true} if this polynomial is {@code 0}
+   */
   public boolean isZero() {
     return raw.isZero();
   }
 
-  /** Returns whether this polynomial is one. */
+  /**
+   * Returns {@code true} if this polynomial is equal to unity.
+   *
+   * @return {@code true} if this polynomial is {@code 1}
+   */
   public boolean isOne() {
     return raw.isOne();
   }
 
-  /** Returns whether this polynomial is minus one. */
+  /**
+   * Returns {@code true} if this polynomial is equal to minus one.
+   *
+   * @return {@code true} if this polynomial is {@code 0}
+   */
   public boolean isMinusOne() {
     if (raw.size() != 1) {
       return false;
@@ -272,12 +299,20 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return lt.isZeroVector() && Rings.Z.isMinusOne(lt.coefficient);
   }
 
-  /** Returns whether this polynomial is constant, i.e., an integer. */
+  /**
+   * Returns {@code true} if this polynomial is constant, i.e., an integer (including zero).
+   *
+   * @return {@code true} if this polynomial is constant
+   */
   public boolean isConstant() {
     return raw.isConstant();
   }
 
-  /** Returns whether this polynomial is constant fitting in a short. */
+  /**
+   * Returns {@code true} if this polynomial is constant that fits in {@code short}.
+   *
+   * @return {@code true} if this polynomial fits in {@code short}
+   */
   public boolean isShortValue() {
     if (isZero()) {
       return true;
@@ -289,7 +324,11 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return c.compareTo(SHORT_MIN_VALUE) >= 0 && c.compareTo(SHORT_MAX_VALUE) <= 0;
   }
 
-  /** Returns whether this polynomial is constant fitting in a int. */
+  /**
+   * Returns {@code true} if this polynomial is constant that fits in {@code int}.
+   *
+   * @return {@code true} if this polynomial fits in {@code int}
+   */
   public boolean isIntValue() {
     if (isZero()) {
       return true;
@@ -301,7 +340,11 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return c.compareTo(INT_MIN_VALUE) >= 0 && c.compareTo(INT_MAX_VALUE) <= 0;
   }
 
-  /** Returns whether this polynomial is constant fitting in a long. */
+  /**
+   * Returns {@code true} if this polynomial is constant that fits in {@code long}.
+   *
+   * @return {@code true} if this polynomial fits in {@code long}
+   */
   public boolean isLongValue() {
     if (isZero()) {
       return true;
@@ -313,17 +356,29 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return c.compareTo(LONG_MIN_VALUE) >= 0 && c.compareTo(LONG_MAX_VALUE) <= 0;
   }
 
-  /** Returns whether this polynomial is a monomial (including zero). */
+  /**
+   * Returns {@code true} if this polynomial is a monomial (including zero).
+   *
+   * @return {@code true} if this polynomial is a monomial
+   */
   public boolean isMonomial() {
     return raw.isMonomial();
   }
 
-  /** Returns whether this polynomial is monic, i.e., the leading coefficient is one. */
+  /**
+   * Returns {@code true} if this polynomial is monic, i.e., the leading coefficient is one.
+   *
+   * @return {@code true} if this polynomial is monic
+   */
   public boolean isMonic() {
     return raw.isMonic();
   }
 
-  /** Returns whether this polynomial is a plain variable (the coefficient is one). */
+  /**
+   * Returns {@code true} if this polynomial is a plain variable (the coefficient is one).
+   *
+   * @return {@code true} if this polynomial is a variable
+   */
   public boolean isVariable() {
     return raw.size() == 1 && raw.degree() == 1 && raw.isMonic();
   }
@@ -331,7 +386,8 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   /**
    * Returns this polynomial as {@code short}.
    *
-   * @throws IllegalStateException when the polynomial is not a {@code short}.
+   * @return the {@code short} value
+   * @throws IllegalStateException when the polynomial is not a {@code short}
    */
   @SuppressWarnings("PMD.AvoidUsingShortType")
   public short asShortValue() {
@@ -347,7 +403,8 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   /**
    * Returns this polynomial as a {@code int}.
    *
-   * @throws IllegalStateException when the polynomial is not a {@code int}.
+   * @return the {@code int} value
+   * @throws IllegalStateException when the polynomial is not a {@code int}
    */
   public int asIntValue() {
     if (isZero()) {
@@ -362,7 +419,8 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   /**
    * Returns this polynomial as a {@code long}.
    *
-   * @throws IllegalStateException when the polynomial is not a {@code long}.
+   * @return the {@code long} value
+   * @throws IllegalStateException when the polynomial is not a {@code long}
    */
   public long asLongValue() {
     if (isZero()) {
@@ -377,7 +435,8 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   /**
    * Returns this polynomial as a variable.
    *
-   * @throws IllegalStateException when the polynomial is not a variable.
+   * @return the variable
+   * @throws IllegalStateException when the polynomial is not a variable
    */
   public Variable asVariable() {
     if (!isVariable()) {
@@ -394,22 +453,41 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return null;
   }
 
-  /** Returns the number of terms in this polynomial. */
+  /**
+   * Returns the number of terms in this polynomial.
+   *
+   * @return the number of terms
+   */
   public int size() {
     return raw.size();
   }
 
-  /** Returns signum of the leading coefficient. */
+  /**
+   * Returns the signum function of polynomial, defined by the sign of the coefficient of the
+   * leading term.
+   *
+   * @return {@code -1} or {@code 1} as the coefficient of the leading term of this polynomial is
+   *     negative or positive, or zero if it has no terms.
+   */
   public int signum() {
     return raw.signumOfLC();
   }
 
-  /** Returns the total degree of this polynomial. */
+  /**
+   * Returns the total degree of this polynomial.
+   *
+   * @return the total degree
+   */
   public int degree() {
     return raw.degree();
   }
 
-  /** Returns the degree in the given variable. */
+  /**
+   * Returns the degree in the given variable.
+   *
+   * @param variable the variable
+   * @return the degree in the variable
+   */
   public int degree(final Variable variable) {
     final int j = variables.indexOf(variable.getName());
     if (j < 0) {
@@ -418,7 +496,12 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return raw.degree(j);
   }
 
-  /** Returns the degree in the given variables. */
+  /**
+   * Returns the degree in the given variables.
+   *
+   * @param variables the variables
+   * @return the degree in the variables
+   */
   public int degree(final VariableSet variables) {
     final int[] variableIndices = new int[variables.size()];
     int n = 0;
@@ -442,7 +525,13 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return raw.degree(Arrays.copyOfRange(variableIndices, 0, n));
   }
 
-  /** Returns the coefficient of the given variable with the specified exponent. */
+  /**
+   * Returns the coefficient of the given variable with the specified exponent.
+   *
+   * @param variable the variable
+   * @param exponent the exponent
+   * @return the coefficient
+   */
   public Polynomial coefficientOf(final Variable variable, final int exponent) {
     final int j = variables.indexOf(variable.getName());
     if (j < 0) {
@@ -455,7 +544,15 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return new Polynomial(variables, raw.coefficientOf(j, exponent));
   }
 
-  /** Returns the coefficient of the given variables with the specified exponents. */
+  /**
+   * Returns the coefficient of the given variables with the specified exponents.
+   *
+   * @param variables the variables
+   * @param exponents the exponents
+   * @return the coefficient
+   * @throws IllegalArgumentException when {@code variables} and {@code exponents} have different
+   *     lengths
+   */
   @SuppressWarnings("PMD.UseVarargs")
   public Polynomial coefficientOf(final Variable[] variables, final int[] exponents) {
     if (variables.length != exponents.length) {
@@ -495,9 +592,11 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   }
 
   /**
-   * Returns the same polynomial in a different variable set.
+   * Returns this polynomial in a different variable set.
    *
-   * @throws IllegalArgumentException when any of used variables are not in {@code newVariables}.
+   * @param newVariables the new variables to be used
+   * @return the resultant polynomial
+   * @throws IllegalArgumentException when any of used variables are not in {@code newVariables}
    */
   @SuppressWarnings("PMD.CompareObjectsWithEquals")
   public Polynomial translate(final VariableSet newVariables) {
@@ -533,7 +632,11 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     // Postcondition: `variables` of the returned-value is the given variable set.
   }
 
-  /** Returns the negation of this polynomial. */
+  /**
+   * Returns the negation of this polynomial.
+   *
+   * @return {@code -this}
+   */
   public Polynomial negate() {
     if (isZero()) {
       return this;
@@ -546,32 +649,47 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   private Polynomial performBinaryOperation(
       final Polynomial other,
       final BinaryOperator<MultivariatePolynomial<BigInteger>> operator,
-      final boolean doClone) {
+      final boolean doCopy) {
     // NOTE: For many methods, MultivariatePolynomial is not immutable. In such cases, we need a
     // clone of one of the operands.
     if (variables.equals(other.variables)) {
-      return new Polynomial(variables, operator.apply(doClone ? raw.copy() : raw, other.raw));
+      return new Polynomial(variables, operator.apply(doCopy ? raw.copy() : raw, other.raw));
     } else {
       final VariableSet newVariables = variables.union(other.variables);
       final MultivariatePolynomial<BigInteger> raw1 = translate(newVariables).raw;
       return new Polynomial(
           newVariables,
           operator.apply(
-              doClone && raw1 == raw ? raw1.copy() : raw1, other.translate(newVariables).raw));
+              doCopy && raw1 == raw ? raw1.copy() : raw1, other.translate(newVariables).raw));
     }
   }
 
-  /** Returns the sum of this polynomial and the other. */
+  /**
+   * Returns the sum of this polynomial and the other.
+   *
+   * @param other the other polynomial to be added to this polynomial
+   * @return {@code this + other}
+   */
   public Polynomial add(final Polynomial other) {
     return performBinaryOperation(other, MultivariatePolynomial<BigInteger>::add, true);
   }
 
-  /** Returns the difference of this polynomial from the other. */
+  /**
+   * Returns the difference of this polynomial from the other.
+   *
+   * @param other the other polynomial to be subtracted from this polynomial
+   * @return {@code this - other}
+   */
   public Polynomial subtract(final Polynomial other) {
     return performBinaryOperation(other, MultivariatePolynomial<BigInteger>::subtract, true);
   }
 
-  /** Returns the product of this polynomial and the other. */
+  /**
+   * Returns the product of this polynomial and the other.
+   *
+   * @param other the other polynomial to be multiplied by this polynomial
+   * @return {@code this * other}
+   */
   public Polynomial multiply(final Polynomial other) {
     return performBinaryOperation(other, MultivariatePolynomial<BigInteger>::multiply, true);
   }
@@ -579,6 +697,8 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   /**
    * Returns the quotient of this polynomial divided by the given divisor.
    *
+   * @param divisor the divisor
+   * @return {@code this / divisor} as a polynomial
    * @throws ArithmeticException when exact division is impossible
    */
   public Polynomial divideExact(final Polynomial divisor) {
@@ -588,6 +708,8 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   /**
    * Returns a rational function whose value is (this / divisor).
    *
+   * @param divisor the divisor
+   * @return {@code this / divisor} as a rational function
    * @throws ArithmeticException when division by zero
    */
   public RationalFunction divide(final Polynomial divisor) {
@@ -595,8 +717,10 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   }
 
   /**
-   * Returns this polynomial to the power {@code exponent}.
+   * Returns this polynomial raised to the power {@code exponent}.
    *
+   * @param exponent the exponent to which this polynomial is to be raised
+   * @return {@code this ^ exponent}
    * @throws IllegalArgumentException when {@code exponent} is negative
    */
   public Polynomial pow(final int exponent) {
@@ -604,20 +728,32 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   }
 
   /**
-   * Returns this polynomial to the power {@code exponent}.
+   * Returns this polynomial raised to the power {@code exponent}.
    *
+   * @param exponent the exponent to which this polynomial is to be raised
+   * @return {@code this ^ exponent}
    * @throws IllegalArgumentException when {@code exponent} is negative
    */
   public Polynomial pow(final BigInteger exponent) {
     return new Polynomial(variables, PolynomialMethods.polyPow(raw, exponent));
   }
 
-  /** Returns the greatest common divisor of this polynomial and the other. */
+  /**
+   * Returns the greatest common divisor of this polynomial and the other.
+   *
+   * @param other the polynomial with which the GCD is to be computed
+   * @return {@code GCD(this, other)}
+   */
   public Polynomial gcd(final Polynomial other) {
     return performBinaryOperation(other, MultivariateGCD::PolynomialGCD, false);
   }
 
-  /** Returns the greatest common divisor of the given polynomials. */
+  /**
+   * Returns the greatest common divisor of the given polynomials.
+   *
+   * @param polynomials the polynomials for which the GCD is to be computed
+   * @return {@code GCD(polynomial1, ..., polynomialN)}
+   */
   public static Polynomial gcdOf(final Polynomial... polynomials) {
     if (polynomials.length == 0) {
       // gcd() -> 0
@@ -636,17 +772,32 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return new Polynomial(newVariables, MultivariateGCD.PolynomialGCD(polys));
   }
 
-  /** Returns the greatest common divisor of the given polynomials. */
+  /**
+   * Returns the greatest common divisor of the given polynomials.
+   *
+   * @param polynomials the polynomials for which the GCD is to be computed
+   * @return {@code GCD(polynomial1, ..., polynomialN)}
+   */
   public static Polynomial gcdOf(final Iterable<Polynomial> polynomials) {
     return gcdOf(StreamSupport.stream(polynomials.spliterator(), false).toArray(Polynomial[]::new));
   }
 
-  /** Returns the greatest common divisor of the given polynomials. */
+  /**
+   * Returns the greatest common divisor of the given polynomials.
+   *
+   * @param polynomials the polynomials for which the GCD is to be computed
+   * @return {@code GCD(polynomial1, ..., polynomialN)}
+   */
   public static Polynomial gcdOf(final Stream<Polynomial> polynomials) {
     return gcdOf(polynomials.toArray(Polynomial[]::new));
   }
 
-  /** Returns the least common multiple of this polynomial and the other. */
+  /**
+   * Returns the least common multiple of this polynomial and the other.
+   *
+   * @param other the polynomial with which the LCM is to be computed
+   * @return {@code LCM(this, other)}
+   */
   public Polynomial lcm(final Polynomial other) {
     return performBinaryOperation(other, Polynomial::polynomialLcm, true);
   }
@@ -654,6 +805,8 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   /**
    * Returns the least common multiple of the given polynomials.
    *
+   * @param polynomials the polynomials for which the LCM is to be computed
+   * @return {@code LCM(polynomial1, ..., polynomialN)}
    * @throws IllegalArgumentException when no polynomial is given
    */
   public static Polynomial lcmOf(final Polynomial... polynomials) {
@@ -674,12 +827,24 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return new Polynomial(newVariables, Polynomial.polynomialLcm(polys));
   }
 
-  /** Returns the least common multiple of the given polynomials. */
+  /**
+   * Returns the least common multiple of the given polynomials.
+   *
+   * @param polynomials the polynomials for which the LCM is to be computed
+   * @return {@code LCM(polynomial1, ..., polynomialN)}
+   * @throws IllegalArgumentException when no polynomial is given
+   */
   public static Polynomial lcmOf(final Iterable<Polynomial> polynomials) {
     return lcmOf(StreamSupport.stream(polynomials.spliterator(), false).toArray(Polynomial[]::new));
   }
 
-  /** Returns the least common multiple of the given polynomials. */
+  /**
+   * Returns the least common multiple of the given polynomials.
+   *
+   * @param polynomials the polynomials for which the LCM is to be computed
+   * @return {@code LCM(polynomial1, ..., polynomialN)}
+   * @throws IllegalArgumentException when no polynomial is given
+   */
   public static Polynomial lcmOf(final Stream<Polynomial> polynomials) {
     return lcmOf(polynomials.toArray(Polynomial[]::new));
   }
@@ -722,7 +887,11 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return lcm;
   }
 
-  /** Returns the factors of the polynomial. */
+  /**
+   * Perform the factorization of this polynomial.
+   *
+   * @return the factors of this polynomial
+   */
   public Polynomial[] factors() {
     if (isConstant()) {
       return new Polynomial[] {this};
@@ -763,9 +932,13 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   }
 
   /**
-   * Returns the result of the given substitution.
+   * Returns the result of the given substitution. The left-hand side must be a non-constant monic
+   * monomial.
    *
-   * @throws IllegalArgumentException when {@code lhs} is invalid.
+   * @param lhs the left-hand side
+   * @param rhs the right-hand side
+   * @return the resultant polynomial
+   * @throws IllegalArgumentException when {@code lhs} is invalid
    */
   public Polynomial substitute(final Polynomial lhs, final Polynomial rhs) {
     SubstitutionUtils.checkLhs(lhs);
@@ -783,7 +956,12 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return new Polynomial(newVariables, newRawPoly);
   }
 
-  /** Returns the partial derivative with respect to the given variable. */
+  /**
+   * Returns the partial derivative with respect to the given variable.
+   *
+   * @param variable the variable
+   * @return the resultant polynomial
+   */
   public Polynomial derivative(final Variable variable) {
     return derivative(variable, 1);
   }
@@ -791,7 +969,10 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   /**
    * Returns the partial derivative of the specified order with respect to the given variable.
    *
-   * @throws IllegalArgumentException when {@code order} is negative.
+   * @param variable the variable
+   * @param order the order
+   * @return the resultant polynomial
+   * @throws IllegalArgumentException when {@code order} is negative
    */
   public Polynomial derivative(final Variable variable, final int order) {
     if (order < 0) {
