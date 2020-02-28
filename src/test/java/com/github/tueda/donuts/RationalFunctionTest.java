@@ -10,8 +10,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.function.BinaryOperator;
-import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Test;
 
 public class RationalFunctionTest {
@@ -293,85 +291,6 @@ public class RationalFunctionTest {
           }
         }
       }
-    }
-  }
-
-  @Test
-  public void immutability() {
-    checkUnaryOperatorImmutability(
-        r -> {
-          r.getRawRational().numerator().increment();
-          r.getRawRational().denominator().decrement();
-          return new RationalFunction();
-        });
-    checkUnaryOperatorImmutability(RationalFunction::negate);
-    checkUnaryOperatorImmutability(RationalFunction::reciprocal);
-    checkBinaryOperatorImmutability(RationalFunction::add);
-    checkBinaryOperatorImmutability(RationalFunction::subtract);
-    checkBinaryOperatorImmutability(RationalFunction::multiply);
-    checkBinaryOperatorImmutability(RationalFunction::divide);
-    checkUnaryOperatorImmutability(r -> r.pow(5));
-    checkUnaryOperatorImmutability(r -> r.pow(new BigInteger("5")));
-    checkUnaryOperatorImmutability(r -> r.derivative(new Variable("x")));
-    checkUnaryOperatorImmutability(r -> r.derivative(new Variable("x"), 2));
-  }
-
-  void checkUnaryOperatorImmutability(UnaryOperator<RationalFunction> operator) {
-    checkUnaryOperatorImmutability(operator, "(1+a+b)/(1+c+d)");
-    checkUnaryOperatorImmutability(operator, "(1+a+b+x)/(1+c+d)");
-    checkUnaryOperatorImmutability(operator, "(1+a+b)/(1+c+d-x)");
-    checkUnaryOperatorImmutability(operator, "(1+a+b+2*x)/(1+c+d+3*x)");
-    checkUnaryOperatorImmutability(operator, "(1+a+b^2+x+x^2+x^3)/(1+c+d^2+3*x+5*x^5)");
-  }
-
-  void checkUnaryOperatorImmutability(UnaryOperator<RationalFunction> operator, String s) {
-    {
-      RationalFunction a = new RationalFunction(s);
-      RationalFunction b = new RationalFunction(s);
-      operator.apply(a);
-      assertThat(a).isEqualTo(b);
-    }
-    {
-      RationalFunction a = new RationalFunction(s);
-      RationalFunction b = new RationalFunction(s);
-      VariableSet v = VariableSet.unionOf(a, b);
-      a = a.translate(v);
-      b = b.translate(v);
-      // At this point, a and b share the same variable set.
-      operator.apply(a);
-      assertThat(a).isEqualTo(b);
-    }
-  }
-
-  void checkBinaryOperatorImmutability(BinaryOperator<RationalFunction> operator) {
-    checkBinaryOperatorImmutability(operator, "6*(1+a-b)*(2-x)*(1+x+y)", "2*(1+a-b)*(2-x)+z-z");
-  }
-
-  void checkBinaryOperatorImmutability(
-      BinaryOperator<RationalFunction> operator, String s1, String s2) {
-    {
-      RationalFunction a1 = new RationalFunction(s1);
-      RationalFunction a2 = new RationalFunction(s2);
-      RationalFunction b1 = new RationalFunction(s1);
-      RationalFunction b2 = new RationalFunction(s2);
-      operator.apply(a1, a2);
-      assertThat(a1).isEqualTo(b1);
-      assertThat(a2).isEqualTo(b2);
-    }
-    {
-      RationalFunction a1 = new RationalFunction(s1);
-      RationalFunction a2 = new RationalFunction(s2);
-      RationalFunction b1 = new RationalFunction(s1);
-      RationalFunction b2 = new RationalFunction(s2);
-      VariableSet v = VariableSet.unionOf(a1, a2, b1, b2);
-      a1 = a1.translate(v);
-      a2 = a2.translate(v);
-      b1 = b1.translate(v);
-      b2 = b2.translate(v);
-      // At this point, a1, a2, b1 and b2 share the same variable set.
-      operator.apply(a1, a2);
-      assertThat(a1).isEqualTo(b1);
-      assertThat(a2).isEqualTo(b2);
     }
   }
 

@@ -14,9 +14,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Test;
 
 public class PolynomialTest {
@@ -317,127 +314,6 @@ public class PolynomialTest {
 
     assertThrows(IllegalStateException.class, () -> Polynomial.of("0").asVariable());
     assertThrows(IllegalStateException.class, () -> Polynomial.of("x*y").asVariable());
-  }
-
-  @Test
-  public void immutability() {
-    checkUnaryOperatorImmutability(
-        p -> Polynomial.createFromRaw(p.getVariables(), p.getRawPolynomial().increment()));
-    checkUnaryOperatorImmutability(Polynomial::negate);
-    checkBinaryOperatorImmutability(Polynomial::add);
-    checkBinaryOperatorImmutability(Polynomial::subtract);
-    checkBinaryOperatorImmutability(Polynomial::multiply);
-    checkBinaryOperatorImmutability(Polynomial::divideExact);
-    checkBinaryOperatorImmutability((p1, p2) -> p1.divide(p2).getNumerator());
-    checkUnaryOperatorImmutability(p -> p.pow(5));
-    checkUnaryOperatorImmutability(p -> p.pow(new BigInteger("5")));
-    checkBinaryOperatorImmutability((p1, p2) -> p1.gcd(p2));
-    checkBinaryOperatorImmutability((p1, p2) -> Polynomial.gcdOf(p1, p2));
-    checkMultaryOperatorImmutability((pp) -> Polynomial.gcdOf(pp));
-    checkBinaryOperatorImmutability((p1, p2) -> p1.lcm(p2));
-    checkBinaryOperatorImmutability((p1, p2) -> Polynomial.lcmOf(p1, p2));
-    checkMultaryOperatorImmutability((pp) -> Polynomial.lcmOf(pp));
-    checkUnaryOperatorImmutability(p -> p.factors()[0]);
-    checkUnaryOperatorImmutability(p -> p.substitute(Polynomial.of("x"), Polynomial.of("x^2+y")));
-    checkUnaryOperatorImmutability(p -> p.evaluate(Variable.of("x"), 42));
-    checkUnaryOperatorImmutability(p -> p.evaluate(Variable.of("x", "y"), ints(42, 81)));
-    checkUnaryOperatorImmutability(p -> p.evaluateAtZero(Variable.of("x")));
-    checkUnaryOperatorImmutability(p -> p.evaluateAtZero(VariableSet.of("x", "y")));
-    checkUnaryOperatorImmutability(p -> p.evaluateAtOne(Variable.of("x")));
-    checkUnaryOperatorImmutability(p -> p.evaluateAtOne(VariableSet.of("x", "y")));
-    checkUnaryOperatorImmutability(p -> p.shift(Variable.of("x"), 42));
-    checkUnaryOperatorImmutability(p -> p.shift(Variable.of("x", "y"), ints(42, 81)));
-    checkUnaryOperatorImmutability(p -> p.derivative(Variable.of("x")));
-    checkUnaryOperatorImmutability(p -> p.derivative(Variable.of("x"), 2));
-  }
-
-  void checkUnaryOperatorImmutability(UnaryOperator<Polynomial> operator) {
-    checkUnaryOperatorImmutability(operator, "(1+a-b)");
-    checkUnaryOperatorImmutability(operator, "(1+a-b)*(2-x)");
-    checkUnaryOperatorImmutability(operator, "(1+a-b)^2*(2+a-x+y)^3");
-  }
-
-  void checkUnaryOperatorImmutability(UnaryOperator<Polynomial> operator, String s) {
-    {
-      Polynomial a = new Polynomial(s);
-      Polynomial b = new Polynomial(s);
-      operator.apply(a);
-      assertThat(a).isEqualTo(b);
-    }
-    {
-      Polynomial a = new Polynomial(s);
-      Polynomial b = new Polynomial(s);
-      VariableSet v = VariableSet.unionOf(a, b);
-      a = a.translate(v);
-      b = b.translate(v);
-      // At this point, a and b share the same variable set.
-      operator.apply(a);
-      assertThat(a).isEqualTo(b);
-    }
-  }
-
-  void checkBinaryOperatorImmutability(BinaryOperator<Polynomial> operator) {
-    checkBinaryOperatorImmutability(operator, "6*(1+a-b)*(2-x)*(1+x+y)", "2*(1+a-b)*(2-x)+z-z");
-  }
-
-  void checkBinaryOperatorImmutability(BinaryOperator<Polynomial> operator, String s1, String s2) {
-    {
-      Polynomial a1 = new Polynomial(s1);
-      Polynomial a2 = new Polynomial(s2);
-      Polynomial b1 = new Polynomial(s1);
-      Polynomial b2 = new Polynomial(s2);
-      operator.apply(a1, a2);
-      assertThat(a1).isEqualTo(b1);
-      assertThat(a2).isEqualTo(b2);
-    }
-    {
-      Polynomial a1 = new Polynomial(s1);
-      Polynomial a2 = new Polynomial(s2);
-      Polynomial b1 = new Polynomial(s1);
-      Polynomial b2 = new Polynomial(s2);
-      VariableSet v = VariableSet.unionOf(a1, a2, b1, b2);
-      a1 = a1.translate(v);
-      a2 = a2.translate(v);
-      b1 = b1.translate(v);
-      b2 = b2.translate(v);
-      // At this point, a1, a2, b1 and b2 share the same variable set.
-      operator.apply(a1, a2);
-      assertThat(a1).isEqualTo(b1);
-      assertThat(a2).isEqualTo(b2);
-    }
-  }
-
-  void checkMultaryOperatorImmutability(Function<Polynomial[], Polynomial> operator) {
-    String s1 = "90*(1+a)";
-    String s2 = "-6*(1+a)*(2+b)";
-    String s3 = "-9*(1+a)*(2+b)*(3+d)";
-    String s4 = "12*(1+a)^2*(2+b)*(4+d)";
-    String s5 = "24*(1+a)*(2+c)*(5+e)";
-    String[] ss = {s1, s2, s3, s4, s5};
-    {
-      Polynomial[] a = Arrays.stream(ss).map(Polynomial::new).toArray(Polynomial[]::new);
-      Polynomial[] b = Arrays.stream(ss).map(Polynomial::new).toArray(Polynomial[]::new);
-      operator.apply(a);
-      for (int i = 0; i < b.length; i++) {
-        assertThat(a[i]).isEqualTo(b[i]);
-      }
-    }
-    {
-      Polynomial[] a = Arrays.stream(ss).map(Polynomial::new).toArray(Polynomial[]::new);
-      Polynomial[] b = Arrays.stream(ss).map(Polynomial::new).toArray(Polynomial[]::new);
-      VariableSet va = VariableSet.unionOf(a);
-      VariableSet vb = VariableSet.unionOf(b);
-      VariableSet v = va.union(vb);
-      for (int i = 0; i < b.length; i++) {
-        a[i] = a[i].translate(v);
-        b[i] = b[i].translate(v);
-      }
-      // At this point, all the polynomials share the same variable set.
-      operator.apply(a);
-      for (int i = 0; i < b.length; i++) {
-        assertThat(a[i]).isEqualTo(b[i]);
-      }
-    }
   }
 
   @Test
