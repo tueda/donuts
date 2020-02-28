@@ -398,8 +398,25 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   @SuppressWarnings("PMD.UseVarargs")
   /* default */ Object[] findIndicesForVariablesAndValues(
       final Variable[] variables, final int[] values) {
+    return findIndicesForVariablesAndValues(variables, values, "values");
+  }
+
+  /**
+   * Returns indices and the corresponding values for the given variables and values. Variables that
+   * do not exist are just ignored in the return value.
+   *
+   * @param variables the variables to be examined
+   * @param values the values paired with {@code variables}
+   * @param valuesName the string to be used when an exception occurs
+   * @return an object array consisting of the indices ({@code (int[]) returnValue[0]}) and the
+   *     corresponding values ({@code (BigInteger[]) returnValue[1]})
+   * @throws IllegalArgumentException when {@code variables} and {@code values} have different
+   *     lengths
+   */
+  /* default */ Object[] findIndicesForVariablesAndValues(
+      final Variable[] variables, final int[] values, final String valuesName) {
     if (variables.length != values.length) {
-      throw new IllegalArgumentException("sizes of variables and values unmatch");
+      throw new IllegalArgumentException("sizes of variables and " + valuesName + " unmatch");
     }
 
     final int len = variables.length;
@@ -435,8 +452,25 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   @SuppressWarnings("PMD.UseVarargs")
   /* default */ Object[] findIndicesForVariablesAndValues(
       final Variable[] variables, final BigInteger[] values) {
+    return findIndicesForVariablesAndValues(variables, values, "values");
+  }
+
+  /**
+   * Returns indices and the corresponding values for the given variables and values. Variables that
+   * do not exist are just ignored in the return value.
+   *
+   * @param variables the variables to be examined
+   * @param values the values paired with {@code variables}
+   * @return an object array consisting of the indices ({@code (int[]) returnValue[0]}) and the
+   *     corresponding values ({@code (BigInteger[]) returnValue[1]})
+   * @param valuesName the string to be used when an exception occurs
+   * @throws IllegalArgumentException when {@code variables} and {@code values} have different
+   *     lengths
+   */
+  /* default */ Object[] findIndicesForVariablesAndValues(
+      final Variable[] variables, final BigInteger[] values, final String valuesName) {
     if (variables.length != values.length) {
-      throw new IllegalArgumentException("sizes of variables and values unmatch");
+      throw new IllegalArgumentException("sizes of variables and " + valuesName + " unmatch");
     }
 
     final int len = variables.length;

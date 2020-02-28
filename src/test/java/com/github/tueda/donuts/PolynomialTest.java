@@ -345,6 +345,8 @@ public class PolynomialTest {
     checkUnaryOperatorImmutability(p -> p.evaluateAtZero(VariableSet.of("x", "y")));
     checkUnaryOperatorImmutability(p -> p.evaluateAtOne(Variable.of("x")));
     checkUnaryOperatorImmutability(p -> p.evaluateAtOne(VariableSet.of("x", "y")));
+    checkUnaryOperatorImmutability(p -> p.shift(Variable.of("x"), 42));
+    checkUnaryOperatorImmutability(p -> p.shift(Variable.of("x", "y"), ints(42, 81)));
     checkUnaryOperatorImmutability(p -> p.derivative(Variable.of("x")));
     checkUnaryOperatorImmutability(p -> p.derivative(Variable.of("x"), 2));
   }
@@ -944,6 +946,103 @@ public class PolynomialTest {
       Polynomial c = Polynomial.of(s.replace("x", "1").replace("y", "1").replace("z", "1"));
       assertThat(b).isEqualTo(c);
     }
+  }
+
+  @Test
+  public void shiftByInt() {
+    String s = "(1+x)^4*(2+y)^3*(3+z)^2*(4+w)";
+    Polynomial a = Polynomial.of(s);
+
+    {
+      Polynomial b = a.shift(Variable.of("a"), 42);
+      Polynomial c = Polynomial.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.shift(Variable.of("x"), 42);
+      Polynomial c = Polynomial.of(s.replace("x", "(x+42)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.shift(Variable.of("a", "b"), ints(7, 9));
+      Polynomial c = Polynomial.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.shift(Variable.of("a", "x"), ints(7, 9));
+      Polynomial c = Polynomial.of(s.replace("x", "(x+9)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b =
+          a.shift(
+              Variable.of("v1", "v2", "x", "x1", "y", "y1", "z1"), ints(7, 9, 11, 13, 15, 17, 19));
+      Polynomial c = Polynomial.of(s.replace("x", "(x+11)").replace("y", "(y+15)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.shift(Variable.of("x", "y", "z"), ints(7, 9, 11));
+      Polynomial c =
+          Polynomial.of(s.replace("x", "(x+7)").replace("y", "(y+9)").replace("z", "(z+11)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    assertThrows(
+        IllegalArgumentException.class, () -> a.shift(Variable.of("x", "y"), ints(1, 2, 3)));
+  }
+
+  @Test
+  public void shiftByBigInt() {
+    String s = "(1+x)^4*(2+y)^3*(3+z)^2*(4+w)";
+    Polynomial a = Polynomial.of(s);
+
+    {
+      Polynomial b = a.shift(Variable.of("a"), BigInteger.valueOf(42));
+      Polynomial c = Polynomial.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.shift(Variable.of("x"), BigInteger.valueOf(42));
+      Polynomial c = Polynomial.of(s.replace("x", "(x+42)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.shift(Variable.of("a", "b"), bigInts(7, 9));
+      Polynomial c = Polynomial.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.shift(Variable.of("a", "x"), bigInts(7, 9));
+      Polynomial c = Polynomial.of(s.replace("x", "(x+9)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b =
+          a.shift(
+              Variable.of("v1", "v2", "x", "x1", "y", "y1", "z1"),
+              bigInts(7, 9, 11, 13, 15, 17, 19));
+      Polynomial c = Polynomial.of(s.replace("x", "(x+11)").replace("y", "(y+15)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.shift(Variable.of("x", "y", "z"), bigInts(7, 9, 11));
+      Polynomial c =
+          Polynomial.of(s.replace("x", "(x+7)").replace("y", "(y+9)").replace("z", "(z+11)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    assertThrows(
+        IllegalArgumentException.class, () -> a.shift(Variable.of("x", "y"), bigInts(1, 2, 3)));
   }
 
   @Test

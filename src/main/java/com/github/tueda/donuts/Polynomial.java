@@ -540,7 +540,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
    * @throws IllegalArgumentException when {@code variables} and {@code exponents} have different
    *     lengths
    */
-  @SuppressWarnings("PMD.UseVarargs")
+  @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.UseVarargs"})
   public Polynomial coefficientOf(final Variable[] variables, final int[] exponents) {
     if (variables.length != exponents.length) {
       throw new IllegalArgumentException("sizes of variables and exponents unmatch");
@@ -1082,6 +1082,82 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     Arrays.fill(values, BigInteger.ONE);
 
     return new Polynomial(this.variables, raw.evaluate(indices, values));
+  }
+
+  /**
+   * Returns a copy of this polynomial with the given variable shift.
+   *
+   * @param variable the variable to be shifted
+   * @param shift the shift amount
+   * @return a copy of {@code this} with {@code variable -> variable + shift}
+   */
+  public Polynomial shift(final Variable variable, final int shift) {
+    final int i = variables.indexOf(variable);
+    if (i < 0) {
+      return this;
+    }
+    return new Polynomial(variables, raw.shift(i, BigInteger.valueOf(shift)));
+  }
+
+  /**
+   * Returns a copy of this polynomial with the given variable shift.
+   *
+   * @param variable the variable to be shifted
+   * @param shift the shift amount
+   * @return a copy of {@code this} with {@code variable -> variable + shift}
+   */
+  public Polynomial shift(final Variable variable, final BigInteger shift) {
+    final int i = variables.indexOf(variable);
+    if (i < 0) {
+      return this;
+    }
+    return new Polynomial(variables, raw.shift(i, shift));
+  }
+
+  /**
+   * Returns a copy of this polynomial with the given variable shifts.
+   *
+   * @param variables the variables to be shifted
+   * @param shifts the shift amounts
+   * @return a copy of {@code this} with {@code variables -> variables + shifts}
+   */
+  @SuppressWarnings("PMD.UseVarargs")
+  public Polynomial shift(final Variable[] variables, final int[] shifts) {
+    final Object[] result =
+        this.variables.findIndicesForVariablesAndValues(variables, shifts, "shifts");
+
+    final int[] indices = (int[]) result[0];
+
+    if (indices.length == 0) {
+      return this;
+    }
+
+    final BigInteger[] newShifts = (BigInteger[]) result[1];
+
+    return new Polynomial(this.variables, raw.shift(indices, newShifts));
+  }
+
+  /**
+   * Returns a copy of this polynomial with the given variable shifts.
+   *
+   * @param variables the variables to be shifted
+   * @param shifts the shift amounts
+   * @return a copy of {@code this} with {@code variables -> variables + shifts}
+   */
+  @SuppressWarnings("PMD.UseVarargs")
+  public Polynomial shift(final Variable[] variables, final BigInteger[] shifts) {
+    final Object[] result =
+        this.variables.findIndicesForVariablesAndValues(variables, shifts, "shifts");
+
+    final int[] indices = (int[]) result[0];
+
+    if (indices.length == 0) {
+      return this;
+    }
+
+    final BigInteger[] newShifts = (BigInteger[]) result[1];
+
+    return new Polynomial(this.variables, raw.shift(indices, newShifts));
   }
 
   /**
