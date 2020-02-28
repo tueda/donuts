@@ -336,13 +336,19 @@ public class PolynomialTest {
     checkBinaryOperatorImmutability((p1, p2) -> Polynomial.lcmOf(p1, p2));
     checkMultaryOperatorImmutability((pp) -> Polynomial.lcmOf(pp));
     checkUnaryOperatorImmutability(p -> p.factors()[0]);
-    checkUnaryOperatorImmutability(p -> p.derivative(new Variable("x")));
-    checkUnaryOperatorImmutability(p -> p.derivative(new Variable("x"), 2));
+    checkUnaryOperatorImmutability(p -> p.substitute(Polynomial.of("x"), Polynomial.of("x^2+y")));
+    checkUnaryOperatorImmutability(p -> p.evaluateAtZero(Variable.of("x")));
+    checkUnaryOperatorImmutability(p -> p.evaluateAtZero(VariableSet.of("x", "y")));
+    checkUnaryOperatorImmutability(p -> p.evaluateAtOne(Variable.of("x")));
+    checkUnaryOperatorImmutability(p -> p.evaluateAtOne(VariableSet.of("x", "y")));
+    checkUnaryOperatorImmutability(p -> p.derivative(Variable.of("x")));
+    checkUnaryOperatorImmutability(p -> p.derivative(Variable.of("x"), 2));
   }
 
   void checkUnaryOperatorImmutability(UnaryOperator<Polynomial> operator) {
     checkUnaryOperatorImmutability(operator, "(1+a-b)");
     checkUnaryOperatorImmutability(operator, "(1+a-b)*(2-x)");
+    checkUnaryOperatorImmutability(operator, "(1+a-b)^2*(2+a-x+y)^3");
   }
 
   void checkUnaryOperatorImmutability(UnaryOperator<Polynomial> operator, String s) {
@@ -754,6 +760,90 @@ public class PolynomialTest {
       assertThrows(IllegalArgumentException.class, () -> p1.substitute(Polynomial.of("1"), p3));
       assertThrows(IllegalArgumentException.class, () -> p1.substitute(Polynomial.of("2*x"), p3));
       assertThrows(IllegalArgumentException.class, () -> p1.substitute(Polynomial.of("x+y+z"), p3));
+    }
+  }
+
+  @Test
+  public void evaluateAtZero() {
+    String s = "(1+x)^4*(2+y)^3*(3+z)^2*(4+w)";
+    Polynomial a = Polynomial.of(s);
+
+    {
+      Polynomial b = a.evaluateAtZero(Variable.of("a"));
+      Polynomial c = Polynomial.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluateAtZero(Variable.of("x"));
+      Polynomial c = Polynomial.of(s.replace("x", "0"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluateAtZero(VariableSet.of("a", "b"));
+      Polynomial c = Polynomial.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluateAtZero(VariableSet.of("a", "x"));
+      Polynomial c = Polynomial.of(s.replace("x", "0"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluateAtZero(VariableSet.of("v1", "v2", "x", "x1", "y", "y1", "z1"));
+      Polynomial c = Polynomial.of(s.replace("x", "0").replace("y", "0"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluateAtZero(VariableSet.of("x", "y", "z"));
+      Polynomial c = Polynomial.of(s.replace("x", "0").replace("y", "0").replace("z", "0"));
+      assertThat(b).isEqualTo(c);
+    }
+  }
+
+  @Test
+  public void evaluateAtOne() {
+    String s = "(1+x)^4*(2+y)^3*(3+z)^2*(4+w)";
+    Polynomial a = Polynomial.of(s);
+
+    {
+      Polynomial b = a.evaluateAtOne(Variable.of("a"));
+      Polynomial c = Polynomial.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluateAtOne(Variable.of("x"));
+      Polynomial c = Polynomial.of(s.replace("x", "1"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluateAtOne(VariableSet.of("a", "b"));
+      Polynomial c = Polynomial.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluateAtOne(VariableSet.of("a", "x"));
+      Polynomial c = Polynomial.of(s.replace("x", "1"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluateAtOne(VariableSet.of("v1", "v2", "x", "x1", "y", "y1", "z1"));
+      Polynomial c = Polynomial.of(s.replace("x", "1").replace("y", "1"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluateAtOne(VariableSet.of("x", "y", "z"));
+      Polynomial c = Polynomial.of(s.replace("x", "1").replace("y", "1").replace("z", "1"));
+      assertThat(b).isEqualTo(c);
     }
   }
 

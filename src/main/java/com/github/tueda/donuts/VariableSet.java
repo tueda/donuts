@@ -356,4 +356,30 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
   /* default */ int indexOf(final Variable variable) {
     return indexOf(variable.getName());
   }
+
+  /**
+   * Return an array for indices corresponding to the given set of variables. Variables that do not
+   * exist are just ignored in the resultant index array.
+   *
+   * @param variables the set of variables to be examined
+   * @return an array storing the indices
+   */
+  /* default */ int[] findIndicesForVariableSet(final VariableSet variables) {
+    final int[] indices = new int[variables.size()];
+    int n = 0;
+
+    int i = 0;
+    for (final String x : variables.getRawTable()) {
+      final int j = indexOf(x, i);
+      if (j >= 0) {
+        indices[n++] = j;
+        i = j + 1;
+        if (i >= size()) {
+          break;
+        }
+      }
+    }
+
+    return Arrays.copyOfRange(indices, 0, n);
+  }
 }

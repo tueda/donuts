@@ -503,26 +503,13 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
    * @return the degree in the variables
    */
   public int degree(final VariableSet variables) {
-    final int[] variableIndices = new int[variables.size()];
-    int n = 0;
+    final int[] indices = this.variables.findIndicesForVariableSet(variables);
 
-    int i = 0;
-    for (final String x : variables.getRawTable()) {
-      final int j = this.variables.indexOf(x, i);
-      if (j >= 0) {
-        variableIndices[n++] = j;
-        i = j + 1;
-        if (i >= this.variables.size()) {
-          break;
-        }
-      }
-    }
-
-    if (n == 0) {
+    if (indices.length == 0) {
       return 0;
     }
 
-    return raw.degree(Arrays.copyOfRange(variableIndices, 0, n));
+    return raw.degree(indices);
   }
 
   /**
@@ -954,6 +941,69 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
             lhs.translate(newVariables).raw.first(),
             rhs.translate(newVariables).raw);
     return new Polynomial(newVariables, newRawPoly);
+  }
+
+  /**
+   * Returns the polynomial with setting the given variable to zero.
+   *
+   * @param variable the variable to be set to zero
+   * @return a copy of {@code this} with {@code variable -> 0}
+   */
+  public Polynomial evaluateAtZero(final Variable variable) {
+    final int i = variables.indexOf(variable);
+    if (i < 0) {
+      return this;
+    }
+    return new Polynomial(this.variables, raw.evaluateAtZero(i));
+  }
+
+  /**
+   * Returns a copy of this polynomial with setting all of the given variable to zero.
+   *
+   * @param variables the variables to be set to zero
+   * @return a copy of {@code this} with {@code variables -> 0}
+   */
+  public Polynomial evaluateAtZero(final VariableSet variables) {
+    final int[] indices = this.variables.findIndicesForVariableSet(variables);
+
+    if (indices.length == 0) {
+      return this;
+    }
+
+    return new Polynomial(this.variables, raw.evaluateAtZero(indices));
+  }
+
+  /**
+   * Returns a copy of this polynomial with setting the given variable to unity.
+   *
+   * @param variable the variable to be set to unity
+   * @return a copy of {@code this} with {@code variable -> 1}
+   */
+  public Polynomial evaluateAtOne(final Variable variable) {
+    final int i = variables.indexOf(variable);
+    if (i < 0) {
+      return this;
+    }
+    return new Polynomial(this.variables, raw.evaluate(i, BigInteger.ONE));
+  }
+
+  /**
+   * Returns a copy of this polynomial with setting all of the given variables to unity.
+   *
+   * @param variables the variables to be set to unity
+   * @return a copy of {@code this} with {@code variables -> 1}
+   */
+  public Polynomial evaluateAtOne(final VariableSet variables) {
+    final int[] indices = this.variables.findIndicesForVariableSet(variables);
+
+    if (indices.length == 0) {
+      return this;
+    }
+
+    final BigInteger[] values = new BigInteger[indices.length];
+    Arrays.fill(values, BigInteger.ONE);
+
+    return new Polynomial(this.variables, raw.evaluate(indices, values));
   }
 
   /**
