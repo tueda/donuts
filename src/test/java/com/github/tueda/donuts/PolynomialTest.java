@@ -1,5 +1,7 @@
 package com.github.tueda.donuts;
 
+import static com.github.tueda.donuts.TestUtils.bigInts;
+import static com.github.tueda.donuts.TestUtils.ints;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -337,6 +339,8 @@ public class PolynomialTest {
     checkMultaryOperatorImmutability((pp) -> Polynomial.lcmOf(pp));
     checkUnaryOperatorImmutability(p -> p.factors()[0]);
     checkUnaryOperatorImmutability(p -> p.substitute(Polynomial.of("x"), Polynomial.of("x^2+y")));
+    checkUnaryOperatorImmutability(p -> p.evaluate(Variable.of("x"), 42));
+    checkUnaryOperatorImmutability(p -> p.evaluate(Variable.of("x", "y"), ints(42, 81)));
     checkUnaryOperatorImmutability(p -> p.evaluateAtZero(Variable.of("x")));
     checkUnaryOperatorImmutability(p -> p.evaluateAtZero(VariableSet.of("x", "y")));
     checkUnaryOperatorImmutability(p -> p.evaluateAtOne(Variable.of("x")));
@@ -761,6 +765,101 @@ public class PolynomialTest {
       assertThrows(IllegalArgumentException.class, () -> p1.substitute(Polynomial.of("2*x"), p3));
       assertThrows(IllegalArgumentException.class, () -> p1.substitute(Polynomial.of("x+y+z"), p3));
     }
+  }
+
+  @Test
+  public void evaluateAtInt() {
+    String s = "(1+x)^4*(2+y)^3*(3+z)^2*(4+w)";
+    Polynomial a = Polynomial.of(s);
+
+    {
+      Polynomial b = a.evaluate(Variable.of("a"), 42);
+      Polynomial c = Polynomial.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluate(Variable.of("x"), 42);
+      Polynomial c = Polynomial.of(s.replace("x", "42"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluate(Variable.of("a", "b"), ints(7, 9));
+      Polynomial c = Polynomial.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluate(Variable.of("a", "x"), ints(7, 9));
+      Polynomial c = Polynomial.of(s.replace("x", "9"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b =
+          a.evaluate(
+              Variable.of("v1", "v2", "x", "x1", "y", "y1", "z1"), ints(7, 9, 11, 13, 15, 17, 19));
+      Polynomial c = Polynomial.of(s.replace("x", "11").replace("y", "15"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluate(Variable.of("x", "y", "z"), ints(7, 9, 11));
+      Polynomial c = Polynomial.of(s.replace("x", "7").replace("y", "9").replace("z", "11"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    assertThrows(
+        IllegalArgumentException.class, () -> a.evaluate(Variable.of("x", "y"), ints(1, 2, 3)));
+  }
+
+  @Test
+  public void evaluateAtBigInt() {
+    String s = "(1+x)^4*(2+y)^3*(3+z)^2*(4+w)";
+    Polynomial a = Polynomial.of(s);
+
+    {
+      Polynomial b = a.evaluate(Variable.of("a"), BigInteger.valueOf(42));
+      Polynomial c = Polynomial.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluate(Variable.of("x"), BigInteger.valueOf(42));
+      Polynomial c = Polynomial.of(s.replace("x", "42"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluate(Variable.of("a", "b"), bigInts(7, 9));
+      Polynomial c = Polynomial.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluate(Variable.of("a", "x"), bigInts(7, 9));
+      Polynomial c = Polynomial.of(s.replace("x", "9"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b =
+          a.evaluate(
+              Variable.of("v1", "v2", "x", "x1", "y", "y1", "z1"),
+              bigInts(7, 9, 11, 13, 15, 17, 19));
+      Polynomial c = Polynomial.of(s.replace("x", "11").replace("y", "15"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      Polynomial b = a.evaluate(Variable.of("x", "y", "z"), bigInts(7, 9, 11));
+      Polynomial c = Polynomial.of(s.replace("x", "7").replace("y", "9").replace("z", "11"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    assertThrows(
+        IllegalArgumentException.class, () -> a.evaluate(Variable.of("x", "y"), bigInts(1, 2, 3)));
   }
 
   @Test

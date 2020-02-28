@@ -1,5 +1,6 @@
 package com.github.tueda.donuts;
 
+import cc.redberry.rings.bigint.BigInteger;
 import java.io.Serializable;
 import java.util.AbstractSet;
 import java.util.ArrayList;
@@ -381,5 +382,79 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
     }
 
     return Arrays.copyOfRange(indices, 0, n);
+  }
+
+  /**
+   * Returns indices and the corresponding values for the given variables and values. Variables that
+   * do not exist are just ignored in the return value.
+   *
+   * @param variables the variables to be examined
+   * @param values the values paired with {@code variables}
+   * @return an object array consisting of the indices ({@code (int[]) returnValue[0]}) and the
+   *     corresponding values ({@code (BigInteger[]) returnValue[1]})
+   * @throws IllegalArgumentException when {@code variables} and {@code values} have different
+   *     lengths
+   */
+  @SuppressWarnings("PMD.UseVarargs")
+  /* default */ Object[] findIndicesForVariablesAndValues(
+      final Variable[] variables, final int[] values) {
+    if (variables.length != values.length) {
+      throw new IllegalArgumentException("sizes of variables and values unmatch");
+    }
+
+    final int len = variables.length;
+    final int[] indices = new int[len];
+    final BigInteger[] newValues = new BigInteger[len];
+    int n = 0;
+
+    for (int i = 0; i < len; i++) {
+      final int j = indexOf(variables[i]);
+      if (j >= 0) {
+        indices[n] = j;
+        newValues[n++] = BigInteger.valueOf(values[i]);
+      }
+    }
+
+    final Object[] result = new Object[2];
+    result[0] = Arrays.copyOfRange(indices, 0, n);
+    result[1] = Arrays.copyOfRange(newValues, 0, n);
+    return result;
+  }
+
+  /**
+   * Returns indices and the corresponding values for the given variables and values. Variables that
+   * do not exist are just ignored in the return value.
+   *
+   * @param variables the variables to be examined
+   * @param values the values paired with {@code variables}
+   * @return an object array consisting of the indices ({@code (int[]) returnValue[0]}) and the
+   *     corresponding values ({@code (BigInteger[]) returnValue[1]})
+   * @throws IllegalArgumentException when {@code variables} and {@code values} have different
+   *     lengths
+   */
+  @SuppressWarnings("PMD.UseVarargs")
+  /* default */ Object[] findIndicesForVariablesAndValues(
+      final Variable[] variables, final BigInteger[] values) {
+    if (variables.length != values.length) {
+      throw new IllegalArgumentException("sizes of variables and values unmatch");
+    }
+
+    final int len = variables.length;
+    final int[] indices = new int[len];
+    final BigInteger[] newValues = new BigInteger[len];
+    int n = 0;
+
+    for (int i = 0; i < len; i++) {
+      final int j = indexOf(variables[i]);
+      if (j >= 0) {
+        indices[n] = j;
+        newValues[n++] = values[i];
+      }
+    }
+
+    final Object[] result = new Object[2];
+    result[0] = Arrays.copyOfRange(indices, 0, n);
+    result[1] = Arrays.copyOfRange(newValues, 0, n);
+    return result;
   }
 }

@@ -944,6 +944,84 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   }
 
   /**
+   * Returns a copy of this polynomial with setting the given variable to the specified value.
+   *
+   * @param variable the variable to be set
+   * @param value the value
+   * @return a copy of {@code this} with {@code variable -> value}
+   */
+  public Polynomial evaluate(final Variable variable, final int value) {
+    final int j = variables.indexOf(variable);
+    if (j < 0) {
+      return this;
+    }
+    return new Polynomial(this.variables, raw.evaluate(j, BigInteger.valueOf(value)));
+  }
+
+  /**
+   * Returns a copy of this polynomial with setting the given variable to the specified value.
+   *
+   * @param variable the variable to be set
+   * @param value the value
+   * @return a copy of {@code this} with {@code variable -> value}
+   */
+  public Polynomial evaluate(final Variable variable, final BigInteger value) {
+    final int j = variables.indexOf(variable);
+    if (j < 0) {
+      return this;
+    }
+    return new Polynomial(this.variables, raw.evaluate(j, value));
+  }
+
+  /**
+   * Returns a copy of this polynomial with setting the given variables to the specified values.
+   *
+   * @param variables the variables to be set
+   * @param values the values
+   * @return a copy of {@code this} with {@code variables -> values}
+   * @throws IllegalArgumentException when {@code variables} and {@code values} have different
+   *     lengths
+   */
+  @SuppressWarnings("PMD.UseVarargs")
+  public Polynomial evaluate(final Variable[] variables, final int[] values) {
+    final Object[] result = this.variables.findIndicesForVariablesAndValues(variables, values);
+
+    final int[] indices = (int[]) result[0];
+
+    if (indices.length == 0) {
+      return this;
+    }
+
+    final BigInteger[] newValues = (BigInteger[]) result[1];
+
+    return new Polynomial(this.variables, raw.evaluate(indices, newValues));
+  }
+
+  /**
+   * Returns a copy of this polynomial with setting the given variables to the specified values.
+   *
+   * @param variables the variables to be set
+   * @param values the values
+   * @return a copy of {@code this} with {@code variables -> values}
+   * @throws IllegalArgumentException when {@code variables} and {@code values} have different
+   *     lengths
+   */
+  @SuppressWarnings("PMD.UseVarargs")
+  public Polynomial evaluate(final Variable[] variables, final BigInteger[] values) {
+    final Object[] result = this.variables.findIndicesForVariablesAndValues(variables, values);
+
+    final int[] indices = (int[]) result[0];
+
+    if (indices.length == 0) {
+      return this;
+    }
+
+    final BigInteger[] newValues = (BigInteger[]) result[1];
+
+    return new Polynomial(this.variables, raw.evaluate(indices, newValues));
+  }
+
+  /**
    * Returns the polynomial with setting the given variable to zero.
    *
    * @param variable the variable to be set to zero
