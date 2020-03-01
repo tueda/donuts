@@ -658,6 +658,103 @@ public class RationalFunctionTest {
   }
 
   @Test
+  public void shiftByInt() {
+    String s = "(1+x)^4*(2+y)^3*(3+z)^2*(4+w)/(1+x^2)/(1+y^2)/(1+z)";
+    RationalFunction a = RationalFunction.of(s);
+
+    {
+      RationalFunction b = a.shift(Variable.of("a"), 42);
+      RationalFunction c = RationalFunction.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.shift(Variable.of("x"), 42);
+      RationalFunction c = RationalFunction.of(s.replace("x", "(x+42)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.shift(Variable.of("a", "b"), ints(7, 9));
+      RationalFunction c = RationalFunction.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.shift(Variable.of("a", "x"), ints(7, 9));
+      RationalFunction c = RationalFunction.of(s.replace("x", "(x+9)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b =
+          a.shift(
+              Variable.of("v1", "v2", "x", "x1", "y", "y1", "z1"), ints(7, 9, 11, 13, 15, 17, 19));
+      RationalFunction c = RationalFunction.of(s.replace("x", "(x+11)").replace("y", "(y+15)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.shift(Variable.of("x", "y", "z"), ints(7, 9, 11));
+      RationalFunction c =
+          RationalFunction.of(s.replace("x", "(x+7)").replace("y", "(y+9)").replace("z", "(z+11)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    assertThrows(
+        IllegalArgumentException.class, () -> a.shift(Variable.of("x", "y"), ints(1, 2, 3)));
+  }
+
+  @Test
+  public void shiftByBigInt() {
+    String s = "(1+x)^4*(2+y)^3*(3+z)^2*(4+w)/(1+x^2)/(1+y^2)/(1+z)";
+    RationalFunction a = RationalFunction.of(s);
+
+    {
+      RationalFunction b = a.shift(Variable.of("a"), BigInteger.valueOf(42));
+      RationalFunction c = RationalFunction.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.shift(Variable.of("x"), BigInteger.valueOf(42));
+      RationalFunction c = RationalFunction.of(s.replace("x", "(x+42)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.shift(Variable.of("a", "b"), bigInts(7, 9));
+      RationalFunction c = RationalFunction.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.shift(Variable.of("a", "x"), bigInts(7, 9));
+      RationalFunction c = RationalFunction.of(s.replace("x", "(x+9)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b =
+          a.shift(
+              Variable.of("v1", "v2", "x", "x1", "y", "y1", "z1"),
+              bigInts(7, 9, 11, 13, 15, 17, 19));
+      RationalFunction c = RationalFunction.of(s.replace("x", "(x+11)").replace("y", "(y+15)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.shift(Variable.of("x", "y", "z"), bigInts(7, 9, 11));
+      RationalFunction c =
+          RationalFunction.of(s.replace("x", "(x+7)").replace("y", "(y+9)").replace("z", "(z+11)"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    assertThrows(
+        IllegalArgumentException.class, () -> a.shift(Variable.of("x", "y"), bigInts(1, 2, 3)));
+  }
+
+  @Test
   public void derivative() {
     {
       RationalFunction r1 = RationalFunction.of("(1+x+y)^3/(1-3*x+y)^2");

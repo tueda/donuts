@@ -156,6 +156,8 @@ public class ImmutabilityTest {
     checkRationalFunctionUnaryOp(r -> r.evaluateAtZero(VariableSet.of("x", "y")));
     checkRationalFunctionUnaryOp(r -> r.evaluateAtOne(Variable.of("x")));
     checkRationalFunctionUnaryOp(r -> r.evaluateAtOne(VariableSet.of("x", "y")));
+    checkRationalFunctionUnaryOp(r -> r.shift(Variable.of("x"), 42));
+    checkRationalFunctionUnaryOp(r -> r.shift(Variable.of("x", "y"), ints(42, 81)));
     checkRationalFunctionUnaryOp(r -> r.derivative(Variable.of("x")));
     checkRationalFunctionUnaryOp(r -> r.derivative(Variable.of("x"), 2));
   }

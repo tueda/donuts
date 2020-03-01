@@ -642,7 +642,7 @@ public final class RationalFunction implements Serializable, Multivariate {
    * @throws IllegalArgumentException when {@code variables} and {@code values} have different
    *     lengths
    */
-  @SuppressWarnings("PMD.UseVarargs")
+  @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.UseVarargs"})
   public RationalFunction evaluate(final Variable[] variables, final int[] values) {
     final Object[] result = this.variables.findIndicesForVariablesAndValues(variables, values);
 
@@ -764,6 +764,91 @@ public final class RationalFunction implements Serializable, Multivariate {
         this.variables,
         raw.numerator().evaluate(indices, values),
         raw.denominator().evaluate(indices, values));
+  }
+
+  /**
+   * Returns a copy of this rational function with the given variable shift.
+   *
+   * @param variable the variable to be shifted
+   * @param shift the shift amount
+   * @return a copy of {@code this} with {@code variable -> variable + shift}
+   */
+  public RationalFunction shift(final Variable variable, final int shift) {
+    final int i = variables.indexOf(variable);
+    if (i < 0) {
+      return this;
+    }
+    final BigInteger newShift = BigInteger.valueOf(shift);
+    return new RationalFunction(
+        variables, raw.numerator().shift(i, newShift), raw.denominator().shift(i, newShift));
+  }
+
+  /**
+   * Returns a copy of this rational function with the given variable shift.
+   *
+   * @param variable the variable to be shifted
+   * @param shift the shift amount
+   * @return a copy of {@code this} with {@code variable -> variable + shift}
+   */
+  public RationalFunction shift(final Variable variable, final BigInteger shift) {
+    final int i = variables.indexOf(variable);
+    if (i < 0) {
+      return this;
+    }
+    return new RationalFunction(
+        variables, raw.numerator().shift(i, shift), raw.denominator().shift(i, shift));
+  }
+
+  /**
+   * Returns a copy of this rational function with the given variable shifts.
+   *
+   * @param variables the variables to be shifted
+   * @param shifts the shift amounts
+   * @return a copy of {@code this} with {@code variables -> variables + shifts}
+   */
+  @SuppressWarnings("PMD.UseVarargs")
+  public RationalFunction shift(final Variable[] variables, final int[] shifts) {
+    final Object[] result =
+        this.variables.findIndicesForVariablesAndValues(variables, shifts, "shifts");
+
+    final int[] indices = (int[]) result[0];
+
+    if (indices.length == 0) {
+      return this;
+    }
+
+    final BigInteger[] newShifts = (BigInteger[]) result[1];
+
+    return new RationalFunction(
+        this.variables,
+        raw.numerator().shift(indices, newShifts),
+        raw.denominator().shift(indices, newShifts));
+  }
+
+  /**
+   * Returns a copy of this rational function with the given variable shifts.
+   *
+   * @param variables the variables to be shifted
+   * @param shifts the shift amounts
+   * @return a copy of {@code this} with {@code variables -> variables + shifts}
+   */
+  @SuppressWarnings("PMD.UseVarargs")
+  public RationalFunction shift(final Variable[] variables, final BigInteger[] shifts) {
+    final Object[] result =
+        this.variables.findIndicesForVariablesAndValues(variables, shifts, "shifts");
+
+    final int[] indices = (int[]) result[0];
+
+    if (indices.length == 0) {
+      return this;
+    }
+
+    final BigInteger[] newShifts = (BigInteger[]) result[1];
+
+    return new RationalFunction(
+        this.variables,
+        raw.numerator().shift(indices, newShifts),
+        raw.denominator().shift(indices, newShifts));
   }
 
   /**
