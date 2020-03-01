@@ -1,5 +1,7 @@
 package com.github.tueda.donuts;
 
+import static com.github.tueda.donuts.TestUtils.bigInts;
+import static com.github.tueda.donuts.TestUtils.ints;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -461,6 +463,198 @@ public class RationalFunctionTest {
       assertThrows(IllegalArgumentException.class, () -> r1.substitute(Polynomial.of("2*x"), r3));
       assertThrows(IllegalArgumentException.class, () -> r1.substitute(Polynomial.of("x+y+z"), r3));
     }
+  }
+
+  @Test
+  public void evaluateAtInt() {
+    String s = "(1+x)^4*(2+y)^3*(3+z)^2*(4+w)/(1+x^2)/(1+y^2)/(1+z)/(1+w)";
+    RationalFunction a = RationalFunction.of(s);
+
+    {
+      RationalFunction b = a.evaluate(Variable.of("a"), 42);
+      RationalFunction c = RationalFunction.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluate(Variable.of("x"), 42);
+      RationalFunction c = RationalFunction.of(s.replace("x", "42"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluate(Variable.of("a", "b"), ints(7, 9));
+      RationalFunction c = RationalFunction.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluate(Variable.of("a", "x"), ints(7, 9));
+      RationalFunction c = RationalFunction.of(s.replace("x", "9"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b =
+          a.evaluate(
+              Variable.of("v1", "v2", "x", "x1", "y", "y1", "z1"), ints(7, 9, 11, 13, 15, 17, 19));
+      RationalFunction c = RationalFunction.of(s.replace("x", "11").replace("y", "15"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluate(Variable.of("x", "y", "z"), ints(7, 9, 11));
+      RationalFunction c =
+          RationalFunction.of(s.replace("x", "7").replace("y", "9").replace("z", "11"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    assertThrows(
+        IllegalArgumentException.class, () -> a.evaluate(Variable.of("x", "y"), ints(1, 2, 3)));
+
+    assertThrows(ArithmeticException.class, () -> a.evaluate(Variable.of("a", "z"), ints(-1, -1)));
+  }
+
+  @Test
+  public void evaluateAtBigInt() {
+    String s = "(1+x)^4*(2+y)^3*(3+z)^2*(4+w)/(1+x^2)/(1+y^2)/(1+z)/(1+w)";
+    RationalFunction a = RationalFunction.of(s);
+
+    {
+      RationalFunction b = a.evaluate(Variable.of("a"), BigInteger.valueOf(42));
+      RationalFunction c = RationalFunction.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluate(Variable.of("x"), BigInteger.valueOf(42));
+      RationalFunction c = RationalFunction.of(s.replace("x", "42"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluate(Variable.of("a", "b"), bigInts(7, 9));
+      RationalFunction c = RationalFunction.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluate(Variable.of("a", "x"), bigInts(7, 9));
+      RationalFunction c = RationalFunction.of(s.replace("x", "9"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b =
+          a.evaluate(
+              Variable.of("v1", "v2", "x", "x1", "y", "y1", "z1"),
+              bigInts(7, 9, 11, 13, 15, 17, 19));
+      RationalFunction c = RationalFunction.of(s.replace("x", "11").replace("y", "15"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluate(Variable.of("x", "y", "z"), bigInts(7, 9, 11));
+      RationalFunction c =
+          RationalFunction.of(s.replace("x", "7").replace("y", "9").replace("z", "11"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    assertThrows(
+        IllegalArgumentException.class, () -> a.evaluate(Variable.of("x", "y"), bigInts(1, 2, 3)));
+
+    assertThrows(
+        ArithmeticException.class, () -> a.evaluate(Variable.of("a", "z"), bigInts(-1, -1)));
+  }
+
+  @Test
+  public void evaluateAtZero() {
+    String s = "(1+x)^4*(2+y)^3*(3+z)^2*(4+w)/(1+x^2)/(1+y^2)/(1+z)/(z+w)";
+    RationalFunction a = RationalFunction.of(s);
+
+    {
+      RationalFunction b = a.evaluateAtZero(Variable.of("a"));
+      RationalFunction c = RationalFunction.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluateAtZero(Variable.of("x"));
+      RationalFunction c = RationalFunction.of(s.replace("x", "0"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluateAtZero(VariableSet.of("a", "b"));
+      RationalFunction c = RationalFunction.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluateAtZero(VariableSet.of("a", "x"));
+      RationalFunction c = RationalFunction.of(s.replace("x", "0"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluateAtZero(VariableSet.of("v1", "v2", "x", "x1", "y", "y1", "z1"));
+      RationalFunction c = RationalFunction.of(s.replace("x", "0").replace("y", "0"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluateAtZero(VariableSet.of("x", "y", "z"));
+      RationalFunction c =
+          RationalFunction.of(s.replace("x", "0").replace("y", "0").replace("z", "0"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    assertThrows(ArithmeticException.class, () -> a.evaluateAtZero(VariableSet.of("z", "w")));
+  }
+
+  @Test
+  public void evaluateAtOne() {
+    String s = "(1+x)^4*(2+y)^3*(3+z)^2*(4+w)/(1+x^2)/(1+y^2)/(1+z)/(z+w-2)";
+    RationalFunction a = RationalFunction.of(s);
+
+    {
+      RationalFunction b = a.evaluateAtOne(Variable.of("a"));
+      RationalFunction c = RationalFunction.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluateAtOne(Variable.of("x"));
+      RationalFunction c = RationalFunction.of(s.replace("x", "1"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluateAtOne(VariableSet.of("a", "b"));
+      RationalFunction c = RationalFunction.of(s);
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluateAtOne(VariableSet.of("a", "x"));
+      RationalFunction c = RationalFunction.of(s.replace("x", "1"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluateAtOne(VariableSet.of("v1", "v2", "x", "x1", "y", "y1", "z1"));
+      RationalFunction c = RationalFunction.of(s.replace("x", "1").replace("y", "1"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    {
+      RationalFunction b = a.evaluateAtOne(VariableSet.of("x", "y", "z"));
+      RationalFunction c =
+          RationalFunction.of(s.replace("x", "1").replace("y", "1").replace("z", "1"));
+      assertThat(b).isEqualTo(c);
+    }
+
+    assertThrows(ArithmeticException.class, () -> a.evaluateAtOne(VariableSet.of("z", "w")));
   }
 
   @Test

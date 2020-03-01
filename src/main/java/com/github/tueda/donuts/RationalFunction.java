@@ -12,6 +12,7 @@ import java.io.InvalidObjectException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BinaryOperator;
@@ -213,6 +214,20 @@ public final class RationalFunction implements Serializable, Multivariate {
     checkNumberOfVariables(newVariables.size());
     variables = newVariables;
     raw = rawRat;
+  }
+
+  private RationalFunction(
+      final VariableSet newVariables,
+      final MultivariatePolynomial<BigInteger> rawNum,
+      final MultivariatePolynomial<BigInteger> rawDen) {
+    final int nVariables = newVariables.size();
+    assert nVariables == rawNum.nVariables;
+    assert nVariables == rawDen.nVariables;
+    if (rawDen.isZero()) {
+      throw new ArithmeticException("division by zero");
+    }
+    variables = newVariables;
+    raw = new Rational<>(getRings(nVariables), rawNum, rawDen);
   }
 
   /* default */ static RationalFunction createFromRaw(
@@ -575,6 +590,180 @@ public final class RationalFunction implements Serializable, Multivariate {
         SubstitutionUtils.substitute(rawRat.denominator(), rawLhs, rawRhs);
 
     return new RationalFunction(newVariables, rawNum.divide(rawDen));
+  }
+
+  /**
+   * Returns a copy of this rational function with setting the given variable to the specified
+   * value.
+   *
+   * @param variable the variable to be set
+   * @param value the value
+   * @return a copy of {@code this} with {@code variable -> value}
+   * @throws ArithmeticException when division by zero
+   */
+  public RationalFunction evaluate(final Variable variable, final int value) {
+    final int i = variables.indexOf(variable);
+    if (i < 0) {
+      return this;
+    }
+    final BigInteger newValue = BigInteger.valueOf(value);
+    return new RationalFunction(
+        this.variables,
+        raw.numerator().evaluate(i, newValue),
+        raw.denominator().evaluate(i, newValue));
+  }
+
+  /**
+   * Returns a copy of this rational function with setting the given variable to the specified
+   * value.
+   *
+   * @param variable the variable to be set
+   * @param value the value
+   * @return a copy of {@code this} with {@code variable -> value}
+   * @throws ArithmeticException when division by zero
+   */
+  public RationalFunction evaluate(final Variable variable, final BigInteger value) {
+    final int i = variables.indexOf(variable);
+    if (i < 0) {
+      return this;
+    }
+    return new RationalFunction(
+        this.variables, raw.numerator().evaluate(i, value), raw.denominator().evaluate(i, value));
+  }
+
+  /**
+   * Returns a copy of this rational function with setting the given variables to the specified
+   * values.
+   *
+   * @param variables the variables to be set
+   * @param values the values
+   * @return a copy of {@code this} with {@code variables -> values}
+   * @throws ArithmeticException when division by zero
+   * @throws IllegalArgumentException when {@code variables} and {@code values} have different
+   *     lengths
+   */
+  @SuppressWarnings("PMD.UseVarargs")
+  public RationalFunction evaluate(final Variable[] variables, final int[] values) {
+    final Object[] result = this.variables.findIndicesForVariablesAndValues(variables, values);
+
+    final int[] indices = (int[]) result[0];
+
+    if (indices.length == 0) {
+      return this;
+    }
+
+    final BigInteger[] newValues = (BigInteger[]) result[1];
+
+    return new RationalFunction(
+        this.variables,
+        raw.numerator().evaluate(indices, newValues),
+        raw.denominator().evaluate(indices, newValues));
+  }
+
+  /**
+   * Returns a copy of this rational function with setting the given variables to the specified
+   * values.
+   *
+   * @param variables the variables to be set
+   * @param values the values
+   * @return a copy of {@code this} with {@code variables -> values}
+   * @throws ArithmeticException when division by zero
+   * @throws IllegalArgumentException when {@code variables} and {@code values} have different
+   *     lengths
+   */
+  @SuppressWarnings("PMD.UseVarargs")
+  public RationalFunction evaluate(final Variable[] variables, final BigInteger[] values) {
+    final Object[] result = this.variables.findIndicesForVariablesAndValues(variables, values);
+
+    final int[] indices = (int[]) result[0];
+
+    if (indices.length == 0) {
+      return this;
+    }
+
+    final BigInteger[] newValues = (BigInteger[]) result[1];
+
+    return new RationalFunction(
+        this.variables,
+        raw.numerator().evaluate(indices, newValues),
+        raw.denominator().evaluate(indices, newValues));
+  }
+
+  /**
+   * Returns the rational function with setting the given variable to zero.
+   *
+   * @param variable the variable to be set to zero
+   * @return a copy of {@code this} with {@code variable -> 0}
+   * @throws ArithmeticException when division by zero
+   */
+  public RationalFunction evaluateAtZero(final Variable variable) {
+    final int i = variables.indexOf(variable);
+    if (i < 0) {
+      return this;
+    }
+    return new RationalFunction(
+        this.variables, raw.numerator().evaluateAtZero(i), raw.denominator().evaluateAtZero(i));
+  }
+
+  /**
+   * Returns a copy of this rational function with setting all of the given variable to zero.
+   *
+   * @param variables the variables to be set to zero
+   * @return a copy of {@code this} with {@code variables -> 0}
+   * @throws ArithmeticException when division by zero
+   */
+  public RationalFunction evaluateAtZero(final VariableSet variables) {
+    final int[] indices = this.variables.findIndicesForVariableSet(variables);
+
+    if (indices.length == 0) {
+      return this;
+    }
+
+    return new RationalFunction(
+        this.variables,
+        raw.numerator().evaluateAtZero(indices),
+        raw.denominator().evaluateAtZero(indices));
+  }
+
+  /**
+   * Returns a copy of this rational function with setting the given variable to unity.
+   *
+   * @param variable the variable to be set to unity
+   * @return a copy of {@code this} with {@code variable -> 1}
+   * @throws ArithmeticException when division by zero
+   */
+  public RationalFunction evaluateAtOne(final Variable variable) {
+    final int i = variables.indexOf(variable);
+    if (i < 0) {
+      return this;
+    }
+    return new RationalFunction(
+        this.variables,
+        raw.numerator().evaluate(i, BigInteger.ONE),
+        raw.denominator().evaluate(i, BigInteger.ONE));
+  }
+
+  /**
+   * Returns a copy of this rational function with setting all of the given variables to unity.
+   *
+   * @param variables the variables to be set to unity
+   * @return a copy of {@code this} with {@code variables -> 1}
+   * @throws ArithmeticException when division by zero
+   */
+  public RationalFunction evaluateAtOne(final VariableSet variables) {
+    final int[] indices = this.variables.findIndicesForVariableSet(variables);
+
+    if (indices.length == 0) {
+      return this;
+    }
+
+    final BigInteger[] values = new BigInteger[indices.length];
+    Arrays.fill(values, BigInteger.ONE);
+
+    return new RationalFunction(
+        this.variables,
+        raw.numerator().evaluate(indices, values),
+        raw.denominator().evaluate(indices, values));
   }
 
   /**

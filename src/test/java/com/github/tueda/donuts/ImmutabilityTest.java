@@ -147,9 +147,17 @@ public class ImmutabilityTest {
     checkRationalFunctionBinaryOp(RationalFunction::multiply);
     checkRationalFunctionBinaryOp(RationalFunction::divide);
     checkRationalFunctionUnaryOp(r -> r.pow(5));
-    checkRationalFunctionUnaryOp(r -> r.pow(new BigInteger("5")));
-    checkRationalFunctionUnaryOp(r -> r.derivative(new Variable("x")));
-    checkRationalFunctionUnaryOp(r -> r.derivative(new Variable("x"), 2));
+    checkRationalFunctionUnaryOp(r -> r.pow(BigInteger.valueOf(5)));
+    checkRationalFunctionUnaryOp(
+        r -> r.substitute(Polynomial.of("x"), RationalFunction.of("x^2+y/(1+z)")));
+    checkRationalFunctionUnaryOp(r -> r.evaluate(Variable.of("x"), 42));
+    checkRationalFunctionUnaryOp(r -> r.evaluate(Variable.of("x", "y"), ints(42, 81)));
+    checkRationalFunctionUnaryOp(r -> r.evaluateAtZero(Variable.of("x")));
+    checkRationalFunctionUnaryOp(r -> r.evaluateAtZero(VariableSet.of("x", "y")));
+    checkRationalFunctionUnaryOp(r -> r.evaluateAtOne(Variable.of("x")));
+    checkRationalFunctionUnaryOp(r -> r.evaluateAtOne(VariableSet.of("x", "y")));
+    checkRationalFunctionUnaryOp(r -> r.derivative(Variable.of("x")));
+    checkRationalFunctionUnaryOp(r -> r.derivative(Variable.of("x"), 2));
   }
 
   void checkRationalFunctionUnaryOp(UnaryOperator<RationalFunction> operator) {
