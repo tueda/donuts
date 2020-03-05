@@ -62,7 +62,15 @@ javadoc {
 
 test {
   useJUnitPlatform()
+  exclude '**/ImmutabilityTest.class'
 }
+
+task testWithoutCoverage(type: Test) {
+  useJUnitPlatform()
+  include '**/ImmutabilityTest.class'
+}
+
+check.dependsOn testWithoutCoverage
 
 spotless {
   java {
