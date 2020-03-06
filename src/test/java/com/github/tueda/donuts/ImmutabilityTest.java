@@ -100,12 +100,27 @@ public class ImmutabilityTest {
   }
 
   void checkPolynomialMultaryOp(Function<Polynomial[], Polynomial> operator) {
-    String s1 = "90*(1+a)";
-    String s2 = "-6*(1+a)*(2+b)";
-    String s3 = "-9*(1+a)*(2+b)*(3+d)";
-    String s4 = "12*(1+a)^2*(2+b)*(4+d)";
-    String s5 = "24*(1+a)*(2+c)*(5+e)";
-    String[] ss = {s1, s2, s3, s4, s5};
+    {
+      String s1 = "90*(1+a)";
+      String s2 = "-6*(1+a)*(2+b)";
+      String s3 = "-9*(1+a)*(2+b)*(3+d)";
+      String s4 = "12*(1+a)^2*(2+b)*(4+d)";
+      String s5 = "24*(1+a)*(2+c)*(5+e)";
+      String[] ss = {s1, s2, s3, s4, s5};
+      checkPolynomialMultaryOp(operator, ss);
+    }
+    {
+      String s1 = "1";
+      String s2 = "x";
+      String s3 = "y";
+      String s4 = "1";
+      String s5 = "2";
+      String[] ss = {s1, s2, s3, s4, s5};
+      checkPolynomialMultaryOp(operator, ss);
+    }
+  }
+
+  void checkPolynomialMultaryOp(Function<Polynomial[], Polynomial> operator, String[] ss) {
     {
       Polynomial[] a = Arrays.stream(ss).map(Polynomial::new).toArray(Polynomial[]::new);
       Polynomial[] b = Arrays.stream(ss).map(Polynomial::new).toArray(Polynomial[]::new);

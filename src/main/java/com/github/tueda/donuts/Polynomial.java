@@ -859,6 +859,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return MultivariateDivision.divideExact(a.multiply(b), gcd);
   }
 
+  @SuppressWarnings("PMD.CompareObjectsWithEquals")
   private static MultivariatePolynomial<BigInteger> polynomialLcm(
       final Iterable<MultivariatePolynomial<BigInteger>> array) {
     boolean first = true;
@@ -869,6 +870,9 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
         first = false;
       } else {
         lcm = polynomialLcm(lcm, poly);
+        if (lcm == poly) {
+          lcm = lcm.copy();
+        }
       }
     }
     return lcm;
