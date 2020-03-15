@@ -487,6 +487,87 @@ public class PolynomialTest {
   }
 
   @Test
+  public void sumOf() {
+    Polynomial p1 = Polynomial.of("x + y");
+    Polynomial p2 = Polynomial.of("y + z");
+    Polynomial p3 = Polynomial.of("z + t");
+    Polynomial p4 = Polynomial.of("1 + y + z");
+
+    assertThat(Polynomial.sumOf()).isEqualTo(Polynomial.of("0"));
+    assertThat(Polynomial.sumOf(p1)).isEqualTo(Polynomial.of("x + y"));
+    assertThat(Polynomial.sumOf(p1, p2)).isEqualTo(Polynomial.of("x + 2*y + z"));
+    assertThat(Polynomial.sumOf(p1, p2, p3)).isEqualTo(Polynomial.of("x + 2*y + 2*z + t"));
+    assertThat(Polynomial.sumOf(p1, p2, p3, p4)).isEqualTo(Polynomial.of("1 + x + 3*y + 3*z + t"));
+
+    // same variable set
+
+    assertThat(Polynomial.sumOf(p1, p1, p1, p1)).isEqualTo(Polynomial.of("4 * x + 4 * y"));
+
+    // auxiliary methods
+
+    {
+      List<Polynomial> pp = new ArrayList<>();
+      assertThat(Polynomial.sumOf(pp)).isEqualTo(Polynomial.of("0"));
+      pp.add(p1);
+      assertThat(Polynomial.sumOf(pp)).isEqualTo(Polynomial.of("x + y"));
+      pp.add(p2);
+      assertThat(Polynomial.sumOf(pp)).isEqualTo(Polynomial.of("x + 2*y + z"));
+      pp.add(p3);
+      assertThat(Polynomial.sumOf(pp)).isEqualTo(Polynomial.of("x + 2*y + 2*z + t"));
+      pp.add(p4);
+      assertThat(Polynomial.sumOf(pp)).isEqualTo(Polynomial.of("1 + x + 3*y + 3*z + t"));
+    }
+
+    {
+      Polynomial[] pp = new Polynomial[] {p1, p2, p3, p4};
+      assertThat(Polynomial.sumOf(Arrays.stream(pp)))
+          .isEqualTo(Polynomial.of("1 + x + 3*y + 3*z + t"));
+    }
+  }
+
+  @Test
+  public void productOf() {
+    Polynomial p1 = Polynomial.of("x + y");
+    Polynomial p2 = Polynomial.of("y + z");
+    Polynomial p3 = Polynomial.of("z + t");
+    Polynomial p4 = Polynomial.of("1 + y + z");
+
+    assertThat(Polynomial.productOf()).isEqualTo(Polynomial.of("1"));
+    assertThat(Polynomial.productOf(p1)).isEqualTo(Polynomial.of("x + y"));
+    assertThat(Polynomial.productOf(p1, p2)).isEqualTo(Polynomial.of("(x + y) * (y + z)"));
+    assertThat(Polynomial.productOf(p1, p2, p3))
+        .isEqualTo(Polynomial.of("(x + y) * (y + z) * (z + t)"));
+    assertThat(Polynomial.productOf(p1, p2, p3, p4))
+        .isEqualTo(Polynomial.of("(x + y) * (y + z) * (z + t) * (1 + y + z)"));
+
+    // same variable set
+
+    assertThat(Polynomial.productOf(p1, p1, p1, p1)).isEqualTo(Polynomial.of("(x + y)^4"));
+
+    // auxiliary methods
+
+    {
+      List<Polynomial> pp = new ArrayList<>();
+      assertThat(Polynomial.productOf(pp)).isEqualTo(Polynomial.of("1"));
+      pp.add(p1);
+      assertThat(Polynomial.productOf(pp)).isEqualTo(Polynomial.of("x + y"));
+      pp.add(p2);
+      assertThat(Polynomial.productOf(pp)).isEqualTo(Polynomial.of("(x + y) * (y + z)"));
+      pp.add(p3);
+      assertThat(Polynomial.productOf(pp)).isEqualTo(Polynomial.of("(x + y) * (y + z) * (z + t)"));
+      pp.add(p4);
+      assertThat(Polynomial.productOf(pp))
+          .isEqualTo(Polynomial.of("(x + y) * (y + z) * (z + t) * (1 + y + z)"));
+    }
+
+    {
+      Polynomial[] pp = new Polynomial[] {p1, p2, p3, p4};
+      assertThat(Polynomial.productOf(Arrays.stream(pp)))
+          .isEqualTo(Polynomial.of("(x + y) * (y + z) * (z + t) * (1 + y + z)"));
+    }
+  }
+
+  @Test
   public void gcd() {
     Polynomial p = Polynomial.of("x + y");
     Polynomial q = Polynomial.of("y + z");

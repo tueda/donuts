@@ -23,6 +23,8 @@ public class ImmutabilityTest {
     checkPolynomialBinaryOp((p1, p2) -> p1.divide(p2).getNumerator());
     checkPolynomialUnaryOp(p -> p.pow(5));
     checkPolynomialUnaryOp(p -> p.pow(BigInteger.valueOf(5)));
+    checkPolynomialMultaryOp((pp) -> Polynomial.sumOf(pp));
+    checkPolynomialMultaryOp((pp) -> Polynomial.productOf(pp));
     checkPolynomialBinaryOp((p1, p2) -> p1.gcd(p2));
     checkPolynomialBinaryOp((p1, p2) -> Polynomial.gcdOf(p1, p2));
     checkPolynomialMultaryOp((pp) -> Polynomial.gcdOf(pp));

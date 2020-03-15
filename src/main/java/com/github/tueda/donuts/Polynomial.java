@@ -732,6 +732,147 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   }
 
   /**
+   * Returns the sum of the given polynomials.
+   *
+   * @apiNote This version of the method with one argument is needed to prevent wrong overloading
+   *     with {@code Iterable<Polynomial>}.
+   * @param polynomials the polynomials to be summed
+   * @return {@code polynomial1 + ... + polynomialN}
+   */
+  public static Polynomial sumOf(final Polynomial polynomials) {
+    return polynomials;
+  }
+
+  /**
+   * Returns the sum of the given polynomials.
+   *
+   * @param polynomials the polynomials to be summed
+   * @return {@code polynomial1 + ... + polynomialN}
+   */
+  public static Polynomial sumOf(final Polynomial... polynomials) {
+    switch (polynomials.length) {
+      case 0:
+        return Polynomial.ZERO;
+      case 1:
+        return polynomials[0];
+      case 2:
+        return polynomials[0].add(polynomials[1]);
+      default:
+        break;
+    }
+
+    // The following code tries to maximize the benefit from mutability of
+    // IPolynomial.add().
+
+    final VariableSet newVariables = VariableSet.unionOf(polynomials);
+
+    final List<MultivariatePolynomial<BigInteger>> polys =
+        Stream.of(polynomials).map(p -> p.translate(newVariables).raw).collect(Collectors.toList());
+
+    MultivariatePolynomial<BigInteger> poly0 = polys.get(0);
+    if (poly0 == polynomials[0].raw) {
+      poly0 = poly0.copy();
+    }
+
+    for (int i = 1; i < polys.size(); i++) {
+      poly0.add(polys.get(i));
+    }
+
+    return new Polynomial(newVariables, poly0);
+  }
+
+  /**
+   * Returns the sum of the given polynomials.
+   *
+   * @param polynomials the polynomials to be summed
+   * @return {@code polynomial1 + ... + polynomialN}
+   */
+  public static Polynomial sumOf(final Iterable<Polynomial> polynomials) {
+    return sumOf(StreamSupport.stream(polynomials.spliterator(), false).toArray(Polynomial[]::new));
+  }
+
+  /**
+   * Returns the sum of the given polynomials.
+   *
+   * @param polynomials the polynomials to be summed
+   * @return {@code polynomial1 + ... + polynomialN}
+   */
+  public static Polynomial sumOf(final Stream<Polynomial> polynomials) {
+    return sumOf(polynomials.toArray(Polynomial[]::new));
+  }
+
+  /**
+   * Returns the product of the given polynomials.
+   *
+   * @apiNote This version of the method with one argument is needed to prevent wrong overloading
+   *     with {@code Iterable<Polynomial>}.
+   * @param polynomials the polynomials to be multiplied
+   * @return {@code polynomial1 * ... * polynomialN}
+   */
+  public static Polynomial productOf(final Polynomial polynomials) {
+    return polynomials;
+  }
+
+  /**
+   * Returns the product of the given polynomials.
+   *
+   * @param polynomials the polynomials to be multiplied
+   * @return {@code polynomial1 * ... * polynomialN}
+   */
+  public static Polynomial productOf(final Polynomial... polynomials) {
+    switch (polynomials.length) {
+      case 0:
+        return Polynomial.ONE;
+      case 1:
+        return polynomials[0];
+      case 2:
+        return polynomials[0].multiply(polynomials[1]);
+      default:
+        break;
+    }
+
+    // The following code tries to maximize the benefit from mutability of
+    // IPolynomial.multiply().
+
+    final VariableSet newVariables = VariableSet.unionOf(polynomials);
+
+    final List<MultivariatePolynomial<BigInteger>> polys =
+        Stream.of(polynomials).map(p -> p.translate(newVariables).raw).collect(Collectors.toList());
+
+    MultivariatePolynomial<BigInteger> poly0 = polys.get(0);
+    if (poly0 == polynomials[0].raw) {
+      poly0 = poly0.copy();
+    }
+
+    for (int i = 1; i < polys.size(); i++) {
+      poly0.multiply(polys.get(i));
+    }
+
+    return new Polynomial(newVariables, poly0);
+  }
+
+  /**
+   * Returns the product of the given polynomials.
+   *
+   * @param polynomials the polynomials to be multiplied
+   * @return {@code polynomial1 * ... * polynomialN}
+   */
+  public static Polynomial productOf(final Iterable<Polynomial> polynomials) {
+    return productOf(
+        StreamSupport.stream(polynomials.spliterator(), false).toArray(Polynomial[]::new));
+  }
+
+  /**
+   * Returns the product of the given polynomials.
+   *
+   * @param polynomials the polynomials to be multiplied
+   * @return {@code polynomial1 * ... * polynomialN}
+   */
+  public static Polynomial productOf(final Stream<Polynomial> polynomials) {
+    return productOf(polynomials.toArray(Polynomial[]::new));
+  }
+
+  /**
    * Returns the greatest common divisor of this polynomial and the other.
    *
    * @param other the polynomial with which the GCD is to be computed

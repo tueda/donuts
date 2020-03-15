@@ -45,6 +45,7 @@ javadoc {
       "https://docs.oracle.com/javase/${source}/docs/api/".toString(),
       "https://www.javadoc.io/doc/cc.redberry/rings/${versions.rings}/".toString(),
     ]
+    addStringOption("tag", "apiNote:a:API Note:")
   }
   // Fail if any warnings are encountered.
   if (JavaVersion.current().isJava8Compatible()) {
