@@ -23,7 +23,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-/** A multivariate polynomial with integer coefficients. */
+/** A multivariate polynomial with integer coefficients. Immutable. */
 public final class Polynomial implements Serializable, Iterable<Polynomial>, Multivariate {
   private static final long serialVersionUID = 1L;
 
@@ -54,6 +54,12 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
 
   /** The raw polynomial object. */
   private final MultivariatePolynomial<BigInteger> raw;
+
+  /** The polynomial that equals to zero. */
+  public static final Polynomial ZERO = new Polynomial();
+
+  /** The polynomial that equals to unity. */
+  public static final Polynomial ONE = new Polynomial(1);
 
   /** Constructs a zero polynomial. */
   public Polynomial() {
@@ -744,7 +750,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   public static Polynomial gcdOf(final Polynomial... polynomials) {
     if (polynomials.length == 0) {
       // gcd() -> 0
-      return new Polynomial();
+      return Polynomial.ZERO;
     }
     if (polynomials.length == 1) {
       // gcd(x) -> x
@@ -1192,7 +1198,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
 
     final int i = variables.indexOf(variable);
     if (i < 0) {
-      return new Polynomial();
+      return Polynomial.ZERO;
     }
 
     return new Polynomial(variables, raw.derivative(i, order));

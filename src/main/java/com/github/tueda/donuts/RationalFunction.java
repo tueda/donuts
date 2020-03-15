@@ -18,7 +18,7 @@ import java.util.Objects;
 import java.util.function.BinaryOperator;
 import java.util.stream.Stream;
 
-/** A multivariate rational function. */
+/** A multivariate rational function. Immutable. */
 public final class RationalFunction implements Serializable, Multivariate {
   private static final long serialVersionUID = 1L;
 
@@ -33,8 +33,14 @@ public final class RationalFunction implements Serializable, Multivariate {
   private static final List<Rationals<MultivariatePolynomial<BigInteger>>> RAW_FIELDS =
       new ArrayList<>();
 
-  /** Zero rational function. */
+  /** Raw zero rational function. */
   /* default */ static final Rational<MultivariatePolynomial<BigInteger>> RAW_ZERO;
+
+  /** The rational function that equals to zero. */
+  public static final RationalFunction ZERO;
+
+  /** The rational function that equals to unity. */
+  public static final RationalFunction ONE;
 
   static {
     assert MAX_VARIABLES >= 0;
@@ -45,6 +51,9 @@ public final class RationalFunction implements Serializable, Multivariate {
     }
 
     RAW_ZERO = new Rational<>(RAW_RINGS.get(0), Polynomial.RAW_ZERO);
+
+    ZERO = new RationalFunction();
+    ONE = new RationalFunction(1);
   }
 
   /** The set of variables. */
@@ -879,7 +888,7 @@ public final class RationalFunction implements Serializable, Multivariate {
 
     final int i = variables.indexOf(variable);
     if (i < 0) {
-      return new RationalFunction();
+      return RationalFunction.ZERO;
     }
 
     Rational<MultivariatePolynomial<BigInteger>> r = raw;
@@ -887,7 +896,7 @@ public final class RationalFunction implements Serializable, Multivariate {
     for (int j = 0; j < order; j++) {
       r = derivativeImpl(r, i);
       if (r == null) {
-        return new RationalFunction();
+        return RationalFunction.ZERO;
       }
     }
 

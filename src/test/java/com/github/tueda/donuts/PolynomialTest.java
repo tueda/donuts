@@ -61,6 +61,12 @@ public class PolynomialTest {
   }
 
   @Test
+  public void constants() {
+    assertThat(Polynomial.ZERO).isEqualTo(new Polynomial(0));
+    assertThat(Polynomial.ONE).isEqualTo(new Polynomial(1));
+  }
+
+  @Test
   public void of() {
     RationalFunction r1 = RationalFunction.of("1+x/y");
     RationalFunction r2 = RationalFunction.of("1+y/z");

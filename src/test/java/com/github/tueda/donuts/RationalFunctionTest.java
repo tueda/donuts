@@ -109,6 +109,12 @@ public class RationalFunctionTest {
   }
 
   @Test
+  public void constants() {
+    assertThat(RationalFunction.ZERO).isEqualTo(new RationalFunction(0));
+    assertThat(RationalFunction.ONE).isEqualTo(new RationalFunction(1));
+  }
+
+  @Test
   public void serialization() throws IOException, ClassNotFoundException {
     // NOTE: this test is imperfect in the sense that the serialization and deserialization are
     // done in the same process.
