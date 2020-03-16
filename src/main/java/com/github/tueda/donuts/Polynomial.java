@@ -10,13 +10,16 @@ import cc.redberry.rings.poly.multivar.MultivariateDivision;
 import cc.redberry.rings.poly.multivar.MultivariateFactorization;
 import cc.redberry.rings.poly.multivar.MultivariateGCD;
 import cc.redberry.rings.poly.multivar.MultivariatePolynomial;
+import com.github.tueda.donuts.util.IntArrayComparator;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -582,6 +585,68 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
         this.variables,
         raw.coefficientOf(
             Arrays.copyOfRange(variableIndices, 0, n), Arrays.copyOfRange(newExponents, 0, n)));
+  }
+
+  /**
+   * Returns the map from exponents to coefficients with respect to the given variables.
+   *
+   * @param variables the variables to be considered
+   * @return the map from exponent vectors to coefficients
+   */
+  @SuppressWarnings("PMD.UseConcurrentHashMap")
+  public Map<int[], Polynomial> getCoefficientMap(final Variable... variables) {
+    final int length = variables.length;
+    final int[] variableIndicesInclusive = new int[length];
+    final int[] variableIndicesExclusive = new int[length];
+
+    int n = 0;
+    for (int i = 0; i < length; i++) {
+      final int j = this.variables.indexOf(variables[i]);
+      variableIndicesInclusive[i] = j;
+      if (j >= 0) {
+        variableIndicesExclusive[n++] = j;
+      }
+    }
+
+    // indices corresponding to the variables to be set to zero in each term
+    final int[] indices = Arrays.copyOfRange(variableIndicesExclusive, 0, n);
+
+    final IntArrayComparator comparator = new IntArrayComparator();
+    final Map<int[], MultivariatePolynomial<BigInteger>> map = new TreeMap<>(comparator);
+
+    for (final Monomial<BigInteger> term : raw) {
+      // coefficient
+      final Monomial<BigInteger> coefficient =
+          new Monomial<>(term.dvSetZero(indices), term.coefficient);
+
+      // corresponding exponents
+      final int[] exponents = new int[length];
+      for (int i = 0; i < length; i++) {
+        final int j = variableIndicesInclusive[i];
+        if (j < 0) {
+          exponents[i] = 0;
+        } else {
+          exponents[i] = term.exponents[j];
+        }
+      }
+
+      // Store it in the map.
+      final MultivariatePolynomial<BigInteger> value = map.get(exponents);
+      if (value == null) {
+        map.put(exponents, raw.create(coefficient));
+      } else {
+        value.add(coefficient);
+      }
+    }
+
+    // Convert the map to the final result.
+    final Map<int[], Polynomial> result = new TreeMap<>(comparator);
+
+    for (final Map.Entry<int[], MultivariatePolynomial<BigInteger>> entry : map.entrySet()) {
+      result.put(entry.getKey(), new Polynomial(this.variables, entry.getValue()));
+    }
+
+    return result;
   }
 
   /**

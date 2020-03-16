@@ -14,6 +14,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 public class PolynomialTest {
@@ -392,6 +393,78 @@ public class PolynomialTest {
     assertThrows(
         IllegalArgumentException.class,
         () -> p.coefficientOf(Variable.of("a", "b"), new int[] {1, 2, 3}));
+  }
+
+  @Test
+  public void getCoefficientMap() {
+    Polynomial p = Polynomial.of("(1+x+2*y+z)^3");
+    {
+      Map<int[], Polynomial> map = p.getCoefficientMap();
+      int[][] exponents = {
+        {},
+      };
+      Polynomial[] coefficients = new Polynomial[] {p};
+      checkExponentsAndCoefficients(map, exponents, coefficients);
+    }
+
+    {
+      Map<int[], Polynomial> map = p.getCoefficientMap(Variable.of("a", "b"));
+      int[][] exponents = {
+        {0, 0},
+      };
+      Polynomial[] coefficients = new Polynomial[] {p};
+      checkExponentsAndCoefficients(map, exponents, coefficients);
+    }
+
+    {
+      Map<int[], Polynomial> map = p.getCoefficientMap(Variable.of("x"));
+      int[][] exponents = {
+        {0}, {1}, {2}, {3},
+      };
+      Polynomial[] coefficients = Polynomial.of("(1+2*y+z)^3", "3*(1+2*y+z)^2", "3*(1+2*y+z)", "1");
+      checkExponentsAndCoefficients(map, exponents, coefficients);
+    }
+
+    {
+      Map<int[], Polynomial> map = p.getCoefficientMap(Variable.of("x", "y", "t"));
+      int[][] exponents = {
+        {0, 0, 0},
+        {0, 1, 0},
+        {0, 2, 0},
+        {0, 3, 0},
+        {1, 0, 0},
+        {1, 1, 0},
+        {1, 2, 0},
+        {2, 0, 0},
+        {2, 1, 0},
+        {3, 0, 0},
+      };
+      Polynomial[] coefficients =
+          Polynomial.of(
+              "(1+z)^3",
+              "6*(1+z)^2",
+              "12*(1+z)",
+              "8",
+              "3*(1+z)^2",
+              "12*(1+z)",
+              "12",
+              "3*(1+z)",
+              "6",
+              "1");
+      checkExponentsAndCoefficients(map, exponents, coefficients);
+    }
+  }
+
+  void checkExponentsAndCoefficients(
+      Map<int[], Polynomial> map, int[][] exponents, Polynomial[] coefficients) {
+    int n = 0;
+    assert exponents.length == coefficients.length;
+    assertThat(map.size()).isEqualTo(exponents.length);
+    for (Map.Entry<int[], Polynomial> entry : map.entrySet()) {
+      assertThat(entry.getKey()).isEqualTo(exponents[n]);
+      assertThat(entry.getValue()).isEqualTo(coefficients[n]);
+      n++;
+    }
   }
 
   @Test
