@@ -885,6 +885,18 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   /**
    * Returns the greatest common divisor of the given polynomials.
    *
+   * @apiNote This version of the method with one argument is needed to prevent wrong overloading
+   *     with {@code Iterable<Polynomial>}.
+   * @param polynomials the polynomials for which the GCD is to be computed
+   * @return {@code GCD(polynomial1, ..., polynomialN)}
+   */
+  public static Polynomial gcdOf(final Polynomial polynomials) {
+    return polynomials;
+  }
+
+  /**
+   * Returns the greatest common divisor of the given polynomials.
+   *
    * @param polynomials the polynomials for which the GCD is to be computed
    * @return {@code GCD(polynomial1, ..., polynomialN)}
    */
@@ -934,6 +946,19 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
    */
   public Polynomial lcm(final Polynomial other) {
     return performBinaryOperation(other, Polynomial::polynomialLcm, true);
+  }
+
+  /**
+   * Returns the least common multiple of the given polynomials.
+   *
+   * @apiNote This version of the method with one argument is needed to prevent wrong overloading
+   *     with {@code Iterable<Polynomial>}.
+   * @param polynomials the polynomials for which the LCM is to be computed
+   * @return {@code LCM(polynomial1, ..., polynomialN)}
+   * @throws IllegalArgumentException when no polynomial is given
+   */
+  public static Polynomial lcmOf(final Polynomial polynomials) {
+    return polynomials;
   }
 
   /**

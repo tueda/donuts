@@ -472,6 +472,18 @@ public class PolynomialTest {
   }
 
   @Test
+  public void divideExact() {
+    Polynomial a = Polynomial.of("1+x");
+    Polynomial b = Polynomial.of("1-y");
+    Polynomial ab = a.multiply(b);
+
+    assertThat(a.divideExact(a)).isEqualTo(Polynomial.ONE);
+    assertThat(ab.divideExact(b)).isEqualTo(a);
+
+    assertThrows(ArithmeticException.class, () -> a.divideExact(b));
+  }
+
+  @Test
   public void pow() {
     Polynomial p1 = Polynomial.of("1-x+y");
     Polynomial p2 = p1.pow(2);
@@ -569,52 +581,64 @@ public class PolynomialTest {
 
   @Test
   public void gcd() {
-    Polynomial p = Polynomial.of("x + y");
-    Polynomial q = Polynomial.of("y + z");
-    Polynomial r = Polynomial.of("1 + x + w");
+    Polynomial a = Polynomial.of("x + y");
+    Polynomial b = Polynomial.of("y + z");
     Polynomial g = Polynomial.of("2 + x + y + z");
-    Polynomial a = g.multiply(p);
-    Polynomial b = g.multiply(q);
-    Polynomial c = g.multiply(r);
+    Polynomial ag = a.multiply(g);
+    Polynomial bg = b.multiply(g);
 
-    Polynomial gcd1 = a.gcd(b);
-    assertThat(gcd1).isEqualTo(g);
-
-    Polynomial gcd2 = Polynomial.gcdOf(a, b, c);
-    assertThat(gcd2).isEqualTo(g);
-
-    Polynomial[] polys2 = {a, b, c};
-    Polynomial gcd3 = Polynomial.gcdOf(polys2);
-    assertThat(gcd3).isEqualTo(g);
-
-    List<Polynomial> polys3 = new ArrayList<>();
-    polys3.add(a);
-    polys3.add(b);
-    polys3.add(c);
-    Polynomial gcd4 = Polynomial.gcdOf(polys3);
-    assertThat(gcd4).isEqualTo(g);
-
-    Polynomial d = a.divideExact(gcd1);
-    Polynomial e = b.divideExact(gcd1);
-    Polynomial f = c.divideExact(gcd1);
-    assertThat(d).isEqualTo(p);
-    assertThat(e).isEqualTo(q);
-    assertThat(f).isEqualTo(r);
-
-    List<Polynomial> polys4 = new ArrayList<>();
-    Polynomial gcd5 = Polynomial.gcdOf(polys4);
-    Polynomial zero = new Polynomial();
-    assertThat(gcd5).isEqualTo(zero);
-
-    List<Polynomial> polys5 = new ArrayList<>();
-    polys5.add(a);
-    Polynomial gcd6 = Polynomial.gcdOf(polys5);
-    assertThat(gcd6).isEqualTo(a);
-
-    // check auxiliary method
     {
-      Polynomial[] pp = Polynomial.of("(1+x)*(1-x)", "(1+x)*(1-y)", "(1+x)^2");
-      assertThat(Polynomial.gcdOf(Arrays.stream(pp))).isEqualTo(Polynomial.of("1+x"));
+      Polynomial gg = ag.gcd(ag);
+      assertThat(gg).isEqualTo(ag);
+    }
+
+    {
+      Polynomial gg = ag.gcd(bg);
+      assertThat(gg).isEqualTo(g);
+    }
+
+    {
+      Polynomial gg = ag.gcd(b);
+      assertThat(gg).isEqualTo(Polynomial.ONE);
+    }
+  }
+
+  @Test
+  public void gcdOf() {
+    Polynomial a = Polynomial.of("x + y");
+    Polynomial b = Polynomial.of("y + z");
+    Polynomial c = Polynomial.of("1 + x + w");
+    Polynomial g = Polynomial.of("2 + x + y + z");
+    Polynomial ag = a.multiply(g);
+    Polynomial bg = b.multiply(g);
+    Polynomial cg = c.multiply(g);
+
+    assertThat(Polynomial.gcdOf()).isEqualTo(Polynomial.ZERO);
+    assertThat(Polynomial.gcdOf(ag)).isEqualTo(ag);
+    assertThat(Polynomial.gcdOf(ag, bg)).isEqualTo(g);
+    assertThat(Polynomial.gcdOf(ag, bg, cg)).isEqualTo(g);
+
+    assertThat(Polynomial.gcdOf(ag, ag)).isEqualTo(ag);
+    assertThat(Polynomial.gcdOf(ag, ag, ag)).isEqualTo(ag);
+
+    assertThat(Polynomial.gcdOf(a, b, c)).isEqualTo(Polynomial.ONE);
+
+    // auxiliary methods
+
+    {
+      List<Polynomial> pp = new ArrayList<>();
+      assertThat(Polynomial.gcdOf(pp)).isEqualTo(Polynomial.ZERO);
+      pp.add(ag);
+      assertThat(Polynomial.gcdOf(pp)).isEqualTo(ag);
+      pp.add(bg);
+      assertThat(Polynomial.gcdOf(pp)).isEqualTo(g);
+      pp.add(cg);
+      assertThat(Polynomial.gcdOf(pp)).isEqualTo(g);
+    }
+
+    {
+      Polynomial[] pp = new Polynomial[] {ag, bg, cg};
+      assertThat(Polynomial.gcdOf(Arrays.stream(pp))).isEqualTo(g);
     }
   }
 
@@ -626,16 +650,6 @@ public class PolynomialTest {
       String s3 = "(1 + x)^2 * (2 + y)^3 * (3 + z) * (4 + w)^5";
 
       assertThat(Polynomial.of(s1).lcm(Polynomial.of(s2))).isEqualTo(Polynomial.of(s3));
-    }
-
-    {
-      Polynomial p1 = Polynomial.of("1+x");
-      Polynomial p2 = Polynomial.of("1-x");
-      Polynomial p3 = Polynomial.of("1-x^2");
-      assertThrows(IllegalArgumentException.class, () -> Polynomial.lcmOf());
-      assertThat(Polynomial.lcmOf(new Polynomial[] {p1})).isEqualTo(p1);
-      assertThat(Polynomial.lcmOf(p1, p2)).isEqualTo(p1.multiply(p2));
-      assertThat(Polynomial.lcmOf(p1, p2, p3)).isEqualTo(p1.multiply(p2));
     }
 
     {
@@ -653,16 +667,46 @@ public class PolynomialTest {
 
       assertThat(p.lcm(p)).isEqualTo(p);
     }
+  }
 
-    // check auxiliary method
+  @Test
+  public void lcmOf() {
+    {
+      Polynomial p1 = Polynomial.of("1+x");
+      Polynomial p2 = Polynomial.of("1-x");
+      Polynomial p3 = Polynomial.of("1-x^2");
+
+      assertThrows(IllegalArgumentException.class, () -> Polynomial.lcmOf());
+      assertThat(Polynomial.lcmOf(p1)).isEqualTo(p1);
+      assertThat(Polynomial.lcmOf(p1, p2)).isEqualTo(p1.multiply(p2));
+      assertThat(Polynomial.lcmOf(p1, p2, p3)).isEqualTo(p1.multiply(p2));
+
+      assertThat(Polynomial.lcmOf(p1, p1)).isEqualTo(p1);
+      assertThat(Polynomial.lcmOf(p1, p1, p1)).isEqualTo(p1);
+    }
+
+    // auxiliary methods
+
     {
       Polynomial p1 = Polynomial.of("(1+x)^2*(1+y)");
       Polynomial p2 = Polynomial.of("(1+x)*(1+y)^2");
       Polynomial p3 = Polynomial.of("(1+y)^2");
-      Polynomial p4 = Polynomial.of("(1+x)^2*(1+y)^2");
+      Polynomial r = Polynomial.of("(1+x)^2*(1+y)^2");
       Polynomial[] pp = {p1, p2, p3};
-      assertThat(Polynomial.lcmOf(Arrays.asList(pp))).isEqualTo(p4);
-      assertThat(Polynomial.lcmOf(Arrays.stream(pp))).isEqualTo(p4);
+      assertThrows(IllegalArgumentException.class, () -> Polynomial.lcmOf(new Polynomial[] {}));
+      assertThat(Polynomial.lcmOf(new Polynomial[] {p1})).isEqualTo(p1);
+      assertThat(Polynomial.lcmOf(new Polynomial[] {p1, p2})).isEqualTo(r);
+      assertThat(Polynomial.lcmOf(new Polynomial[] {p1, p2, p3})).isEqualTo(r);
+      assertThat(Polynomial.lcmOf(Arrays.asList(pp))).isEqualTo(r);
+      assertThat(Polynomial.lcmOf(Arrays.stream(pp))).isEqualTo(r);
+    }
+
+    {
+      Polynomial p1 = Polynomial.of("1");
+      Polynomial p2 = Polynomial.of("1+x");
+      Polynomial p3 = Polynomial.of("1+y");
+      Polynomial r = p2.multiply(p3);
+      assertThat(Polynomial.lcmOf(new Polynomial[] {p1, p2, p3})).isEqualTo(r);
     }
   }
 
