@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import lombok.EqualsAndHashCode;
 
 /** A variable. Immutable. */
 public final class Variable implements Comparable<Variable>, Serializable, Multivariate {
@@ -149,7 +150,8 @@ public final class Variable implements Comparable<Variable>, Serializable, Multi
   }
 
   /** Comparator class for variable names. */
-  /* default */ static class NameComparator implements Serializable, Comparator<String> {
+  @EqualsAndHashCode
+  /* default */ static class NameComparator implements Comparator<String>, Serializable {
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -242,16 +244,6 @@ public final class Variable implements Comparable<Variable>, Serializable, Multi
         i++;
       }
       return i;
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-      return obj instanceof NameComparator;
-    }
-
-    @Override
-    public int hashCode() {
-      return 1; // because it is stateless
     }
   }
 }

@@ -2,8 +2,10 @@ package com.github.tueda.donuts.util;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import lombok.EqualsAndHashCode;
 
 /** A comparator for arrays of integers. */
+@EqualsAndHashCode
 public class IntArrayComparator implements Comparator<int[]>, Serializable {
   private static final long serialVersionUID = 1L;
 
@@ -49,15 +51,5 @@ public class IntArrayComparator implements Comparator<int[]>, Serializable {
       }
     }
     return 0;
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    return obj instanceof IntArrayComparator;
-  }
-
-  @Override
-  public int hashCode() {
-    return 1; // because it is stateless
   }
 }
