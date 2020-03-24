@@ -61,3 +61,7 @@ jdk12:
 jdk13:
   extends: .test
   image: openjdk:13
+
+jdk14:
+  extends: .test
+  image: openjdk:14
