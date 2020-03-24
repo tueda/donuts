@@ -3,11 +3,14 @@ package com.github.tueda.donuts.python;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.github.tueda.donuts.Polynomial;
+import com.github.tueda.donuts.Variable;
+import com.github.tueda.donuts.VariableSet;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 public class PythonUtilsTest {
@@ -40,8 +43,28 @@ public class PythonUtilsTest {
   }
 
   @Test
+  public void variableSet() {
+    Variable[] vars = Variable.of("x", "y", "z");
+    assertThat(PythonUtils.variableSet(vars)).isEqualTo(new VariableSet(vars));
+  }
+
+  @Test
+  public void getCoefficientMap() {
+    Polynomial p = Polynomial.of("(1+x-y)^2");
+    Variable[] vars = Variable.of("x", "y");
+    Map<int[], Polynomial> ret1 = PythonUtils.getCoefficientMap(p, vars);
+    Map<int[], Polynomial> ret2 = p.getCoefficientMap(vars);
+    assertThat(ret1).isEqualTo(ret2);
+    assertThat(ret1.get(new int[] {0, 0})).isEqualTo(Polynomial.of("1"));
+    assertThat(ret1.get(new int[] {0, 1})).isEqualTo(Polynomial.of("-2"));
+    assertThat(ret1.get(new int[] {0, 2})).isEqualTo(Polynomial.of("1"));
+    assertThat(ret1.get(new int[] {1, 0})).isEqualTo(Polynomial.of("2"));
+    assertThat(ret1.get(new int[] {1, 1})).isEqualTo(Polynomial.of("-2"));
+    assertThat(ret1.get(new int[] {2, 0})).isEqualTo(Polynomial.of("1"));
+  }
+
+  @Test
   public void sumOf() {
-    // PythonUtils.sumOf() must be equivalent to Polynomial.sumOf().
     Polynomial a = Polynomial.of("1+x+y");
     Polynomial b = Polynomial.of("1+x-y");
     Polynomial c = Polynomial.of("1+z");
@@ -54,7 +77,6 @@ public class PythonUtilsTest {
 
   @Test
   public void productOf() {
-    // PythonUtils.productOf() must be equivalent to Polynomial.productOf().
     Polynomial a = Polynomial.of("1+x+y");
     Polynomial b = Polynomial.of("1+x-y");
     Polynomial c = Polynomial.of("1+z");
@@ -67,7 +89,6 @@ public class PythonUtilsTest {
 
   @Test
   public void gcdOf() {
-    // PythonUtils.gcdOf() must be equivalent to Polynomial.gcdOf().
     Polynomial a = Polynomial.of("(1+x)^3*(2+y)^5*(3+z)^2*(1+x+2*z)");
     Polynomial b = Polynomial.of("(1+x)^2*(2+y)^3*(3+z)^3*(7-5*x^2)");
     Polynomial c = Polynomial.of("(1+x)^2*(2+y)^2*(3+z)^5*(2-x-y)");
@@ -80,7 +101,6 @@ public class PythonUtilsTest {
 
   @Test
   public void lcmOf() {
-    // PythonUtils.lcmOf() must be equivalent to Polynomial.lcmOf().
     Polynomial a = Polynomial.of("(1+x)^3*(2+y)^5*(3+z)^2*(1+x+2*z)");
     Polynomial b = Polynomial.of("(1+x)^2*(2+y)^3*(3+z)^3*(7-5*x^2)");
     Polynomial c = Polynomial.of("(1+x)^2*(2+y)^2*(3+z)^5*(2-x-y)");

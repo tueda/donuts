@@ -1,10 +1,13 @@
 package com.github.tueda.donuts.python;
 
 import com.github.tueda.donuts.Polynomial;
+import com.github.tueda.donuts.Variable;
+import com.github.tueda.donuts.VariableSet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
+import java.util.Map;
 import lombok.experimental.UtilityClass;
 
 /** This class consists of static utility methods for Python binding. */
@@ -36,8 +39,34 @@ public class PythonUtils {
     return new ObjectInputStream2(in);
   }
 
-  // The following methods are defined in order to avoid the issues of overloading static methods
-  // with variable arguments in Pyjnius.
+  // The following methods are defined in order to avoid some hacky situations in overloading.
+  // The main difficulty comes from the fact that Py4j does not support varargs so a Java array
+  // should be passed explicitly while PyJNIus does support varargs but does not work when a Java
+  // array is explicitly passed; tough to keep the both working.
+
+  /**
+   * Construct a variable set from the given variables.
+   *
+   * @param variables the variables
+   * @return the variable set
+   */
+  @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.UseVarargs"})
+  public static VariableSet variableSet(final Variable[] variables) {
+    return new VariableSet(variables);
+  }
+
+  /**
+   * Returns the map from exponents to coefficients for the given polynomial.
+   *
+   * @param polynomial the polynomial
+   * @param variables the variables to be considered
+   * @return the map from exponent vectors to coefficients
+   */
+  @SuppressWarnings("PMD.UseVarargs")
+  public static Map<int[], Polynomial> getCoefficientMap(
+      final Polynomial polynomial, final Variable[] variables) {
+    return polynomial.getCoefficientMap(variables);
+  }
 
   /**
    * Returns the sum of the given polynomials.
@@ -45,7 +74,7 @@ public class PythonUtils {
    * @param polynomials the polynomials for which the sum is to be computed
    * @return {@code polynomial1 + ... + polynomialN}
    */
-  @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.UseVarargs"})
+  @SuppressWarnings("PMD.UseVarargs")
   public static Polynomial sumOf(final Polynomial[] polynomials) {
     return Polynomial.sumOf(polynomials);
   }
