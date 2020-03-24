@@ -19,6 +19,7 @@ public final class IndexToObjectMap<V> {
    * @param index whose associated value is to be returned
    * @return the value to which the specified index is mapped, or {@code null} if no mapping is
    *     stored
+   * @throws IndexOutOfBoundsException when {@code index} is negative
    */
   public V get(final int index) {
     ensureIndex(index);
@@ -30,6 +31,7 @@ public final class IndexToObjectMap<V> {
    *
    * @param index with which the value is to be associated
    * @param value to be associated to the index
+   * @throws IndexOutOfBoundsException when {@code index} is negative
    */
   public void put(final int index, final V value) {
     ensureIndex(index);

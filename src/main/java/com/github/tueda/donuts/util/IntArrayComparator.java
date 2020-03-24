@@ -33,7 +33,7 @@ public class IntArrayComparator implements Comparator<int[]>, Serializable {
       final int n = compareImpl(a1, a2, n1);
       return n == 0 ? -1 : n;
     } else if (n1 > n2) {
-      final int n = compareImpl(a1, a2, n1);
+      final int n = compareImpl(a1, a2, n2);
       return n == 0 ? 1 : n;
     } else {
       return compareImpl(a1, a2, n1);
