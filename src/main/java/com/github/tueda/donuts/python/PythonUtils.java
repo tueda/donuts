@@ -40,6 +40,28 @@ public class PythonUtils {
   // with variable arguments in Pyjnius.
 
   /**
+   * Returns the sum of the given polynomials.
+   *
+   * @param polynomials the polynomials for which the sum is to be computed
+   * @return {@code polynomial1 + ... + polynomialN}
+   */
+  @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.UseVarargs"})
+  public static Polynomial sumOf(final Polynomial[] polynomials) {
+    return Polynomial.sumOf(polynomials);
+  }
+
+  /**
+   * Returns the product of the given polynomials.
+   *
+   * @param polynomials the polynomials for which the product is to be computed
+   * @return {@code polynomial1 * ... * polynomialN}
+   */
+  @SuppressWarnings("PMD.UseVarargs")
+  public static Polynomial productOf(final Polynomial[] polynomials) {
+    return Polynomial.productOf(polynomials);
+  }
+
+  /**
    * Returns the greatest common divisor of the given polynomials.
    *
    * @param polynomials the polynomials for which the GCD is to be computed

@@ -40,6 +40,32 @@ public class PythonUtilsTest {
   }
 
   @Test
+  public void sumOf() {
+    // PythonUtils.sumOf() must be equivalent to Polynomial.sumOf().
+    Polynomial a = Polynomial.of("1+x+y");
+    Polynomial b = Polynomial.of("1+x-y");
+    Polynomial c = Polynomial.of("1+z");
+    Polynomial sum1 = PythonUtils.sumOf(new Polynomial[] {a, b, c});
+    Polynomial sum2 = Polynomial.sumOf(a, b, c);
+    Polynomial res = Polynomial.of("(1+x+y)+(1+x-y)+(1+z)");
+    assertThat(sum1).isEqualTo(sum2);
+    assertThat(sum1).isEqualTo(res);
+  }
+
+  @Test
+  public void productOf() {
+    // PythonUtils.productOf() must be equivalent to Polynomial.productOf().
+    Polynomial a = Polynomial.of("1+x+y");
+    Polynomial b = Polynomial.of("1+x-y");
+    Polynomial c = Polynomial.of("1+z");
+    Polynomial prod1 = PythonUtils.productOf(new Polynomial[] {a, b, c});
+    Polynomial prod2 = Polynomial.productOf(a, b, c);
+    Polynomial res = Polynomial.of("(1+x+y)*(1+x-y)*(1+z)");
+    assertThat(prod1).isEqualTo(prod2);
+    assertThat(prod1).isEqualTo(res);
+  }
+
+  @Test
   public void gcdOf() {
     // PythonUtils.gcdOf() must be equivalent to Polynomial.gcdOf().
     Polynomial a = Polynomial.of("(1+x)^3*(2+y)^5*(3+z)^2*(1+x+2*z)");
