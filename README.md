@@ -16,6 +16,8 @@ Currently, the following wrapper classes are available:
 | `Polynomial`       | `MultivariatePolynomial<BigInteger>`           |
 | `RationalFunction` | `Rational<MultivariatePolynomial<BigInteger>>` |
 
+All instances of the above classes of Donuts are *immutable* objects.
+
 
 Requirements
 ------------
@@ -60,7 +62,7 @@ $9 ==> Polynomial[8] { -2, y, y, y, x, -y+x, -y+x, y+x }
 ```
 
 Development
--------
+-----------
 
 ```shell
 ./gradlew spotlessApply      # code formatter
