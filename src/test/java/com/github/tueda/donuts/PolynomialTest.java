@@ -786,28 +786,53 @@ public class PolynomialTest {
   @Test
   public void factors() {
     checkNoFactorization("0");
-    checkNoFactorization("12");
+    checkNoFactorization("1");
+    checkNoFactorization("-1");
+    checkNoFactorization("42");
     checkNoFactorization("x");
 
-    assertThat(Polynomial.of("-3*x^2").factors())
-        .isEqualTo(Polynomial.of(new String[] {"-3", "x", "x"}));
-    assertThat(Polynomial.of("-7*x^2*y").factors())
-        .isEqualTo(Polynomial.of(new String[] {"-7", "y", "x", "x"}));
-    assertThat(Polynomial.of("(x+y)").factors()).isEqualTo(Polynomial.of(new String[] {"x+y"}));
-    assertThat(Polynomial.of("-(x+y)").factors()).isEqualTo(Polynomial.of("-1", "x+y"));
-    assertThat(Polynomial.of("2*(x+y)").factors()).isEqualTo(Polynomial.of("2", "x+y"));
-    assertThat(Polynomial.of("-2*(x+y)").factors()).isEqualTo(Polynomial.of("-2", "x+y"));
-    assertThat(Polynomial.of("2*(x-y)").factors()).isEqualTo(Polynomial.of("2", "x-y"));
-    assertThat(Polynomial.of("-2*(x-y)").factors()).isEqualTo(Polynomial.of("-2", "x-y"));
-
-    assertThat(Polynomial.of("x^2-y^2").factors()).isEqualTo(Polynomial.of("x-y", "x+y"));
-    assertThat(Polynomial.of("-3*x*z^2*(x^2-y^2)^3").factors())
-        .isEqualTo(Polynomial.of("-3", "z", "z", "x", "x-y", "x-y", "x-y", "x+y", "x+y", "x+y"));
+    checkFactorization("2*x", new String[] {"2", "x"});
+    checkFactorization("-x", new String[] {"-1", "x"});
+    checkFactorization("x^2", new String[] {"x", "x"});
+    checkFactorization("x*y", new String[] {"y", "x"});
+    checkFactorization("-3*x^2", new String[] {"-3", "x", "x"});
+    checkFactorization("-7*x^2*y", new String[] {"-7", "y", "x", "x"});
+    checkFactorization("(x+y)", new String[] {"x+y"});
+    checkFactorization("-(x+y)", new String[] {"-1", "x+y"});
+    checkFactorization("2*(x+y)", new String[] {"2", "x+y"});
+    checkFactorization("-2*(x+y)", new String[] {"-2", "x+y"});
+    checkFactorization("2*(x-y)", new String[] {"2", "x-y"});
+    checkFactorization("-2*(x-y)", new String[] {"-2", "x-y"});
+    checkFactorization("x^2-y^2", new String[] {"x-y", "x+y"});
+    checkFactorization(
+        "(1+x+y)*(1+x-y)*(1-x+y)*(1-x-y)*(1-y)",
+        new String[] {"-1", "-1+y", "-1-y+x", "-1+y+x", "1-y+x", "1+y+x"});
+    checkFactorization(
+        "-3*x*z^2*(x^2-y^2)^3",
+        new String[] {"-3", "z", "z", "x", "x-y", "x-y", "x-y", "x+y", "x+y", "x+y"});
   }
 
-  void checkNoFactorization(String s) {
-    Polynomial p = new Polynomial(s);
+  void checkNoFactorization(String poly_str) {
+    Polynomial p = new Polynomial(poly_str);
     assertThat(p.factors()).isEqualTo(new Polynomial[] {p});
+  }
+
+  void checkFactorization(String poly_str, String[] factors_str) {
+    Polynomial p = Polynomial.of(poly_str);
+    Polynomial[] factors = p.factors();
+    // At least, the factored result should be equal to the original polynomial.
+    assertThat(factors).isEqualTo(Polynomial.of(factors_str));
+    for (int i = 0; i < factors.length; i++) {
+      // The overall constant factor comes first.
+      if (i >= 1) {
+        assertThat(factors[i].isConstant()).isFalse();
+      }
+      // Each factor, except the overall constant factor, has its leading term with a positive
+      // coefficient.
+      if (!factors[i].isConstant()) {
+        assertThat(factors[i].signum()).isGreaterThan(0);
+      }
+    }
   }
 
   @Test

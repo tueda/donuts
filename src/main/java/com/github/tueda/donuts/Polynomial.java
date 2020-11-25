@@ -1116,7 +1116,10 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   }
 
   /**
-   * Perform the factorization of this polynomial.
+   * Performs the factorization of this polynomial. In the result, the overall constant factor
+   * always comes first, if it exists. Each non-constant factor is normalized in such a way that its
+   * leading term has a positive coefficient. A power of factors are expanded as a product of
+   * duplicate factors.
    *
    * @return the factors of this polynomial
    */
@@ -1130,7 +1133,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     final PolynomialFactorDecomposition<MultivariatePolynomial<BigInteger>> decomposition =
         MultivariateFactorization.Factor(raw);
 
-    decomposition.canonical();
+    decomposition.canonical(); // sorting, positive signumOfLC
 
     // Construct the result.
 
