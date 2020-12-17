@@ -810,6 +810,10 @@ public class PolynomialTest {
     checkFactorization(
         "-3*x*z^2*(x^2-y^2)^3",
         new String[] {"-3", "z", "z", "x", "x-y", "x-y", "x-y", "x+y", "x+y", "x+y"});
+
+    // https://github.com/PoslavskySV/rings/issues/70
+    checkFactorization(
+        "(x1-1)*(x2-1)*(x3-1)*(x4-1)", new String[] {"-1+x4", "-1+x3", "-1+x2", "-1+x1"});
   }
 
   void checkNoFactorization(String poly_str) {

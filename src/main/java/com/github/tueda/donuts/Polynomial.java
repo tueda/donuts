@@ -7,7 +7,6 @@ import cc.redberry.rings.poly.PolynomialMethods;
 import cc.redberry.rings.poly.multivar.Monomial;
 import cc.redberry.rings.poly.multivar.MonomialOrder;
 import cc.redberry.rings.poly.multivar.MultivariateDivision;
-import cc.redberry.rings.poly.multivar.MultivariateFactorization;
 import cc.redberry.rings.poly.multivar.MultivariateGCD;
 import cc.redberry.rings.poly.multivar.MultivariatePolynomial;
 import com.github.tueda.donuts.util.IntArrayComparator;
@@ -1131,7 +1130,7 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     // Perform the factorization.
 
     final PolynomialFactorDecomposition<MultivariatePolynomial<BigInteger>> decomposition =
-        MultivariateFactorization.Factor(raw);
+        MultivariateFactorizationFix.factorInZ(raw);
 
     decomposition.canonical(); // sorting, positive signumOfLC
 
