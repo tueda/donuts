@@ -15,6 +15,7 @@ public class IntArrayComparator implements Comparator<int[]>, Serializable {
   }
 
   @Override
+  @SuppressWarnings("PMD.CompareObjectsWithEquals")
   public int compare(final int[] a1, final int[] a2) {
     if (a1 == a2) {
       return 0;

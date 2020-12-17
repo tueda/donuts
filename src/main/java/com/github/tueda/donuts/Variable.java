@@ -80,6 +80,7 @@ public final class Variable implements Comparable<Variable>, Serializable, Multi
     return name.equals(aVariable.name);
   }
 
+  @SuppressWarnings("PMD.CompareObjectsWithEquals")
   @Override
   public int compareTo(final Variable other) {
     if (this == other) {
@@ -155,7 +156,7 @@ public final class Variable implements Comparable<Variable>, Serializable, Multi
     private static final long serialVersionUID = 1L;
 
     @Override
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    @SuppressWarnings({"PMD.CompareObjectsWithEquals", "PMD.UseEqualsToCompareStrings"})
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
         justification = "Intend to compare two references",
         value = "ES_COMPARING_PARAMETER_STRING_WITH_EQ")
