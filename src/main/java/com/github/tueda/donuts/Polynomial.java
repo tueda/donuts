@@ -160,6 +160,12 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     return Stream.of(strings).map(Polynomial::new).toArray(Polynomial[]::new);
   }
 
+  /**
+   * Performs a replacement in deserialization.
+   *
+   * @return the result of the deserialization
+   * @throws ObjectStreamException never thrown
+   */
   private Object readResolve() throws ObjectStreamException {
     // Note that Rings.Z (Integers) doesn't override equals(), as of Rings v.2.5.2.
     // In deserialization, we need to keep Rings.Z being singleton, otherwise we easily get

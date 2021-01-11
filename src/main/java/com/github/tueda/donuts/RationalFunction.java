@@ -269,6 +269,12 @@ public final class RationalFunction implements Serializable, Multivariate {
     return Stream.of(strings).map(RationalFunction::new).toArray(RationalFunction[]::new);
   }
 
+  /**
+   * Performs a replacement in serialization.
+   *
+   * @return a serialization proxy object
+   * @throws ObjectStreamException never thrown
+   */
   private Object writeReplace() throws ObjectStreamException {
     // Because Rational is not serializable (PoslavskySV/rings#61), the default serialization fails.
     // A solution is to serialize the numerator and denominator, separately.
@@ -276,6 +282,13 @@ public final class RationalFunction implements Serializable, Multivariate {
     return new SerializationProxy(this);
   }
 
+  /**
+   * Performs a replacement in deserialization (but always fails, must never called).
+   *
+   * @return never returns
+   * @throws ObjectStreamException never thrown
+   * @throws InvalidObjectException always thrown
+   */
   private Object readResolve() throws ObjectStreamException {
     throw new InvalidObjectException("Proxy required.");
   }
@@ -302,6 +315,12 @@ public final class RationalFunction implements Serializable, Multivariate {
       denominator = rat.raw.denominator();
     }
 
+    /**
+     * Performs a replacement in deserialization.
+     *
+     * @return the result of the deserialization
+     * @throws ObjectStreamException never thrown
+     */
     private Object readResolve() throws ObjectStreamException {
       // We need to treat Rings.Z as a singleton. The easiest way to avoid similar singleton issues
       // of RationalFunction is to construct it via two Polynomial objects.
