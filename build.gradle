@@ -2,7 +2,7 @@ plugins {
   id 'jacoco'
   id 'java-library'
   id 'maven-publish'
-  id 'com.diffplug.spotless' version '5.8.2'
+  id 'com.diffplug.spotless' version '5.9.0'
   id 'com.github.ben-manes.versions' version '0.36.0'
   id 'com.github.johnrengelman.shadow' version '6.1.0'
   id 'net.researchgate.release' version '2.8.1'
@@ -16,7 +16,7 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 def versions = [
-  checkstyle: '8.38',
+  checkstyle: '8.39',
   junit: '5.7.0',
   lombok: '1.18.16',
   pmd: '6.30.0',
