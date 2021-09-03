@@ -461,9 +461,9 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
    *
    * @param variables the variables to be examined
    * @param values the values paired with {@code variables}
+   * @param valuesName the string to be used when an exception occurs
    * @return an object array consisting of the indices ({@code (int[]) returnValue[0]}) and the
    *     corresponding values ({@code (BigInteger[]) returnValue[1]})
-   * @param valuesName the string to be used when an exception occurs
    * @throws IllegalArgumentException when {@code variables} and {@code values} have different
    *     lengths
    */
