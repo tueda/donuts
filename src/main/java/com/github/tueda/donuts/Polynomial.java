@@ -665,33 +665,33 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
   public Polynomial translate(final VariableSet newVariables) {
     if (variables == newVariables) {
       return this;
-    } else if (variables.equals(newVariables)) {
-      return new Polynomial(newVariables, raw);
-    } else {
-      if (variables.isEmpty()) {
-        // 0 -> N variables (N >= 1).
-        return new Polynomial(newVariables, raw.setNVariables(newVariables.size()));
-      } else {
-        final int[] mapping = variables.map(newVariables);
-        if (mapping == null) {
-          // No direct mapping from the current set of variables to the new one.
-          // Then consider a composition of 2 mappings: first, shrinking the current set to
-          // the minimum one, and secondly to the new one.
-          final VariableSet minVariables = getMinimalVariables();
-          if (variables.equals(minVariables)) {
-            // Already the current set is minimal. No way to proceed.
-            throw new IllegalArgumentException(
-                String.format("Variables %s does not fit in %s", variables, newVariables));
-          }
-          final int[] minMapping = variables.map(minVariables, variables.size() - 1);
-          return new Polynomial(
-                  minVariables, raw.mapVariables(minMapping).setNVariables(minVariables.size()))
-              .translate(newVariables);
-        }
-        return new Polynomial(
-            newVariables, raw.mapVariables(mapping).setNVariables(newVariables.size()));
-      }
     }
+    if (variables.equals(newVariables)) {
+      return new Polynomial(newVariables, raw);
+    }
+    if (variables.isEmpty()) {
+      // 0 -> N variables (N >= 1).
+      return new Polynomial(newVariables, raw.setNVariables(newVariables.size()));
+    }
+
+    final int[] mapping = variables.map(newVariables);
+    if (mapping == null) {
+      // No direct mapping from the current set of variables to the new one.
+      // Then consider a composition of 2 mappings: first, shrinking the current set to
+      // the minimum one, and secondly to the new one.
+      final VariableSet minVariables = getMinimalVariables();
+      if (variables.equals(minVariables)) {
+        // Already the current set is minimal. No way to proceed.
+        throw new IllegalArgumentException(
+            String.format("Variables %s does not fit in %s", variables, newVariables));
+      }
+      final int[] minMapping = variables.map(minVariables, variables.size() - 1);
+      return new Polynomial(
+              minVariables, raw.mapVariables(minMapping).setNVariables(minVariables.size()))
+          .translate(newVariables);
+    }
+    return new Polynomial(
+        newVariables, raw.mapVariables(mapping).setNVariables(newVariables.size()));
     // Postcondition: `variables` of the returned-value is the given variable set.
   }
 
