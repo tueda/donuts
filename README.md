@@ -1,6 +1,11 @@
 Donuts
 ======
 
+[![Test](https://github.com/tueda/donuts/workflows/Test/badge.svg?branch=master)](https://github.com/tueda/donuts/actions?query=branch:master)
+[![Release](https://jitpack.io/v/tueda/donuts.svg)](https://jitpack.io/#tueda/donuts)
+[![Javadoc](https://img.shields.io/badge/javadoc-latest-brightgreen.svg)](https://jitpack.io/com/github/tueda/donuts/latest/javadoc/)
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/tueda/donuts.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/tueda/donuts/context:java)
+
 A wrapper library for [Rings](https://github.com/PoslavskySV/rings).
 
 This library provides polynomial arithmetic operations based on the Rings
