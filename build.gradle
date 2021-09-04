@@ -10,7 +10,6 @@ plugins {
 }
 
 group = 'com.github.tueda'
-archivesBaseName = 'donuts'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -130,7 +129,7 @@ task javadocJar(type: Jar) {
 
 publishing {
   publications {
-    maven(MavenPublication) {
+    mavenJava(MavenPublication) {
       from components.java
       artifact sourcesJar
       artifact javadocJar
@@ -159,11 +158,6 @@ publishing {
           url = 'https://github.com/tueda/donuts'
         }
       }
-    }
-  }
-  repositories {
-    maven {
-      url = "${buildDir}/repo"
     }
   }
 }
