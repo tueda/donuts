@@ -4,7 +4,7 @@ Donuts
 A wrapper library for [Rings](https://github.com/PoslavskySV/rings).
 
 This library provides polynomial arithmetic operations based on the Rings
-library by Stanislav Poslavsky. The main difference from Rings is that it
+library by Stanislav Poslavsky. The main difference from Rings is that this library
 allows operations between different polynomial rings; for example, addition of
 two polynomials in Z[x,&nbsp;y] and Z[y,&nbsp;z], respectively, gives a
 polynomial in Z[x,&nbsp;y,&nbsp;z].
@@ -72,7 +72,7 @@ Development
 ./gradlew dependencyUpdates  # check dependency updates
 ./gradlew release            # release a new version
 
-# Git hooks.
+# Git hooks
 pre-commit install
 pre-commit install --hook-type commit-msg
 ```
