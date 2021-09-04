@@ -137,7 +137,7 @@ publishing {
         name = 'Donuts'
         description = 'A wrapper library for Rings'
         url = 'https://github.com/tueda/donuts'
-        inceptionYear = '2019'
+        inceptionYear = '2021'
         licenses {
           license {
             name = 'MIT License'
