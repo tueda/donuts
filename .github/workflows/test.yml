@@ -1,0 +1,28 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ 8, 9, 10, 11, 12, 13, 14, 15, 16 ]
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: ${{ matrix.java }}
+          cache: 'gradle'
+
+      - name: Build test
+        run: ./gradlew build jacocoTestReport shadowJar
+
+      - name: Publishing test
+        run: ./gradlew publishToMavenLocal

@@ -10,7 +10,8 @@
     - javac -version
     - ./gradlew -version
   script:
-    - ./gradlew check jacocoTestReport javadoc shadowJar
+    - ./gradlew build jacocoTestReport shadowJar
+    - ./gradlew publishToMavenLocal
   artifacts:
     paths:
       - build/docs
@@ -19,7 +20,7 @@
     expire_in: 1 week
 
 lint:
-  image: python:3.8
+  image: python:3.9
   variables:
     PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
     PRE_COMMIT_HOME: "$CI_PROJECT_DIR/.cache/pre-commit"
