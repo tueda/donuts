@@ -19,7 +19,7 @@ def versions = [
   junit: '5.7.2',
   lombok: '1.18.20',
   pmd: '6.38.0',
-  rings: '2.5.7',
+  rings: '2.5.8',
   spotbugs: '4.2.3',
   truth: '1.1.3',
 ]
