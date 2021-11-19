@@ -2,8 +2,9 @@ style: github
 template: CHANGELOG.tpl.md
 info:
   title: CHANGELOG
-  repository_url: https://github.com/tueda/python-grace
+  repository_url: https://github.com/tueda/donuts
 options:
+  tag_filter_pattern: '^v'
   commits:
     # filters:
     #   Type:
@@ -18,7 +19,7 @@ options:
     #   perf: Performance Improvements
     #   refactor: Code Refactoring
   header:
-    pattern: "^(\\w*)(?:\\(([\\w\\$\\.\\-\\*\\s]*)\\))?\\:\\s(.*)$"
+    pattern: "^(\\w*)!?(?:\\(([\\w\\$\\.\\-\\*\\s]*)\\))?\\:\\s(.*)$"
     pattern_maps:
       - Type
       - Scope
