@@ -74,3 +74,7 @@ jdk15:
 jdk16:
   extends: .test
   image: openjdk:16
+
+jdk17:
+  extends: .test
+  image: openjdk:17
