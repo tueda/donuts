@@ -23,6 +23,8 @@ Currently, the following wrapper classes are available:
 
 All instances of the above classes of Donuts are *immutable* objects.
 
+The [Python binding](https://github.com/tueda/donuts-python) is available.
+
 
 Requirements
 ------------
@@ -81,6 +83,12 @@ Development
 pre-commit install
 pre-commit install --hook-type commit-msg
 ```
+
+
+Acknowledgements
+----------------
+
+This software was developed as part of the project supported by JSPS KAKENHI Grant Number 19K03831.
 
 
 License
