@@ -9,8 +9,8 @@ line-length=80
 line-length=80
 
 [ignore-by-title]
-regex=^Merge|^\[Gradle Release Plugin\]
-ignore=title-trailing-punctuation,body-is-missing,contrib-title-conventional-commits
+regex=^Merge|^\s?\[Gradle Release Plugin\]
+ignore=title-trailing-punctuation,title-leading-whitespace,body-is-missing,contrib-title-conventional-commits
 
 [contrib-title-conventional-commits]
 types = build,chore,ci,docs,feat,fix,perf,refactor,revert,style,test
