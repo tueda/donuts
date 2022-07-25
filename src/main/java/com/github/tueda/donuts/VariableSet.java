@@ -288,6 +288,7 @@ public final class VariableSet extends AbstractSet<Variable> implements Serializ
    * @return the mapping of the variables, or {@code null} when the given variable set does not
    *     contain all variables in the current set
    */
+  @SuppressWarnings("PMD.ReturnEmptyCollectionRatherThanNull")
   @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
       justification = "Returning null indicates no mapping exists",
       value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS")

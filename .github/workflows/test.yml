@@ -3,13 +3,14 @@ name: Test
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 ]
+        java: [ 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 ]
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2

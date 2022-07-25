@@ -11,6 +11,7 @@ import com.github.tueda.donuts.util.IndexToObjectMap;
 import lombok.experimental.UtilityClass;
 
 /** This class consists of static utility methods for substitutions. */
+@SuppressWarnings("doclint:missing") // workaround for JDK-8271159
 @UtilityClass
 public class SubstitutionUtils {
   /**

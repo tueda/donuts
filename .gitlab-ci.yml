@@ -78,3 +78,7 @@ jdk16:
 jdk17:
   extends: .test
   image: openjdk:17
+
+jdk18:
+  extends: .test
+  image: openjdk:18
