@@ -65,20 +65,20 @@ jdk13:
 
 jdk14:
   extends: .test
-  image: openjdk:14
+  image: openjdk:14-slim
 
 jdk15:
   extends: .test
-  image: openjdk:15
+  image: openjdk:15-slim
 
 jdk16:
   extends: .test
-  image: openjdk:16
+  image: openjdk:16-slim
 
 jdk17:
   extends: .test
-  image: openjdk:17
+  image: openjdk:17-slim
 
 jdk18:
   extends: .test
-  image: openjdk:18
+  image: openjdk:18-slim
