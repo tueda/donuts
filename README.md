@@ -23,7 +23,7 @@ Currently, the following wrapper classes are available:
 
 All instances of the above classes of Donuts are *immutable* objects.
 
-The [Python binding](https://github.com/tueda/donuts-python) is available.
+A [Python binding](https://github.com/tueda/donuts-python) is available.
 
 
 Requirements
@@ -77,11 +77,14 @@ Development
 ./gradlew jacocoTestReport   # code coverage
 ./gradlew javadoc            # build documents
 ./gradlew dependencyUpdates  # check dependency updates
-./gradlew release            # release a new version
 
 # Git hooks
 pre-commit install
 pre-commit install --hook-type commit-msg
+
+# for releasing a new version
+git-chglog --next-tag v1.0.0  # show the changelog, which must be added to CHANGELOG.md manually
+./gradlew release             # release a new version
 ```
 
 
