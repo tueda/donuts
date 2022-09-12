@@ -1,7 +1,7 @@
 Donuts
 ======
 
-[![Test](https://github.com/tueda/donuts/workflows/Test/badge.svg?branch=master)](https://github.com/tueda/donuts/actions?query=branch:master)
+[![Test](https://github.com/tueda/donuts/workflows/Test/badge.svg?branch=main)](https://github.com/tueda/donuts/actions?query=branch:main)
 [![Release](https://jitpack.io/v/tueda/donuts.svg)](https://jitpack.io/#tueda/donuts)
 [![Javadoc](https://img.shields.io/badge/javadoc-latest-brightgreen.svg)](https://jitpack.io/com/github/tueda/donuts/latest/javadoc/)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/tueda/donuts.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/tueda/donuts/context:java)
