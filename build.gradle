@@ -41,24 +41,26 @@ dependencies {
 }
 
 javadoc {
-  options.with {
-    source = '8'
-    links += [
-      "https://docs.oracle.com/javase/${source}/docs/api/".toString(),
-      "https://www.javadoc.io/doc/cc.redberry/rings/${versions.rings}/".toString(),
-    ]
-    addStringOption("tag", "apiNote:a:API Note:")
-  }
-  // Fail if any warnings are encountered.
-  if (JavaVersion.current().isJava8Compatible()) {
-    options.addBooleanOption('Xdoclint', true)
+  options {
     if (JavaVersion.current().isJava10Compatible()) {
-      // Ignore "Error fetching URL" warnings in JDK < 10.
-      options.addBooleanOption('Xwerror', true)
+      // javadoc in JDK 10 requires element-list.
+      links("https://docs.oracle.com/en/java/javase/11/docs/api/")
+    } else {
+      links("https://docs.oracle.com/javase/8/docs/api/")
     }
-    if (JavaVersion.current().isJava10()) {
-      // Need to specify HTML4 or HTML5.
-      options.addBooleanOption('html4', true)
+    links("https://www.javadoc.io/doc/cc.redberry/rings/${versions.rings}/")
+    addStringOption("tag", "apiNote:a:API Note:")
+    // Fail if any warnings are encountered.
+    if (JavaVersion.current().isJava8Compatible()) {
+      addBooleanOption('Xdoclint', true)
+      if (JavaVersion.current().isJava10Compatible()) {
+        // Ignore "Error fetching URL" warnings in JDK < 10.
+        addBooleanOption('Xwerror', true)
+      }
+      if (JavaVersion.current().isJava10()) {
+        // Need to specify HTML4 or HTML5.
+        addBooleanOption('html4', true)
+      }
     }
   }
 }
