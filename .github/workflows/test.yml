@@ -1,8 +1,10 @@
 name: Test
 
 on:
-  push:
   pull_request:
+  push:
+  schedule:
+    - cron: '0 0 1 * *' # monthly
   workflow_dispatch:
 
 jobs:
