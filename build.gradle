@@ -151,7 +151,7 @@ publishing {
           developer {
             id = 'tueda'
             name = 'Takahiro Ueda'
-            email = 'tueda@st.seikei.ac.jp'
+            email = 't.ueda.od@juntendo.ac.jp'
           }
         }
         scm {
