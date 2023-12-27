@@ -2,7 +2,11 @@ package com.github.tueda.donuts.util;
 
 import java.util.ArrayList;
 
-/** An object that maps indices to values. */
+/**
+ * An object that maps indices to values.
+ *
+ * @param <V> the type of mapped values
+ */
 public final class IndexToObjectMap<V> {
   /** The table to store mappings. */
   @SuppressWarnings("PMD.LooseCoupling") // we want to use ArrayList.ensureCapacity().
