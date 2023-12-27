@@ -79,7 +79,6 @@ Development
 
 # Git hooks
 pre-commit install
-pre-commit install --hook-type commit-msg
 
 # for releasing a new version
 git-chglog --next-tag v1.0.0  # show the changelog, which must be added to CHANGELOG.md manually
