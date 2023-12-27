@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="0.0.5"></a>
+## [0.0.5] (2023-12-27)
+### Changed
+- Support JDK 21.
+  ([59e7b6e](https://github.com/tueda/donuts/commit/59e7b6e54be89a23732053c18521950d48f29f29))
+
 <a name="0.0.4"></a>
 ## [0.0.4] (2022-09-12)
 ### Fixed
@@ -25,6 +31,7 @@
 ## 0.0.1 (2021-09-04)
 - First version.
 
+[0.0.5]: https://github.com/tueda/donuts/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/tueda/donuts/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/tueda/donuts/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/tueda/donuts/compare/v0.0.1...v0.0.2
