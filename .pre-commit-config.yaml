@@ -4,13 +4,23 @@ repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
+    -   id: check-added-large-files
     -   id: check-case-conflict
     -   id: check-merge-conflict
     -   id: check-symlinks
     -   id: check-xml
     -   id: check-yaml
+    -   id: destroyed-symlinks
     -   id: end-of-file-fixer
+    -   id: fix-byte-order-marker
+    -   id: mixed-line-ending
     -   id: trailing-whitespace
+
+-   repo: https://github.com/jguttman94/pre-commit-gradle
+    rev: v0.3.0
+    hooks:
+    -   id: gradle-spotless
+        args: [-w]
 
 -   repo: https://github.com/editorconfig-checker/editorconfig-checker.python
     rev: 2.7.3
