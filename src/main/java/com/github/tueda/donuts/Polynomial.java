@@ -4,8 +4,8 @@ import cc.redberry.rings.Rings;
 import cc.redberry.rings.bigint.BigInteger;
 import cc.redberry.rings.poly.PolynomialFactorDecomposition;
 import cc.redberry.rings.poly.PolynomialMethods;
+import cc.redberry.rings.poly.multivar.GroebnerBases;
 import cc.redberry.rings.poly.multivar.Monomial;
-import cc.redberry.rings.poly.multivar.MonomialOrder;
 import cc.redberry.rings.poly.multivar.MultivariateDivision;
 import cc.redberry.rings.poly.multivar.MultivariateFactorization;
 import cc.redberry.rings.poly.multivar.MultivariateGCD;
@@ -32,7 +32,8 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
 
   /** Raw zero polynomial. */
   /* default */ static final MultivariatePolynomial<BigInteger> RAW_ZERO =
-      MultivariatePolynomial.zero(0, Rings.Z, MonomialOrder.DEFAULT);
+      MultivariatePolynomial.zero(
+          0, Rings.Z, cc.redberry.rings.poly.multivar.MonomialOrder.DEFAULT);
 
   /** The minimum value of short. */
   private static final BigInteger SHORT_MIN_VALUE = BigInteger.valueOf(Short.MIN_VALUE);
@@ -1119,6 +1120,40 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
       }
     }
     return lcm;
+  }
+
+  /**
+   * Returns the Gröbner basis for the ideal represented by the given polynomials.
+   *
+   * @param polynomials the polynomials for which the Gröbner basis is to be computed
+   * @return the minimized and reduced Gröbner basis for {@code {polynomial1 = 0, ..., polynomialN =
+   *     0}}
+   */
+  public static Polynomial[] groebnerBasisOf(final Polynomial... polynomials) {
+    return groebnerBasisOf(MonomialOrder.GREVLEX, polynomials);
+  }
+
+  /**
+   * Returns the Gröbner basis for the ideal represented by the given polynomials.
+   *
+   * @param monomialOrder the monomial order to be used
+   * @param polynomials the polynomials for which the Gröbner basis is to be computed
+   * @return the minimized and reduced Gröbner basis for {@code {polynomial1 = 0, ..., polynomialN =
+   *     0}}
+   */
+  public static Polynomial[] groebnerBasisOf(
+      final MonomialOrder monomialOrder, final Polynomial... polynomials) {
+    final VariableSet newVariables = VariableSet.unionOf(polynomials);
+
+    final List<MultivariatePolynomial<BigInteger>> polys =
+        Stream.of(polynomials).map(p -> p.translate(newVariables).raw).collect(Collectors.toList());
+
+    final List<MultivariatePolynomial<BigInteger>> basis =
+        GroebnerBases.GroebnerBasis(polys, monomialOrder.raw);
+
+    return basis.stream()
+        .map(p -> Polynomial.createFromRaw(newVariables, p))
+        .toArray(Polynomial[]::new);
   }
 
   /**

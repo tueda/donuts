@@ -784,6 +784,20 @@ public class PolynomialTest {
   }
 
   @Test
+  public void groebnerBasisOf() {
+    {
+      // Taken from Rings documentation.
+      Polynomial a = Polynomial.of("8*x^2*y^2 + 5*x*y^3 + 3*x^3*z + x^2*y*z");
+      Polynomial b = Polynomial.of("x^5 + 2*y^3*z^2 + 13*y^2*z^3 + 5*y*z^4");
+      Polynomial c = Polynomial.of("8*x^3 + 12*y^3 + x*z^2 + 3");
+      Polynomial d = Polynomial.of("7*x^2*y^4 + 18*x*y^3*z^2 + y^3*z^3");
+
+      assertThat(Polynomial.groebnerBasisOf(a, b, c, d))
+          .isEqualTo(Polynomial.of("x", "z^2", "1 + 4*y^3"));
+    }
+  }
+
+  @Test
   public void factors() {
     checkNoFactorization("0");
     checkNoFactorization("1");
