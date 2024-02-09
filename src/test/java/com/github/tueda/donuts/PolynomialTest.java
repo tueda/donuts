@@ -814,6 +814,9 @@ public class PolynomialTest {
     // https://github.com/PoslavskySV/rings/issues/70
     checkFactorization(
         "(x1-1)*(x2-1)*(x3-1)*(x4-1)", new String[] {"-1+x4", "-1+x3", "-1+x2", "-1+x1"});
+
+    // https://github.com/PoslavskySV/rings/issues/76
+    checkFactorization("2*y^3-3*x*y^2+x^3", new String[] {"-y+x", "-y+x", "2*y+x"});
   }
 
   void checkNoFactorization(String poly_str) {
@@ -824,8 +827,11 @@ public class PolynomialTest {
   void checkFactorization(String poly_str, String[] factors_str) {
     Polynomial p = Polynomial.of(poly_str);
     Polynomial[] factors = p.factors();
+    Polynomial[] answer = Polynomial.of(factors_str);
+    // The factorization given in the test case must be correct.
+    assertThat(p).isEqualTo(Polynomial.productOf(answer));
     // At least, the factored result should be equal to the original polynomial.
-    assertThat(factors).isEqualTo(Polynomial.of(factors_str));
+    assertThat(factors).isEqualTo(answer);
     for (int i = 0; i < factors.length; i++) {
       // The overall constant factor comes first.
       if (i >= 1) {

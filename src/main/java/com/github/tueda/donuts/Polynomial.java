@@ -1139,6 +1139,8 @@ public final class Polynomial implements Serializable, Iterable<Polynomial>, Mul
     final PolynomialFactorDecomposition<MultivariatePolynomial<BigInteger>> decomposition =
         MultivariateFactorization.FactorInZ(raw);
 
+    decomposition.setLcFrom(raw); // workaround for https://github.com/PoslavskySV/rings/issues/76
+
     decomposition.canonical(); // sorting, positive signumOfLC
 
     // Construct the result.
