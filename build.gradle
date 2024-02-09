@@ -68,6 +68,10 @@ javadoc {
 test {
   useJUnitPlatform()
   exclude '**/ImmutabilityTest.class'
+  testLogging {
+    events 'failed'
+    exceptionFormat 'full'
+  }
 }
 
 task testWithoutCoverage(type: Test) {
