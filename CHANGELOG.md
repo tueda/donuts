@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="0.0.6"></a>
+## [0.0.6] (2024-02-09)
+### Fixed
+- Bug in factorization.
+  ([165a04f](https://github.com/tueda/donuts/commit/165a04f3fbc215f48d28c0211f6becdf59312619))
+
 <a name="0.0.5"></a>
 ## [0.0.5] (2023-12-27)
 ### Changed
@@ -31,6 +37,7 @@
 ## 0.0.1 (2021-09-04)
 - First version.
 
+[0.0.6]: https://github.com/tueda/donuts/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/tueda/donuts/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/tueda/donuts/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/tueda/donuts/compare/v0.0.2...v0.0.3
