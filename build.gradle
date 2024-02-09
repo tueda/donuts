@@ -2,11 +2,11 @@ plugins {
   id 'jacoco'
   id 'java-library'
   id 'maven-publish'
-  id 'com.diffplug.spotless' version '6.13.0'
-  id 'com.github.ben-manes.versions' version '0.50.0'
+  id 'com.diffplug.spotless' version '6.13.0'  // https://github.com/diffplug/spotless/issues/1337
+  id 'com.github.ben-manes.versions' version '0.51.0'
   id 'com.github.johnrengelman.shadow' version '8.1.1'
   id 'net.researchgate.release' version '3.0.2'
-  id 'ru.vyarus.quality' version '4.9.0'
+  id 'ru.vyarus.quality' version '5.0.0'
 }
 
 group = 'com.github.tueda'
@@ -15,13 +15,13 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 def versions = [
-  checkstyle: '10.12.6',
-  junit: '5.10.1',
+  checkstyle: '10.13.0',
+  junit: '5.10.2',
   lombok: '1.18.30',
   pmd: '6.55.0',
   rings: '2.5.8',
   spotbugs: '4.8.3',
-  truth: '1.2.0',
+  truth: '1.4.0',
 ]
 
 repositories {

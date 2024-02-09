@@ -28,6 +28,6 @@ repos:
     -   id: editorconfig-checker
 
 -   repo: https://github.com/jorisroovers/gitlint
-    rev: v0.18.0
+    rev: v0.18.0  # https://github.com/jorisroovers/gitlint/issues/535
     hooks:
     -   id: gitlint
